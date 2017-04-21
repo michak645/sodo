@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pl"
+<meta charset="utf-8">
+
+<body>
+
+<h1>Dodaj</h1>
+
+
+<form action="/add/" method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="Submit">
+</form>
+
+{{ thanks }}
+
+
+</body>
+
+
+</html>
