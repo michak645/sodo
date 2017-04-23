@@ -1,22 +1,14 @@
-<!DOCTYPE html>
-<html lang="pl"
-<meta charset="utf-8">
+{% extends "wnioski/base.html" %}
 
-<body>
+{% block title %}Dodaj wniosek{% endblock %}
 
-<h1>Dodaj</h1>
+{% block content %}
 
-
-<form action="/add/" method="post">
+<h3>Dodaj Wniosek</h3>
+<form action="/addWniosek/" method="post">
 	{% csrf_token %}
-	{{ form.as_p }}
-	<input type="submit" value="Submit">
+	{{formWniosek.as_p}}
+	<input type="submit" value="dodaj"
 </form>
 
-{{ thanks }}
-
-
-</body>
-
-
-</html>
+{% endblock %}

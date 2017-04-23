@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Pracownik, Wniosek, Obiekt
-from .forms import PracownikForm
+from .forms import WniosekForm
 
 
 def index(request):
@@ -25,14 +25,18 @@ def add(request):
 
     thanks = ''
 
+# thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
+
     if request.method == 'POST':
-        form = PracownikForm(request.POST)
-        if form.is_valid():
-            form.save()
-            thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
+        formWniosek = WniosekForm(request.POST)
+        if formWniosek.is_valid():
+            formWniosek.save()
+            thanks = 'wniosek dodany w dniu {0}'.format(
+                formWniosek.cleaned_data['data_zlo']
+            )
     else:
-        form = PracownikForm()
+        formWniosek = WniosekForm()
 
     template = "wnioski/add.html"
-    context = {'form': form, 'thanks': thanks}
+    context = {'formWniosek': formWniosek, 'thanks': thanks}
     return render(request, template, context)

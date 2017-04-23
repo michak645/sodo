@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <title>{% block title %}SODO{% endblock %}</title>
+</head>
+<body>
+
+  <div class="container">
+    {% block nav %}
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills">
+            <li role="presentation" class="active"><a href="#">Home</a></li>
+            <li role="presentation"><a href="add">Dodaj</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">SODO</h3>
+      </div>
+    {% endblock %}
+  </div>
+
+  <div id="container">
+  {% block content %}{% endblock %}
+  </div>
+
+</body>
+
+</html>
