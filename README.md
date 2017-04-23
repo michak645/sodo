@@ -3,7 +3,8 @@
 Na razie podstawy
 
 To do: 
-* dodać tabele
-* pododawać jakieś przykładowe rekordy
+* naprawić dodawanie wniosków
+* uzupełnić tabele
+* front dodać
 
 Dopisywać co trzeba zrobić, przynajmniej na wtorek
