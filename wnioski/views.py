@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Pracownik, Wniosek, Obiekt
 from .forms import WniosekForm
+from django.utils import formats
 
 
 def index(request):
@@ -28,15 +29,18 @@ def add(request):
 # thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
 
     if request.method == 'POST':
-        formWniosek = WniosekForm(request.POST)
-        if formWniosek.is_valid():
-            formWniosek.save()
+        form = WniosekForm(request.POST)
+        if form.is_valid():
+            form.save()
             thanks = 'wniosek dodany w dniu {0}'.format(
-                formWniosek.cleaned_data['data_zlo']
+                formats.date_format(
+                    form.cleaned_data['data_zlo'],
+                    "SHORT_DATETIME_FORMAT"
+                )
             )
     else:
-        formWniosek = WniosekForm()
+        form = WniosekForm()
 
     template = "wnioski/add.html"
-    context = {'formWniosek': formWniosek, 'thanks': thanks}
+    context = {'form': form, 'thanks': thanks}
     return render(request, template, context)

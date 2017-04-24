@@ -1,53 +1,36 @@
+{% extends "wnioski/base.html" %}
 
-<!DOCTYPE html>
-<html lang="pl">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <title>SODO</title>
-</head>
+{% block title %}SODO{% endblock %}
 
-  <body>
-    <div class="container">
-      <div class="header clearfix">
-        <nav>
-          <ul class="nav nav-pills">
-            <li role="presentation" class="active"><a href="#">Home</a></li>
-            <li role="presentation"><a href="add">Dodaj</a></li>
-            
-          </ul>
-        </nav>
-        <h3 class="text-muted">SODO</h3>
-      </div>
+{% block content %}
 
-      <div class="row marketing">
 
-        <div class="col-md-4">
+      <div class="col-md-12">
+
+        <div class="col-md-6">
           <h3>Lista użytkowników</h3>
           {% for pracownik in pracownik %}
-            <p>{{ pracownik }}</p>
+            <p>{{ forloop.counter }}. {{ pracownik }}</p>
           {% endfor %}
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-6">
         <h3>Lista obiektów</h3>
           {% for obiekt in obiekt %}
-            <p>{{ obiekt.nazwa }}</p>
+            <p>{{ forloop.counter }}. {{ obiekt.nazwa }}</p>
           {%endfor%}
         </div>
-
-        <div class="col-md-4">
+          
+    </div>
+    </br>
+    <div>
+        <div class="col-md-12">
         <h3>Lista wniosków</h3>
           {% for wniosek in wniosek %}
-            <p>{{ wniosek }} {{ forloop.counter }}</p>
+            <p>{{ forloop.counter }}. {{ wniosek }} </p>
           {%endfor%}
         </div>
 
-
     </div>
-  </body>
-</html>
+        
+{% endblock %}
