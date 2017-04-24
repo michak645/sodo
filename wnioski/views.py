@@ -11,7 +11,7 @@ def index(request):
 
     pracownik = Pracownik.objects.all()
     obiekt = Obiekt.objects.all()
-    wniosek = Wniosek.objects.all()
+    wniosek = Wniosek.objects.order_by('-data_zlo')[:5]
 
     template = "wnioski/index.html"
     context = {
