@@ -7,4 +7,8 @@ To do:
 * uzupełnić tabele
 * front dodać
 
+* logowanie
+
 Dopisywać co trzeba zrobić, przynajmniej na wtorek
+
+
