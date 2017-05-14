@@ -1,0 +1,18 @@
+{% extends "wnioski/base.html" %}
+
+{% block title %}SODO{% endblock %}
+
+{% block content %}
+
+<h3>REJESTRACJA</h3>
+<form action="/acc/create_user" method="post">
+	{% csrf_token %}	
+	
+	{{ form }}
+
+	</br>
+	<input type="submit" value="rejestruj">
+</form>
+
+        
+{% endblock %}
