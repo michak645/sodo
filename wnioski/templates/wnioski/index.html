@@ -5,37 +5,7 @@
 {% block content %}
 
 
-      <div class="col-md-12">
+SODO
 
-        <div class="col-md-6">
-          <h3>Lista użytkowników</h3>
-          {% for pracownik in pracownik %}
-            <p>{{ forloop.counter }}. {{ pracownik }}</p>
-          {% endfor %}
-        </div>
-
-        <div class="col-md-6">
-        <h3>Lista obiektów</h3>
-          {% for obiekt in obiekt %}
-            <p>{{ forloop.counter }}. {{ obiekt.nazwa }}</p>
-          {%endfor%}
-        </div>
-          
-    </div>
-    </br>
-    <div>
-        <div class="col-md-12">
-        <h3>Lista najnowszych wniosków</h3>
-          {% for wniosek in wniosek %}
-            <p>{{ forloop.counter }}. {{ wniosek }} </p>
-          {%endfor%}
-        </div>
-
-    </div>
-
-
-    <div>
-      <h1>test</h1>
-    </div>
         
 {% endblock %}

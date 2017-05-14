@@ -9,16 +9,8 @@ def index(request):
     # import pdb
     # pdb.set_trace()
 
-    pracownik = Pracownik.objects.all()
-    obiekt = Obiekt.objects.all()
-    wniosek = Wniosek.objects.order_by('-data_zlo')[:5]
-
     template = "wnioski/index.html"
-    context = {
-        'pracownik': pracownik,
-        'obiekt': obiekt,
-        'wniosek': wniosek
-    }
+    context = {}
     return render(request, template, context)
 
 
@@ -43,4 +35,20 @@ def add(request):
 
     template = "wnioski/add.html"
     context = {'form': form, 'thanks': thanks}
+    return render(request, template, context)
+
+
+def list(request):
+
+    pracownik = Pracownik.objects.all()
+    obiekt = Obiekt.objects.all()
+    wniosek = Wniosek.objects.order_by('-data_zlo')[:5]
+
+    template = "wnioski/list.html"
+
+    context = {
+        'pracownik': pracownik,
+        'obiekt': obiekt,
+        'wniosek': wniosek
+    }
     return render(request, template, context)
