@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from .models import Pracownik, Wniosek, Obiekt
+from .models import Pracownicy, Wnioski, Obiekty_Chronione
 from .forms import WniosekForm
 from django.utils import formats
 from django.contrib.auth.forms import UserCreationForm
@@ -43,9 +43,9 @@ def add(request):
 
 def list(request):
 
-    pracownik = Pracownik.objects.all()
-    obiekt = Obiekt.objects.all()
-    wniosek = Wniosek.objects.order_by('-data_zlo')[:5]
+    pracownik = Pracownicy.objects.all()
+    obiekt = Obiekty_Chronione.objects.all()
+    wniosek = Wnioski.objects.order_by('-data_zlo')[:5]
 
     template = "wnioski/list.html"
 
