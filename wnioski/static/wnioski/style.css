@@ -2,3 +2,24 @@ body {
     font-family: Verdana;
 }
 
+.logowanie {
+	border: solid black 1px;
+	height: 300px;
+}
+
+.main-page {
+	margin-top: 100px;
+}
+
+.content {
+	margin-top: 100px;
+}
+
+.separator {
+	border-bottom: solid black 1px;
+}
+
+.input-table {
+	border-collapse: separate;
+    border-spacing: 10px;
+}

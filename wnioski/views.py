@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from .models import Pracownicy, Wnioski, Obiekty_Chronione
-from .forms import WniosekForm
+from .models import Pracownik, Wniosek, Obiekt
+from .forms import WniosekForm, SearchForm, PracownikForm
 from django.utils import formats
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -17,6 +17,7 @@ def index(request):
     return render(request, template, context)
 
 
+@login_required(login_url='/')
 def add(request):
 
     thanks = ''
@@ -41,11 +42,26 @@ def add(request):
     return render(request, template, context)
 
 
+@login_required(login_url='/')
+def create_user(request):
+    if request.method == 'POST':
+        form = PracownikForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = PracownikForm()
+
+    template = "wnioski/create_user.html"
+    context = {'form': form}
+    return render(request, template, context)
+
+
+@login_required(login_url='/')
 def list(request):
 
-    pracownik = Pracownicy.objects.all()
-    obiekt = Obiekty_Chronione.objects.all()
-    wniosek = Wnioski.objects.order_by('-data_zlo')[:5]
+    pracownik = Pracownik.objects.all()
+    obiekt = Obiekt.objects.all()
+    wniosek = Wniosek.objects.order_by('-data_zlo')[:5]
 
     template = "wnioski/list.html"
 
@@ -58,7 +74,7 @@ def list(request):
 
 
 def login(request):
-    template = "wnioski/login.html"
+    template = "wnioski/index.html"
     context = {}
     return render(request, template, context)
 
@@ -67,6 +83,7 @@ def authentication(request):
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
     user = auth.authenticate(username=username, password=password)
+
     if user is not None:
         auth.login(request, user)
         return HttpResponseRedirect('/acc/loggedin/')
@@ -74,8 +91,11 @@ def authentication(request):
         return HttpResponseRedirect('/acc/invalid/')
 
 
+@login_required(login_url='/')
 def loggedin(request):
-    return render(request, 'wnioski/loggedin.html', {'username': request.user.username})
+    return render(request, 'wnioski/loggedin.html', {
+        'username': request.user.username}
+    )
 
 
 def logout(request):
@@ -87,22 +107,47 @@ def invalid(request):
     return render(request, 'wnioski/invalid.html', {})
 
 
-def create_user(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/acc/create_user_succ')
-        else:
-            return HttpResponseRedirect('/acc/create_user_error')
-    args = {}
-    args['form'] = UserCreationForm()
-    return render(request, 'wnioski/create_user.html', args)
-
-
 def create_user_succ(request):
     return render(request, 'wnioski/create_user_succ.html', {})
 
 
 def create_user_error(request):
     return render(request, 'wnioski/create_user_error.html', {})
+
+
+@login_required(login_url='/')
+def search(request):
+
+    if request.method == 'GET':
+        username = SearchForm(request.GET)
+        if username.is_valid():
+            user = username.cleaned_data['username'].encode('utf-8').strip()
+            message = 'Wyszukiwanie dla: "{0}"'.format(
+                user
+            )
+            pracownicy = Pracownik.objects.filter(nazwisko__icontains=user)
+            return render(request, 'wnioski/search_results.html', {
+                'pracownicy': pracownicy, 'message': message}
+            )
+    else:
+        username = SearchForm()
+        message = "cos nie tak.. {0}".format(username)
+        return render(request, 'wnioski/search_results.html', {
+            'message': message, 'username': username}
+        )
+
+    return render(request, 'wnioski/search.html')
+
+
+@login_required(login_url='/')
+def user_view(request, user_id):
+    pracownik = Pracownik.objects.get(id=user_id)
+    return render(request, 'wnioski/user_view.html', {
+        'pracownik': pracownik})
+
+
+@login_required(login_url='/')
+def user_account(request):
+    if request.user.is_authenticated():
+        return render(request, 'wnioski/user_account.html', {
+            'user': request.user})

@@ -9,8 +9,10 @@
     <h3>Dodaj Wniosek</h3></br>
     <form action="/add/" method="post">
         {% csrf_token %}
-        <table>{{form}}</table>
-        <input type="submit" value="dodaj">
+        <div class="table">
+        	<table class="input-table">{{form}}</table>
+        </div>
+        <input type="submit" value="dodaj" class="btn btn-primary">
     </form>
     {{ thanks }}
 

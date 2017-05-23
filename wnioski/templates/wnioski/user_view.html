@@ -1,0 +1,93 @@
+{% extends "wnioski/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <h3>{{ pracownik }} - dane szczegółowe</h3>
+  </div>
+  <hr>
+  <div class="row">
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Imię: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.imie }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Nazwisko: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.nazwisko }}
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Email: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.email }}
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Data zatrudnienia: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.data_zatr }}
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Jednostka organizacyjna: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.jedn_org }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Szkolenie: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.szkolenie }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Login: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.login }}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-2">
+        <p>Rodzaj użytkownika: </p>
+      </div>
+      <div class="col-md-4">
+        {{ pracownik.rodzaj }}
+      </div>
+    </div>
+  </div>
+
+</div>
+    
+{% endblock %}

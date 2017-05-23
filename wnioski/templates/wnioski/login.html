@@ -5,14 +5,23 @@
 {% block content %}
 
 
-<form action="/acc/authentication" method="post">
-	{% csrf_token %}	
-	<label for="username">User</label>
-	<input type="text" name="username" value="" id="username"></br>
-	<label for="password">password</label>
-	<input type="password" name="password" value="" id="password"></br>
-	<input type="submit" value="loguj">
-</form>
+<div class="container input-group">
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6">
+			<h3>Logowanie</h3>
+		</div>
+	</div>
+	<hr>
+	<form action="/acc/authentication/" method="post">
+		{% csrf_token %}
+		<label for="username">Login</label>
+		<input type="text" placeholder="nazwa użytkownika" name="username" value="" id="username">
+		<label for="username">Hasło</label>
+		<input type="password" placeholder="hasło" id="password">
+		<input type="submit" value="Zaloguj" class="btn btn-primary">
+	</form>
+</div>
 
-        
 {% endblock %}

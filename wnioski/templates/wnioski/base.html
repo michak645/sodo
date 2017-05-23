@@ -18,22 +18,27 @@
 
   <div class="container menu">
     {% block nav %}
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-               <a class="navbar-brand" href="/">SODO</a>
+               <a class="navbar-brand" href="/acc/loggedin/">SODO</a>
             </div>
             <ul class="nav navbar-nav">
-              <li><a href="/">Home</a></li>
-              <li><a href="/add">Add</a></li>
+              <li><a href="/add">Dodaj wniosek</a></li>
+              <li><a href="/acc/create_user">Dodaj użytkownika</a></li>
               <li><a href="/list">Lista</a></li>
+              <li><a href="/search">Wyszukaj</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="/user_account/">Twoje konto</a></li>
+              <li><a href="/acc/logout/">Wyloguj</a></li>
             </ul>
         </div>
       </nav>
     {% endblock %}
   </div>
 
-  <div id="row" class="container">
+  <div id="row" class="container content">
       <div class="row">
             {% block content %}{% endblock %}
       </div>
