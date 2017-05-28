@@ -8,7 +8,8 @@ from .models import (
     Pracownik,
     Wniosek,
     Status,
-    Historia
+    Historia,
+    WniosekTyp
 )
 
 
@@ -21,3 +22,4 @@ admin.site.register(Pracownik)
 admin.site.register(Wniosek)
 admin.site.register(Status)
 admin.site.register(Historia)
+admin.site.register(WniosekTyp)

@@ -1,0 +1,53 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <h3>{{ obiekt }} - dane szczegółowe</h3>
+  </div>
+  <hr>
+  <div class="row">
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Nazwa: </p>
+      </div>
+      <div class="col-md-4">
+        {{ obiekt.nazwa }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Typ: </p>
+      </div>
+      <div class="col-md-4">
+        {{ obiekt.typ }}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-2">
+        <p>Jednostka organizacyjna: </p>
+      </div>
+      <div class="col-md-4">
+        {{ obiekt.jedn_org }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Opis: </p>
+      </div>
+      <div class="col-md-4">
+        {{ obiekt.opis }}
+      </div>
+    </div>
+
+</div>
+    
+{% endblock %}

@@ -1,12 +1,6 @@
 from django.forms import ModelForm
-from .models import Pracownik, Wniosek
+from .models import Wniosek, Pracownik
 from django import forms
-
-
-class PracownikForm(ModelForm):
-    class Meta:
-        model = Pracownik
-        fields = ('imie', 'nazwisko', 'email', 'data_zatr', 'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo')
 
 
 class WniosekForm(ModelForm):
@@ -17,3 +11,12 @@ class WniosekForm(ModelForm):
 
 class SearchForm(forms.Form):
     username = forms.CharField()
+
+
+class PracownikForm(ModelForm):
+    class Meta:
+        model = Pracownik
+        fields = (
+            'imie', 'nazwisko', 'email', 'data_zatr', 'szkolenie',
+            'rodzaj', 'jedn_org', 'admin'
+        )

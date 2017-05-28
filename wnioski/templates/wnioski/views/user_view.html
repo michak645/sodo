@@ -1,4 +1,4 @@
-{% extends "wnioski/base.html" %}
+{% extends "wnioski/base/base.html" %}
 
 {% block title %}Lista{% endblock %}
 
@@ -36,7 +36,7 @@
         <p>Email: </p>
       </div>
       <div class="col-md-4">
-        {{ pracownik.email }}
+        {{ user.username }}
       </div>
     </div>
 

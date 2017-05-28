@@ -1,0 +1,62 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <h3>{{ wniosek }} - dane szczegółowe</h3>
+  </div>
+  <hr>
+  <div class="row">
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Typ wniosku: </p>
+      </div>
+      <div class="col-md-4">
+        {{ wniosek.typ }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Data złożenia: </p>
+      </div>
+      <div class="col-md-4">
+        {{ wniosek.data_zlo }}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-2">
+        <p>Pracownik składający: </p>
+      </div>
+      <div class="col-md-4">
+        {{ wniosek.prac_sklada }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Pracownik którego dotyczy: </p>
+      </div>
+      <div class="col-md-4">
+        {{ wniosek.prac_dot }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <p>Obiekt: </p>
+      </div>
+      <div class="col-md-4">
+        {{ wniosek.obiekt }}
+      </div>
+    </div>
+
+</div>
+    
+{% endblock %}

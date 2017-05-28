@@ -1,4 +1,4 @@
-{% extends "wnioski/base.html" %}
+{% extends "wnioski/base/base.html" %}
 
 {% block title %}Lista{% endblock %}
 
@@ -8,15 +8,15 @@
 
         <div class="col-md-6">
           <h3>Lista użytkowników</h3>
-          {% for pracownik in pracownik %}
+          {% for pracownik in pracownicy %}
             <p><a href="/user_view/{{ pracownik.id }}">{{ forloop.counter }}. {{ pracownik }}</a></p>
           {% endfor %}
         </div>
 
         <div class="col-md-6">
-        <h3>asd</h3>
-          {% for obiekt in obiekty %}
-            <p>{{ forloop.counter }}. {{ obiekt }}</p>
+        <h3>Obiekty:</h3>
+          {% for obiekt in obiekt %}
+            <p><a href="/obj_view/{{ obiekt.id }}">{{ forloop.counter }}. {{ obiekt }}</a></p>
           {%endfor%}
         </div>
           
@@ -26,7 +26,7 @@
         <div class="col-md-12">
         <h3>Lista najnowszych wniosków</h3>
           {% for wniosek in wniosek %}
-            <p>{{ forloop.counter }}. {{ wniosek }} </p>
+            <p><a href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. {{ wniosek }}</a></p>
           {%endfor%}
         </div>
 

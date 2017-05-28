@@ -1,4 +1,4 @@
-{% extends "wnioski/base.html" %}
+{% extends "wnioski/base/base.html" %}
 
 {% block title %}Lista{% endblock %}
 
@@ -7,7 +7,7 @@
 <div class="container">
 
   <div class="row">
-    <h3>{{ user.Pracownik.imie }} {{ user.Pracownik.nazwisko }} - dane szczegółowe</h3>
+    <h3>{{ user.username }} {{ user.nazwisko }} - dane szczegółowe</h3>
   </div>
   <hr>
   <div class="row">
@@ -22,7 +22,7 @@
         <p>Imię: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.imie }}
+        {{ user.first_name }}
       </div>
     </div>
 
@@ -31,7 +31,7 @@
         <p>Nazwisko: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.nazwisko }}
+        {{ user.last_name }}
       </div>
     </div>
 
@@ -40,43 +40,73 @@
         <p>Email: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.email }}
+        {{ user.email }}
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-2">
-        <p>Data zatrudnienia: </p>
+        <p>Grupy: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.data_zatr }}
+        {{ user.groups }}
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-2">
-        <p>Jednostka organizacyjna: </p>
+        <p>user_permissions: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.jedn_org }}
+        {{ user.user_permissions }}
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-2">
-        <p>Szkolenie: </p>
+        <p>is_staff: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.szkolenie }}
+        {{ user.is_staff }}
       </div>
     </div>
     
     <div class="row">
       <div class="col-md-2">
-        <p>Rodzaj użytkownika: </p>
+        <p>is_active: </p>
       </div>
       <div class="col-md-4">
-        {{ user.Pracownik.rodzaj }}
+        {{ user.is_active }}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-md-2">
+        <p>is_superuser: </p>
+      </div>
+      <div class="col-md-4">
+        {{ user.is_superuser }}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-md-2">
+        <p>last_login: </p>
+      </div>
+      <div class="col-md-4">
+        {{ user.last_login }}
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+      <div class="col-md-2">
+        <p>date_joined: </p>
+      </div>
+      <div class="col-md-4">
+        {{ user.date_joined }}
       </div>
     </div>
   </div>

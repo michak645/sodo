@@ -1,0 +1,50 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}SODO{% endblock %}
+
+{% block content %}
+
+
+<div class="container col-md-offset-2">
+	<div class="row">
+		<div class="row">
+			<h3>Dodaj użytkownika</h3>
+		</div>
+	</div>
+
+	<hr>
+	<div class="row">
+		{% if message %}
+
+			<p style="color: green;">{{ message }}</p>
+
+		{% endif %}
+	</div>
+
+	<div class="row input-group">
+		<form action="/acc/create_user" method="post">
+			{% csrf_token %}
+
+			<div>
+
+				{% for field in form1 %}
+					<p>{{field.label}} {{field}}</p>
+					<p>{{field.error}}</p>
+				{% endfor %}
+
+				{% for field in form2 %}
+					<p>{{field.label}} {{field}}</p>
+					<p>{{field.error}}</p>
+				{% endfor %}
+
+			</div>
+			
+			<div class="row">
+				<input type="submit" value="rejestruj" class="btn btn-primary">
+			</div>
+		</form>
+	</div>
+
+</div>
+        
+{% endblock %}
