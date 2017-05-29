@@ -7,8 +7,11 @@ urlpatterns = [
     # main page
     url(r'^$', views.login, name='loggedin'),
 
-    # get - lists and views
+    # views
     url(r'^list/', views.list, name='list'),
+    url(r'^obiekty/', views.obiekty, name='obiekty'),
+    url(r'^pracownicy/', views.pracownicy, name='pracownicy'),
+    url(r'^wnioski/', views.wnioski, name='wnioski'),
     url(r'^user_view/(?P<user_id>\d+)/', views.user_view, name='user_view'),
     url(r'^obj_view/(?P<obj_id>\d+)/', views.obj_view, name='obj_view'),
     url(r'^wniosek_view/(?P<wniosek_id>\d+)/', views.wniosek_view,

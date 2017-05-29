@@ -56,6 +56,30 @@ def list(request):
 
 
 @login_required(login_url='/')
+def pracownicy(request):
+    pracownicy = Pracownik.objects.all()
+    template = "wnioski/views/pracownicy.html"
+    context = {'pracownicy': pracownicy}
+    return render(request, template, context)
+
+
+@login_required(login_url='/')
+def obiekty(request):
+    obiekty = Obiekt.objects.all()
+    template = "wnioski/views/obiekty.html"
+    context = {'obiekty': obiekty}
+    return render(request, template, context)
+
+
+@login_required(login_url='/')
+def wnioski(request):
+    wnioski = Wniosek.objects.order_by('-data_zlo')
+    template = "wnioski/views/wnioski.html"
+    context = {'wnioski': wnioski}
+    return render(request, template, context)
+
+
+@login_required(login_url='/')
 def search(request):
 
     if request.method == 'GET':
