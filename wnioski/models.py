@@ -1,9 +1,9 @@
 from django.db import models
 from datetime import datetime
 from django.utils import formats
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+# from django.contrib.auth.models import User
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
 
 
 class Uprawnienia(models.Model):
@@ -46,10 +46,9 @@ class RodzajPracownika(models.Model):
 
 
 class Pracownik(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, blank=True,
-        null=True, related_name='pracownik'
-    )
+    # user = models.OneToOneField(
+    #    User, on_delete=models.CASCADE, related_name='pracownik'
+    # )
     imie = models.CharField(max_length=45)
     nazwisko = models.CharField(max_length=45)
     email = models.EmailField(max_length=45, null=True)
@@ -64,7 +63,9 @@ class Pracownik(models.Model):
     jedn_org = models.ForeignKey(
         JednOrg, null=True, verbose_name='Jedn. org.'
     )
-    admin = models.BooleanField(default=False, null=False)
+    login = models.CharField(max_length=45, null=True)
+    haslo = models.CharField(max_length=45, null=True)
+    # admin = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return u'{0} {1}'.format(
@@ -103,7 +104,7 @@ class Wniosek(models.Model):
     prac_dot = models.ForeignKey(
         Pracownik, related_name='wnioski_dot', verbose_name='Dotyczy'
     )
-    obiekt = models.ForeignKey(Obiekt)
+    obiekt = models.ForeignKey(Obiekt, related_name='obiekt')
 
     def __str__(self):
         return u'Wniosek, {0}, data {1}'.format(
@@ -120,8 +121,9 @@ class Status(models.Model):
 
 
 class Historia(models.Model):
-    wniosek = models.ForeignKey(Wniosek)
-    status = models.ForeignKey(Status)
+    wniosek = models.ForeignKey(Wniosek, related_name='wniosek')
+    status = models.ForeignKey(
+        Status)
 
     def __str__(self):
         return u'{0} {1}'.format(self.wniosek, self.status)

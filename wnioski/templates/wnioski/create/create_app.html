@@ -1,11 +1,11 @@
 {% extends "wnioski/base/base.html" %}
 
-{% block title %}Dodaj wniosek{% endblock %}
+{% block title %}SODO{% endblock %}
 
 {% block content %}
 
-<div class="container col-md-offset-2">
-	<div class="row">
+<div class="container">
+	<div class="row col-md-offset-2">
 		<div class="row">
 			<h3>Dodaj wniosek</h3>
 		</div>
@@ -13,7 +13,13 @@
 
     <hr>
 
-    <div class="row">
+    <div class="row col-md-offset-2">
+		{% if message %}
+			<p style="color: green;">{{ message }}</p>
+		{% endif %}
+	</div>
+
+    <div class="row col-md-offset-2">
 	    <form action="/create_app/" method="post">
 	        {% csrf_token %}
 	        <div class="table">
@@ -21,10 +27,6 @@
 	        </div>
 	        <input type="submit" value="dodaj" class="btn btn-primary">
 	    </form>
-	</div>
-
-	<div class="row">
-	    <p>{{ thanks }}</p>
 	</div>
 
 </div>

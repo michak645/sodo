@@ -88,6 +88,42 @@
     </div>
   </div>
 
+  <hr>
+
+  <div class="row">
+    <h3>Wnioski i obiekty</h3>
+    <br>
+
+    <div class="row table-responsive">
+      <table class="table table-hover table-striped table-bordered">
+        <tr>
+          <th>
+            Wniosek
+          </th>
+          <th>
+            Obiekt
+          </th>
+          <th>
+            Typ
+          </th>
+        </tr>
+        {% for wniosek in wnioski %}
+        <tr>
+          <td>
+            <a href="/wniosek_view/{{wniosek.id}}">{{forloop.counter}}. {{wniosek}}</a>
+          </td>
+          <td>
+            <a href="/obj_view/{{ obiekt.id }}">{{wniosek.obiekt}}</a>
+          </td>
+          <td>
+            {{wniosek.typ}}
+          </td>
+        </tr>
+        {%endfor%}
+      </table>
+    </div>
+
+
 </div>
     
 {% endblock %}

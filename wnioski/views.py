@@ -1,12 +1,11 @@
 from django.shortcuts import render
-from .models import Pracownik, Wniosek, Obiekt
-from .forms import WniosekForm, SearchForm
+from .models import Pracownik, Wniosek, Obiekt, Historia
+from .forms import WniosekForm, SearchForm, ObiektForm
 from django.utils import formats
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from django.contrib.auth.forms import UserCreationForm
 from .forms import PracownikForm
 
 
@@ -38,6 +37,8 @@ def create_app(request):
 
 @login_required(login_url='/')
 def list(request):
+    session_user = request.session['session_user']
+    user = User.objects.get(id=session_user)
 
     pracownicy = Pracownik.objects.all()
     obiekt = Obiekt.objects.all()
@@ -48,7 +49,8 @@ def list(request):
     context = {
         'pracownicy': pracownicy,
         'obiekt': obiekt,
-        'wniosek': wniosek
+        'wniosek': wniosek,
+        'user': user
     }
     return render(request, template, context)
 
@@ -79,15 +81,6 @@ def search(request):
 
 
 @login_required(login_url='/')
-def user_view(request, user_id):
-    pracownik = Pracownik.objects.get(id=user_id)
-    session_user = request.session['session_user']
-    user = User.objects.get(id=session_user)
-    return render(request, 'wnioski/views/user_view.html', {
-        'pracownik': pracownik}, {'user': user})
-
-
-@login_required(login_url='/')
 def user_account(request):
     if request.user.is_authenticated():
         session_user = request.session['session_user']
@@ -97,43 +90,73 @@ def user_account(request):
 
 
 @login_required(login_url='/')
+def user_view(request, user_id):
+    pracownik = Pracownik.objects.get(id=user_id)
+    wnioski = Wniosek.objects.filter(prac_sklada=user_id)
+    return render(request, 'wnioski/views/user_view.html', {
+        'pracownik': pracownik, 'wnioski': wnioski})
+
+
+@login_required(login_url='/')
 def obj_view(request, obj_id):
     obiekt = Obiekt.objects.get(id=obj_id)
     return render(request, 'wnioski/views/obj_view.html', {
         'obiekt': obiekt})
 
 
+# ========================================================================
 @login_required(login_url='/')
 def wniosek_view(request, wniosek_id):
     wniosek = Wniosek.objects.get(id=wniosek_id)
+    try:
+        historia = Historia.objects.get(wniosek=wniosek)
+    except Historia.DoesNotExist:
+        historia = None
     return render(request, 'wnioski/views/wniosek_view.html', {
-        'wniosek': wniosek})
+        'wniosek': wniosek, 'historia': historia})
+# ========================================================================
 
 
 @login_required(login_url='/')
 def create_user(request):
     message = ''
     if request.method == 'POST':
-        form1 = PracownikForm(request.POST)
-        form2 = UserCreationForm(request.POST)
-        if (form1.is_valid() and form2.is_valid):
-            form1.save()
-            form2.save()
+        form = PracownikForm(request.POST)
+        if form.is_valid():
+            form.save()
             message = 'Dodano użytkownika'
-            form1 = PracownikForm()
-            form2 = UserCreationForm()
+            form = PracownikForm()
             return render(
                 request, 'wnioski/create/create_user.html',
-                {'message': message, 'form1': form1, 'form2': form2}
+                {'message': message, 'form': form}
             )
     else:
-        form1 = PracownikForm()
-        form2 = UserCreationForm()
+        form = PracownikForm()
 
     template = "wnioski/create/create_user.html"
     args = {}
-    args['form2'] = UserCreationForm()
-    args['form1'] = PracownikForm()
+    args['form'] = PracownikForm()
+    return render(request, template, args)
+
+
+def create_obj(request):
+    message = ''
+    if request.method == 'POST':
+        form = ObiektForm(request.POST)
+        if form.is_valid():
+            form.save()
+            message = 'Dodano obiekt'
+            form = ObiektForm()
+            return render(
+                request, 'wnioski/create/create_user.html',
+                {'message': message, 'form': form}
+            )
+    else:
+        form = ObiektForm()
+
+    template = "wnioski/create/create_obj.html"
+    args = {}
+    args['form'] = ObiektForm()
     return render(request, template, args)
 
 
@@ -152,18 +175,9 @@ def authentication(request):
 
         auth.login(request, user_auth)
         request.session['session_user'] = user_auth.id
-        return HttpResponseRedirect('/acc/loggedin/')
+        return HttpResponseRedirect('/list/')
     else:
             return HttpResponseRedirect('/acc/invalid/')
-
-
-@login_required(login_url='/')
-def loggedin(request):
-    session_user = request.session['session_user']
-    user = User.objects.get(id=session_user)
-    return render(request, 'wnioski/user/loggedin.html', {
-        'username': user.username}
-    )
 
 
 def logout(request):

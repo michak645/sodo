@@ -21,11 +21,11 @@ urlpatterns = [
     url(r'^acc/login', views.login, name='login'),
     url(r'^acc/authentication', views.authentication, name='authentication'),
     url(r'^acc/logout', views.logout, name='logout'),
-    url(r'^acc/loggedin', views.loggedin, name='loggedin'),
     url(r'^acc/invalid', views.invalid, name='invalid'),
     url(r'^user_account/', views.user_account, name='user_account'),
 
     # create apps
-    url(r'^create_app/', views.create_app, name='create_app'),
-    url(r'^acc/create_user', views.create_user, name='create_user')
+    url(r'^create_app', views.create_app, name='create_app'),
+    url(r'^create_user', views.create_user, name='create_user'),
+    url(r'^create_obj', views.create_obj, name='create_obj')
 ]
