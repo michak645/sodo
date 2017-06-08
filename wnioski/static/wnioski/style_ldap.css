@@ -1,0 +1,25 @@
+body {
+    font-family: Verdana;
+}
+
+.logowanie {
+	border: solid black 1px;
+	height: 300px;
+}
+
+.main-page {
+	margin-top: 50px;
+}
+
+.content {
+	margin-top: 50px;
+}
+
+.separator {
+	border-bottom: solid black 1px;
+}
+
+.input-table {
+	border-collapse: separate;
+    border-spacing: 10px;
+}

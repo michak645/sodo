@@ -1,4 +1,4 @@
-{% extends "wnioski/base/base.html" %}
+{% extends "wnioski/base/base_ldap.html" %}
 
 {% block title %}Lista{% endblock %}
 
@@ -7,7 +7,8 @@
 <div class="container">
 
   <div class="row">
-    <h3>Dane szczegółowe wniosku {{wniosek.prac_sklada}}</h3>
+    <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
+    <a class="btn btn-primary" href="/ldap/main">Powrót</a>
   </div>
   <hr>
   <div class="row">
@@ -56,6 +57,7 @@
         {{ wniosek.obiekt }}
       </div>
     </div>
+
   </div>
 
   <hr>

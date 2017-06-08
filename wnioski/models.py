@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from datetime import datetime
 from django.utils import formats
@@ -9,7 +10,7 @@ from django.utils import formats
 class Uprawnienia(models.Model):
     nazwa = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.nazwa)
 
 
@@ -17,14 +18,14 @@ class JednOrg(models.Model):
     id_jedn = models.CharField(max_length=20)
     nazwa = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.nazwa)
 
 
 class TypObiektu(models.Model):
     nazwa = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.nazwa)
 
 
@@ -34,14 +35,14 @@ class Obiekt(models.Model):
     jedn_org = models.ForeignKey(JednOrg)
     opis = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.nazwa)
 
 
 class RodzajPracownika(models.Model):
     nazwa = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.nazwa)
 
 
@@ -63,11 +64,11 @@ class Pracownik(models.Model):
     jedn_org = models.ForeignKey(
         JednOrg, null=True, verbose_name='Jedn. org.'
     )
-    login = models.CharField(max_length=45, null=True)
+    login = models.CharField(max_length=45, null=True, unique=True)
     haslo = models.CharField(max_length=45, null=True)
     # admin = models.BooleanField(default=False, null=False)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0} {1}'.format(
             self.imie,
             self.nazwisko
@@ -89,7 +90,7 @@ class Pracownik(models.Model):
 class WniosekTyp(models.Model):
     typ = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.typ)
 
 
@@ -106,7 +107,7 @@ class Wniosek(models.Model):
     )
     obiekt = models.ForeignKey(Obiekt, related_name='obiekt')
 
-    def __str__(self):
+    def __unicode__(self):
         return u'Wniosek, {0}, data {1}'.format(
             self.prac_sklada,
             formats.date_format(self.data_zlo, "SHORT_DATETIME_FORMAT")
@@ -116,7 +117,7 @@ class Wniosek(models.Model):
 class Status(models.Model):
     nazwa = models.CharField(max_length=45)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0}'.format(self.nazwa)
 
 
@@ -125,5 +126,5 @@ class Historia(models.Model):
     status = models.ForeignKey(
         Status)
 
-    def __str__(self):
+    def __unicode__(self):
         return u'{0} {1}'.format(self.wniosek, self.status)

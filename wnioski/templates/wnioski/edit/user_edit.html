@@ -19,15 +19,15 @@
 	</div>
 
 	<div class="row col-md-offset-2">
-	    <form action="/create_user/" method="post">
+	    <form action="/user_edit" method="post">
 	        {% csrf_token %}
 	        <div class="table">
 	        	<table class="input-table">{{form}}</table>
 	        </div>
-	        <input type="submit" value="dodaj" class="btn btn-primary">
+	        <input type="submit" value="zapisz" class="btn btn-primary">
 	    </form>
 	</div>
 
 </div>
-
+        
 {% endblock %}

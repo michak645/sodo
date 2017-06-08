@@ -17,6 +17,9 @@ urlpatterns = [
     url(r'^wniosek_view/(?P<wniosek_id>\d+)/', views.wniosek_view,
         name='wniosek_view'),
 
+    # edit
+    url(r'^user_edit/(?P<user_id>\d+)/', views.user_edit, name='user_edit'),
+
     # search
     url(r'^search/', views.search, name='search'),
 
@@ -30,5 +33,14 @@ urlpatterns = [
     # create apps
     url(r'^create_app', views.create_app, name='create_app'),
     url(r'^create_user', views.create_user, name='create_user'),
-    url(r'^create_obj', views.create_obj, name='create_obj')
+    url(r'^create_obj', views.create_obj, name='create_obj'),
+
+    # LDAP
+    url(r'^ldap/login', views.ldap_login, name='ldap_login'),
+    url(r'^ldap/main', views.ldap_main, name='ldap_main'),
+    url(r'^ldap/auth', views.ldap_auth, name='ldap_auth'),
+    url(r'^ldap/obj_list', views.obj_list, name='obj_list'),
+    url(r'^ldap/logout', views.ldap_logout, name='ldap_logout'),
+    url(r'^ldap/wniosek_view_ldap/(?P<wniosek_id>\d+)',
+        views.wniosek_view_ldap, name='wniosek_view_ldap')
 ]

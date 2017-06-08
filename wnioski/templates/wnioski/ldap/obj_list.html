@@ -1,0 +1,55 @@
+{% extends "wnioski/base/base_ldap.html" %}
+
+{% block title %}SODO{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <h3>Lista obiektów</h3>
+    <a class="btn btn-primary" href="/ldap/main">Powrót</a>
+  </div>
+
+  <hr>
+
+    <div class="row table-responsive">
+    <table class="table table-hover table-striped table-bordered">
+      <tr>
+        <th>
+          Lp
+        </th>
+        <th>
+          Nazwa
+        </th>
+        <th>
+          Jednostka org.
+        </th>
+        <th>
+          Opis
+        </th>
+      </tr>
+      {% for obiekt in obiekty %}
+      <tr>
+        <td>
+          {{ forloop.counter }}
+        </td>
+        <td>
+          {{ obiekt.nazwa }}
+        </td>
+        <td>
+          {{ obiekt.jedn_org }}
+        </td>
+        <td>
+          {{ obiekt.opis }}
+        </td>
+      </tr>
+      {%endfor%}
+    </table>
+  </div>
+
+    
+</div>
+
+
+{% endblock %}

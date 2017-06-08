@@ -8,6 +8,9 @@
 
   <div class="row">
     <h3>{{ pracownik }} - dane szczegółowe</h3>
+    <a class="btn btn-primary" href="/user_edit/{{ pracownik.id }}">
+      Edytuj <span class="glyphicon glyphicon-pencil"></span>
+    </a>
   </div>
   <hr>
   <div class="row">
@@ -90,7 +93,7 @@
 
   <hr>
 
-  <div class="row">
+<div class="row">
     <h3>Wnioski i obiekty</h3>
     <br>
 
@@ -113,7 +116,7 @@
             <a href="/wniosek_view/{{wniosek.id}}">{{forloop.counter}}. {{wniosek}}</a>
           </td>
           <td>
-            <a href="/obj_view/{{ obiekt.id }}">{{wniosek.obiekt}}</a>
+            {{wniosek.obiekt}}
           </td>
           <td>
             {{wniosek.typ}}
@@ -122,6 +125,7 @@
         {%endfor%}
       </table>
     </div>
+</div>
 
 
 </div>
