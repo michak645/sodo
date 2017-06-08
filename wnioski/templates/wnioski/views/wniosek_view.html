@@ -7,7 +7,7 @@
 <div class="container">
 
   <div class="row">
-    <h3>Dane szczegółowe wniosku {{wniosek.prac_sklada}}</h3>
+    <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
   </div>
   <hr>
   <div class="row">
@@ -17,7 +17,7 @@
         <label>Typ wniosku: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        {{ wniosek.typ }}
+        <p>{{ wniosek.typ }}</p>
       </div>
     </div>
 
@@ -26,7 +26,7 @@
         <label>Data złożenia: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        {{ wniosek.data_zlo }}
+        <p>{{ wniosek.data_zlo }}</p>
       </div>
     </div>
     
@@ -35,7 +35,7 @@
         <label>Pracownik składający: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        {{ wniosek.prac_sklada }}
+        <p>{{ wniosek.prac_sklada }}</p>
       </div>
     </div>
 
@@ -44,7 +44,7 @@
         <label>Pracownik którego dotyczy: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        {{ wniosek.prac_dot }}
+        <p>{{ wniosek.prac_dot }}</p>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
         <label>Obiekt: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        {{ wniosek.obiekt }}
+        <p>{{ wniosek.obiekt }}</p>
       </div>
     </div>
   </div>

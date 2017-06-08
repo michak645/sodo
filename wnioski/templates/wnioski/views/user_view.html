@@ -7,7 +7,7 @@
 <div class="container">
 
   <div class="row">
-    <h3>{{ pracownik }} - dane szczegółowe</h3>
+    <h3><b>{{ pracownik }}</b> - dane szczegółowe</h3>
     <a class="btn btn-primary" href="/user_edit/{{ pracownik.id }}">
       Edytuj <span class="glyphicon glyphicon-pencil"></span>
     </a>
@@ -16,77 +16,77 @@
   <div class="row">
 
     <div class="row">
-      <div class="col-md-2">
-        <p>Imię: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Imię: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.imie }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.imie }}</p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-2">
-        <p>Nazwisko: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Nazwisko: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.nazwisko }}
-      </div>
-    </div>
-
-
-    <div class="row">
-      <div class="col-md-2">
-        <p>Email: </p>
-      </div>
-      <div class="col-md-4">
-        {{ user.username }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.nazwisko }}</p>
       </div>
     </div>
 
 
     <div class="row">
-      <div class="col-md-2">
-        <p>Data zatrudnienia: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Email: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.data_zatr }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ user.username }}</p>
       </div>
     </div>
 
 
     <div class="row">
-      <div class="col-md-2">
-        <p>Jednostka organizacyjna: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Data zatrudnienia: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.jedn_org }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.data_zatr }}</p>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-4 col-sm-4">
+        <label>Jednostka organizacyjna: </label>
+      </div>
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.jedn_org }}</p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-2">
-        <p>Szkolenie: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Szkolenie: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.szkolenie }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.szkolenie }}</p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-2">
-        <p>Login: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Login: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.login }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.login }}</p>
       </div>
     </div>
     
     <div class="row">
-      <div class="col-md-2">
-        <p>Rodzaj użytkownika: </p>
+      <div class="col-md-4 col-sm-4">
+        <label>Rodzaj użytkownika: </label>
       </div>
-      <div class="col-md-4">
-        {{ pracownik.rodzaj }}
+      <div class="col-md-4 col-sm-4">
+        <p>{{ pracownik.rodzaj }}</p>
       </div>
     </div>
   </div>
