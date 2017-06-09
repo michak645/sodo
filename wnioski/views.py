@@ -234,9 +234,9 @@ def user_edit(request, user_id):
     form = PracownikForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
-        return HttpResponseRedirect('wnioski/edit/user_view.html')
+        return HttpResponseRedirect('/user_edit/{{ instance.id }}')
     return render(
-        request, 'wnioski/edit/user_view.html', {'form': form}
+        request, 'wnioski/edit/user_edit.html', {'form': form}
     )
 
 
