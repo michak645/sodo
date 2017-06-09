@@ -8,7 +8,6 @@ urlpatterns = [
     url(r'^$', views.login, name='loggedin'),
 
     # views
-    url(r'^list/', views.list, name='list'),
     url(r'^obiekty/', views.obiekty, name='obiekty'),
     url(r'^pracownicy/', views.pracownicy, name='pracownicy'),
     url(r'^wnioski/', views.wnioski, name='wnioski'),

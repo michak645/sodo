@@ -34,26 +34,6 @@ def create_app(request):
 
 
 @login_required(login_url='/')
-def list(request):
-    session_user = request.session['session_user']
-    user = User.objects.get(id=session_user)
-
-    pracownicy = Pracownik.objects.all()
-    obiekt = Obiekt.objects.all()
-    wniosek = Wniosek.objects.order_by('-data_zlo')[:5]
-
-    template = "wnioski/views/list.html"
-
-    context = {
-        'pracownicy': pracownicy,
-        'obiekt': obiekt,
-        'wniosek': wniosek,
-        'user': user
-    }
-    return render(request, template, context)
-
-
-@login_required(login_url='/')
 def pracownicy(request):
     pracownicy = Pracownik.objects.all()
     template = "wnioski/views/pracownicy.html"
@@ -197,7 +177,7 @@ def authentication(request):
 
         auth.login(request, user_auth)
         request.session['session_user'] = user_auth.id
-        return HttpResponseRedirect('/list/')
+        return HttpResponseRedirect('/wnioski')
     else:
             return HttpResponseRedirect('/acc/invalid/')
 

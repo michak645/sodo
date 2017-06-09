@@ -22,10 +22,10 @@
 
 	    <form action="/app_edit/{{ wniosek.id }}/" method="post">
 	        {% csrf_token %}
-	        {% for field in form %}
-	        	<p>{{field.label}} {{field}}</p>
+	        <div class="table">
+	        	<table class="input-table">{{form}}</table>
 	        	{{form.error}}
-	        {% endfor %}
+	        </div>
 	        <input type="submit" value="zapisz" class="btn btn-primary"> 
 	        <a class="btn btn-primary" href="/wniosek_view/{{ wniosek.id }}">Powrót</a>
 	    </form>
