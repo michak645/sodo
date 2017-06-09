@@ -7,7 +7,7 @@
 <div class="container">
 	<div class="row col-md-offset-2">
 		<div class="row">
-			<h3>Edytuj użytkownika</h3>
+			<h3>Edytuj wniosek</h3>
 		</div>
 	</div>
 
@@ -20,14 +20,14 @@
 
 	<div class="row col-md-offset-2">
 
-	    <form action="/user_edit/{{ user.id }}/" method="post">
+	    <form action="/app_edit/{{ wniosek.id }}/" method="post">
 	        {% csrf_token %}
 	        {% for field in form %}
 	        	<p>{{field.label}} {{field}}</p>
 	        	{{form.error}}
 	        {% endfor %}
 	        <input type="submit" value="zapisz" class="btn btn-primary"> 
-	        <a class="btn btn-primary" href="/user_view/{{ user.id }}">Powrót</a>
+	        <a class="btn btn-primary" href="/wniosek_view/{{ wniosek.id }}">Powrót</a>
 	    </form>
 	    
 	</div>

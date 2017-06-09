@@ -19,6 +19,8 @@ urlpatterns = [
 
     # edit
     url(r'^user_edit/(?P<user_id>\d+)/', views.user_edit, name='user_edit'),
+    url(r'^obj_edit/(?P<obj_id>\d+)/', views.obj_edit, name='obj_edit'),
+    url(r'^app_edit/(?P<app_id>\d+)/', views.app_edit, name='app_edit'),
 
     # search
     url(r'^search/', views.search, name='search'),

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from .models import Pracownik, Wniosek, Obiekt, Historia
-from .forms import WniosekForm, SearchForm, ObiektForm
+from .forms import WniosekForm, SearchForm, ObiektForm, EditObiektForm, EditWniosekForm
 from django.utils import formats
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from .forms import PracownikForm
+from .forms import PracownikForm, EditPracownikForm
 
 
 @login_required(login_url='/')
@@ -126,7 +126,6 @@ def obj_view(request, obj_id):
         'obiekt': obiekt})
 
 
-# ========================================================================
 @login_required(login_url='/')
 def wniosek_view(request, wniosek_id):
     wniosek = Wniosek.objects.get(id=wniosek_id)
@@ -136,7 +135,6 @@ def wniosek_view(request, wniosek_id):
         historia = None
     return render(request, 'wnioski/views/wniosek_view.html', {
         'wniosek': wniosek, 'historia': historia})
-# ========================================================================
 
 
 @login_required(login_url='/')
@@ -213,31 +211,55 @@ def invalid(request):
     return render(request, 'wnioski/user/invalid.html', {})
 
 
-'''
+@login_required(login_url='/')
 def user_edit(request, user_id):
-    old_user = Pracownik.objects.get(id=user_id)
-    form = PracownikForm(instance=old_user)
-    if request.method == 'POST':
-        if form.is_valid():
-            form = PracownikForm(request.POST, instance=old_user)
-            form.save()
-            return HttpResponseRedirect('wnioski/views/user_view.html')
-    return render(
-        request, 'wnioski/edit/user_edit.html', {'form': form}
-    )
-'''
+    user = Pracownik.objects.get(id=user_id)
+    form = EditPracownikForm(request.POST or None, instance=user)
+    if request.POST and form.is_valid():
+        form.save()
+        return HttpResponseRedirect(
+            '/user_view/{0}'.format(user_id)
+        )
+    else:
+        form = EditPracownikForm(instance=user)
+    return render(request, 'wnioski/edit/user_edit.html', {
+        'user': user,
+        'form': form
+    })
 
 
 @login_required(login_url='/')
-def user_edit(request, user_id):
-    instance = get_object_or_404(Pracownik, id=user_id)
-    form = PracownikForm(request.POST or None, instance=instance)
-    if form.is_valid():
+def app_edit(request, app_id):
+    wniosek = Wniosek.objects.get(id=app_id)
+    form = EditWniosekForm(request.POST or None, instance=wniosek)
+    if request.POST and form.is_valid():
         form.save()
-        return HttpResponseRedirect('/user_edit/{{ instance.id }}')
-    return render(
-        request, 'wnioski/edit/user_edit.html', {'form': form}
-    )
+        return HttpResponseRedirect(
+            '/wniosek_view/{0}'.format(app_id)
+        )
+    else:
+        form = EditWniosekForm(instance=wniosek)
+    return render(request, 'wnioski/edit/app_edit.html', {
+        'wniosek': wniosek,
+        'form': form
+    })
+
+
+@login_required(login_url='/')
+def obj_edit(request, obj_id):
+    obiekt = Obiekt.objects.get(id=obj_id)
+    form = EditObiektForm(request.POST or None, instance=obiekt)
+    if request.POST and form.is_valid():
+        form.save()
+        return HttpResponseRedirect(
+            '/obj_view/{0}'.format(obj_id)
+        )
+    else:
+        form = EditObiektForm(instance=obiekt)
+    return render(request, 'wnioski/edit/obj_edit.html', {
+        'obiekt': obiekt,
+        'form': form
+    })
 
 
 def ldap_login(request):
@@ -253,7 +275,7 @@ def ldap_auth(request):
     request.session['ldap_user'] = username
     try:
         user_auth = Pracownik.objects.get(login=username)
-        ldap_user = user_auth.id
+        user_auth.id
         return HttpResponseRedirect('/ldap/main')
     except Pracownik.DoesNotExist:
         user_auth = None
@@ -296,7 +318,7 @@ def ldap_main(request):
 def obj_list(request):
     ldap_user = request.session['ldap_user']
     try:
-        user = Pracownik.objects.get(login=ldap_user)
+        Pracownik.objects.get(login=ldap_user)
     except Pracownik.DoesNotExist:
         return HttpResponseRedirect('/ldap/login')
     obiekty = Obiekt.objects.all()
@@ -309,7 +331,7 @@ def obj_list(request):
 def wniosek_view_ldap(request, wniosek_id):
     ldap_user = request.session['ldap_user']
     try:
-        user = Pracownik.objects.get(login=ldap_user)
+        Pracownik.objects.get(login=ldap_user)
     except Pracownik.DoesNotExist:
         return HttpResponseRedirect('/ldap/login')
     wniosek = Wniosek.objects.get(id=wniosek_id)
@@ -320,3 +342,4 @@ def wniosek_view_ldap(request, wniosek_id):
 def ldap_logout(request):
     request.session['ldap_user'] = ''
     return HttpResponseRedirect('/ldap/login')
+# ========================================================================

@@ -10,7 +10,7 @@ class WniosekForm(ModelForm):
 
 
 class SearchForm(forms.Form):
-    username = forms.CharField()
+    username = forms.CharField(max_length=100)
 
 
 class PracownikForm(ModelForm):
@@ -18,7 +18,7 @@ class PracownikForm(ModelForm):
         model = Pracownik
         fields = (
             'imie', 'nazwisko', 'email', 'data_zatr', 'szkolenie',
-            'rodzaj', 'jedn_org', 'login'
+            'rodzaj', 'jedn_org', 'login', 'haslo'
         )
 
 
@@ -28,3 +28,26 @@ class ObiektForm(ModelForm):
         fields = (
             'nazwa', 'typ', 'jedn_org', 'opis'
         )
+
+
+class EditPracownikForm(ModelForm):
+    class Meta:
+        model = Pracownik
+        fields = (
+            'imie', 'nazwisko', 'email', 'data_zatr',
+            'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo'
+        )
+
+
+class EditObiektForm(ModelForm):
+    class Meta:
+        model = Obiekt
+        fields = (
+            'nazwa', 'typ', 'jedn_org', 'opis'
+        )
+
+
+class EditWniosekForm(ModelForm):
+    class Meta:
+        model = Wniosek
+        fields = ('typ', 'data_zlo', 'prac_sklada', 'prac_dot', 'obiekt')
