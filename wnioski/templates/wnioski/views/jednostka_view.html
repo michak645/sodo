@@ -1,0 +1,41 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <h3><b>{{ jednostka }}</b> - dane szczegółowe</h3>
+    <a class="btn btn-primary" href="/jednostka_edit/{{ jednostka.id }}">
+      Edytuj <span class="glyphicon glyphicon-pencil"></span>
+    </a>
+    <a class="btn btn-primary" href="/jednostki">
+      Powrót
+    </a>
+  </div>
+  <hr>
+  <div class="row">
+
+    <div class="row">
+      <div class="col-md-4 col-sm-4">
+        <label>Identyfikator: </label>
+      </div>
+      <div class="col-md-4 col-sm-4">
+        <p>{{ jednostka.id_jedn }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 col-sm-4">
+        <label>Nazwa: </label>
+      </div>
+      <div class="col-md-4 col-sm-4">
+        <p>{{ jednostka.nazwa }}</p>
+      </div>
+    </div>
+
+</div>
+    
+{% endblock %}

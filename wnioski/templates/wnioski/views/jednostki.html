@@ -1,0 +1,33 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <h3>Jednostki organizacyjne</h3>
+  </div>
+
+  <hr>
+
+  <div class="row table-responsive">
+    <table class="table table-hover table-striped table-bordered">
+      <tr>
+        <th>
+          Jednostka organizacyjna
+        </th>
+      </tr>
+      {% for jednostka in jednostki %}
+      <tr>
+        <td>
+          <a href="/jednostka_view/{{ jednostka.id }}">{{ forloop.counter }}. {{ jednostka }}</a>
+        </td>
+      </tr>
+      {%endfor%}
+    </table>
+  </div>
+
+    
+{% endblock %}

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu
+from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu, JednOrg
 from .forms import WniosekForm, SearchForm, ObiektForm, TypeForm, EditObiektForm, EditWniosekForm
 from django.utils import formats
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from .forms import PracownikForm, EditPracownikForm, EditTypObiektuForm
+from .forms import PracownikForm, EditPracownikForm, EditTypObiektuForm, JednostkaForm, EditJednostkaForm
 
 
 @login_required(login_url='/')
@@ -62,6 +62,14 @@ def typy_obiektow(request):
     typy_obiektow = TypObiektu.objects.all()
     template = "wnioski/views/typy_obiektow.html"
     context = {'typy_obiektow': typy_obiektow}
+    return render(request, template, context)
+
+
+@login_required(login_url='/')
+def jednostki(request):
+    jednostki = JednOrg.objects.order_by('nazwa')
+    template = "wnioski/views/jednostki.html"
+    context = {'jednostki': jednostki}
     return render(request, template, context)
 
 
@@ -133,6 +141,13 @@ def typ_obiektu_view(request, typ_obiektu_id):
 
 
 @login_required(login_url='/')
+def jednostka_view(request, jednostka_id):
+    jednostka = JednOrg.objects.get(id=jednostka_id)
+    return render(request, 'wnioski/views/jednostka_view.html', {
+        'jednostka': jednostka})
+
+
+@login_required(login_url='/')
 def create_user(request):
     message = ''
     if request.method == 'POST':
@@ -195,6 +210,28 @@ def create_type(request):
     template = "wnioski/create/create_type.html"
     args = {}
     args['form'] = TypeForm()
+    return render(request, template, args)
+
+
+@login_required(login_url='/')
+def create_unit(request):
+    message = ''
+    if request.method == 'POST':
+        form = JednostkaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            message = 'Dodano jednostkę organizacyjną'
+            form = JednostkaForm()
+            return render(
+                request, 'wnioski/create/create_unit.html',
+                {'message': message, 'form': form}
+            )
+    else:
+        form = JednostkaForm()
+
+    template = "wnioski/create/create_unit.html"
+    args = {}
+    args['form'] = JednostkaForm()
     return render(request, template, args)
 
 
@@ -292,6 +329,23 @@ def typ_obiektu_edit(request, typ_obiektu_id):
         form = EditTypObiektuForm(instance=typ_obiektu)
     return render(request, 'wnioski/edit/typ_obiektu_edit.html', {
         'typ_obiektu': typ_obiektu,
+        'form': form
+    })
+
+
+@login_required(login_url='/')
+def jednostka_edit(request, jednostka_id):
+    jednostka = JednOrg.objects.get(id=jednostka_id)
+    form = EditJednostkaForm(request.POST or None, instance=jednostka)
+    if request.POST and form.is_valid():
+        form.save()
+        return HttpResponseRedirect(
+            '/jednostka_view/{0}'.format(jednostka_id)
+        )
+    else:
+        form = EditJednostkaForm(instance=jednostka)
+    return render(request, 'wnioski/edit/jednostka_edit.html', {
+        'jednostka': jednostka,
         'form': form
     })
 
