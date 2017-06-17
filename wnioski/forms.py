@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Wniosek, Pracownik, Obiekt
+from .models import Wniosek, Pracownik, Obiekt, TypObiektu
 from django import forms
 
 
@@ -30,6 +30,12 @@ class ObiektForm(ModelForm):
         )
 
 
+class TypeForm(ModelForm):
+    class Meta:
+        model = TypObiektu
+        fields = ('nazwa', )
+
+
 class EditPracownikForm(ModelForm):
     class Meta:
         model = Pracownik
@@ -51,3 +57,9 @@ class EditWniosekForm(ModelForm):
     class Meta:
         model = Wniosek
         fields = ('typ', 'data_zlo', 'prac_sklada', 'prac_dot', 'obiekt')
+
+
+class EditTypObiektuForm(ModelForm):
+    class Meta:
+        model = TypObiektu
+        fields = ('nazwa', )

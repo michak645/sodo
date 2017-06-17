@@ -7,30 +7,31 @@
 <div class="container">
 	<div class="row col-md-offset-2">
 		<div class="row">
-			<h3>Dodaj wniosek</h3>
+			<h3>Edytuj typ obiektu</h3>
 		</div>
 	</div>
 
-    <hr>
-
-    <div class="row col-md-offset-2">
+	<hr>
+	<div class="row col-md-offset-2">
 		{% if message %}
 			<p style="color: green;">{{ message }}</p>
 		{% endif %}
 	</div>
 
-    <div class="row col-md-offset-2">
-	    <form action="/create_app/" method="post">
+	<div class="row col-md-offset-2">
+
+	    <form action="/typ_obiektu_edit/{{ typ_obiektu.id }}/" method="post">
 	        {% csrf_token %}
 	        <div class="table">
 	        	<table class="input-table">{{form}}</table>
+	        	{{form.error}}
 	        </div>
-            <a class="btn btn-default" href="/wnioski">Powrót</a>
-	        <input type="submit" value="Dodaj" class="btn btn-primary">
+	        <input type="submit" value="Zapisz" class="btn btn-primary"> 
+	        <a class="btn btn-primary" href="javascript:history.back()">Powrót</a>
 	    </form>
+	    
 	</div>
 
-
 </div>
-   
+        
 {% endblock %}

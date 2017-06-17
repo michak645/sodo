@@ -42,7 +42,7 @@
         <label>Email: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        <p>{{ user.username }}</p>
+        <p>{{ pracownik.email }}</p>
       </div>
     </div>
 
@@ -71,7 +71,11 @@
         <label>Szkolenie: </label>
       </div>
       <div class="col-md-4 col-sm-4">
-        <p>{{ pracownik.szkolenie }}</p>
+        {% if pracownik.szkolenie %}
+        <p>Przeszedł</p>
+        {% else %}
+        <p>Nie przeszedł</p>
+        {% endif %}
       </div>
     </div>
 

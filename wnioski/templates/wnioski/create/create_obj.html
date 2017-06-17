@@ -20,12 +20,13 @@
 	</div>
 
 	<div class="row col-md-offset-2">
-	    <form action="/create_app/" method="post">
+	    <form action="/create_obj/" method="post">
 	        {% csrf_token %}
 	        <div class="table">
 	        	<table class="input-table">{{form}}</table>
 	        </div>
-	        <input type="submit" value="dodaj" class="btn btn-primary">
+	        <a class="btn btn-default" href="/obiekty">Powrót</a>
+	        <input type="submit" value="Dodaj" class="btn btn-primary">
 	    </form>
 	</div>
 

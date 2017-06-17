@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from .models import Pracownik, Wniosek, Obiekt, Historia
-from .forms import WniosekForm, SearchForm, ObiektForm, EditObiektForm, EditWniosekForm
+from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu
+from .forms import WniosekForm, SearchForm, ObiektForm, TypeForm, EditObiektForm, EditWniosekForm
 from django.utils import formats
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from .forms import PracownikForm, EditPracownikForm
+from .forms import PracownikForm, EditPracownikForm, EditTypObiektuForm
 
 
 @login_required(login_url='/')
@@ -54,6 +54,14 @@ def wnioski(request):
     wnioski = Wniosek.objects.order_by('-data_zlo')
     template = "wnioski/views/wnioski.html"
     context = {'wnioski': wnioski}
+    return render(request, template, context)
+
+
+@login_required(login_url='/')
+def typy_obiektow(request):
+    typy_obiektow = TypObiektu.objects.all()
+    template = "wnioski/views/typy_obiektow.html"
+    context = {'typy_obiektow': typy_obiektow}
     return render(request, template, context)
 
 
@@ -118,6 +126,13 @@ def wniosek_view(request, wniosek_id):
 
 
 @login_required(login_url='/')
+def typ_obiektu_view(request, typ_obiektu_id):
+    typ_obiektu = TypObiektu.objects.get(id=typ_obiektu_id)
+    return render(request, 'wnioski/views/typ_obiektu_view.html', {
+        'typ_obiektu': typ_obiektu})
+
+
+@login_required(login_url='/')
 def create_user(request):
     message = ''
     if request.method == 'POST':
@@ -158,6 +173,28 @@ def create_obj(request):
     template = "wnioski/create/create_obj.html"
     args = {}
     args['form'] = ObiektForm()
+    return render(request, template, args)
+
+
+@login_required(login_url='/')
+def create_type(request):
+    message = ''
+    if request.method == 'POST':
+        form = TypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            message = 'Dodano typ obiektu'
+            form = TypeForm()
+            return render(
+                request, 'wnioski/create/create_type.html',
+                {'message': message, 'form': form}
+            )
+    else:
+        form = TypeForm()
+
+    template = "wnioski/create/create_type.html"
+    args = {}
+    args['form'] = TypeForm()
     return render(request, template, args)
 
 
@@ -238,6 +275,23 @@ def obj_edit(request, obj_id):
         form = EditObiektForm(instance=obiekt)
     return render(request, 'wnioski/edit/obj_edit.html', {
         'obiekt': obiekt,
+        'form': form
+    })
+
+
+@login_required(login_url='/')
+def typ_obiektu_edit(request, typ_obiektu_id):
+    typ_obiektu = TypObiektu.objects.get(id=typ_obiektu_id)
+    form = EditTypObiektuForm(request.POST or None, instance=typ_obiektu)
+    if request.POST and form.is_valid():
+        form.save()
+        return HttpResponseRedirect(
+            '/typ_obiektu_view/{0}'.format(typ_obiektu_id)
+        )
+    else:
+        form = EditTypObiektuForm(instance=typ_obiektu)
+    return render(request, 'wnioski/edit/typ_obiektu_edit.html', {
+        'typ_obiektu': typ_obiektu,
         'form': form
     })
 

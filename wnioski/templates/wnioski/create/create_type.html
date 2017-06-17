@@ -7,7 +7,7 @@
 <div class="container">
 	<div class="row col-md-offset-2">
 		<div class="row">
-			<h3>Dodaj wniosek</h3>
+			<h3>Dodaj typ obiektu</h3>
 		</div>
 	</div>
 
@@ -20,16 +20,15 @@
 	</div>
 
     <div class="row col-md-offset-2">
-	    <form action="/create_app/" method="post">
+	    <form action="/create_type/" method="post">
 	        {% csrf_token %}
 	        <div class="table">
 	        	<table class="input-table">{{form}}</table>
 	        </div>
-            <a class="btn btn-default" href="/wnioski">Powrót</a>
+	        <a class="btn btn-default" href="/typy_obiektow">Powrót</a>
 	        <input type="submit" value="Dodaj" class="btn btn-primary">
 	    </form>
 	</div>
-
 
 </div>
    
