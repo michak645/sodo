@@ -22,10 +22,18 @@
       {% for wniosek in wnioski %}
       <tr>
         <td>
-          <a href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. {{ wniosek }}</a>
+            {% if statusy_wnioskow|get_item:wniosek.id == 4 %}
+            <a style="color: orange;" href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. WSTRZYMANY {{ wniosek }}</a>
+            {% elif statusy_wnioskow|get_item:wniosek.id == 5 %}
+            <a style="color: green;" href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. ZATWIERDZONY {{ wniosek }}</a>
+            {% elif statusy_wnioskow|get_item:wniosek.id == 6 %}
+            <a style="color: red;" href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. ODRZUCONY {{ wniosek }}</a>
+            {% else %}
+            <a href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. {{ wniosek }}</a>
+            {% endif %}
         </td>
       </tr>
-      {%endfor%}
+      {% endfor %}
     </table>
   </div>
 

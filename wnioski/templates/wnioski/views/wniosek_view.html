@@ -67,9 +67,23 @@
   <hr>
   <!-- Dodać if jeżeli nie ma historii -->
   <div class="row">
-    <a class="btn btn-success">Zatwierdź</a>
+
+    {% if message %}
+      <p style="color: grey;">{{ message }}</p>
+    {% endif %}
+    
+    <!--<a class="btn btn-success">Zatwierdź</a>
     <a class="btn btn-warning">Wstrzymaj</a>
-    <a class="btn btn-danger">Odrzuć</a>
+    <a class="btn btn-danger">Odrzuć</a>-->
+
+    <form action="/wniosek_view/{{ wniosek.id }}/" method="post">
+          {% csrf_token %}
+          <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
+          <input name="change" type="submit" value="Wstrzymaj" class="btn btn-warning">
+          <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
+          <!--<input name="hold" type="submit" value="Wstrzymaj" class="btn btn-warning">
+          <input name="discard" type="submit" value="Odrzuć" class="btn btn-danger">-->
+    </form>
   </div>
 
   <hr>
@@ -85,22 +99,31 @@
           Wniosek
         </th>
         <th>
+          Data zmiany
+        </th>
+        <th>
           Status
         </th>
       </tr>
+      {% for h in historia%}
       <tr>
         <td>
-          {{historia.wniosek}}
+          {{ h.wniosek }}
         </td>
         <td>
-          {{historia.status}}
+          {{ date }}
         </td>
+        <td>
+          {{ h.status }}
+        </td>
+        
       </tr>
+      {% endfor %}
     </table>
   </div>
   {% elif historia is None %}
   <div class="row">
-  <h3>Brak hisotrii wniosku</h3>
+  <h3>Brak historii wniosku</h3>
   </div>
   {% endif %}
 

@@ -14,6 +14,13 @@
 
   <div>
     <h4>Strona w budowie</h4>
+    {% if 0 == 1 %}
+ 	Do tych obiektów masz uprawnienia:
+ 	<br>
+    {% for obiekt in obiekty %}
+    <br>{{ obiekt.nazwa }} ({{ obiekt.opis }}) w jednostce organizacyjnej: {{ obiekt.jedn_org }}
+    {% endfor %}
+    {% endif %}
   </div>
 
 </div>

@@ -8,7 +8,13 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from .forms import PracownikForm, EditPracownikForm, EditTypObiektuForm, JednostkaForm, EditJednostkaForm
+from django.template.defaulttags import register
+from django.db.models import Max
+from datetime import datetime
 
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 @login_required(login_url='/')
 def create_app(request):
@@ -52,8 +58,19 @@ def obiekty(request):
 @login_required(login_url='/')
 def wnioski(request):
     wnioski = Wniosek.objects.order_by('-data_zlo')
+    historie = Historia.objects.all()
+    statusy_wnioskow = {}
+    for w in wnioski:
+        id_historia = 0
+        id_status = 0
+        for historia in historie:
+            if historia.wniosek.id == w.id and historia.id > id_historia:
+                id_historia = historia.id
+                id_status = historia.status_id
+        statusy_wnioskow.update({w.id: id_status})
+
     template = "wnioski/views/wnioski.html"
-    context = {'wnioski': wnioski}
+    context = {'wnioski': wnioski, 'historia': historie, 'statusy_wnioskow': statusy_wnioskow}
     return render(request, template, context)
 
 
@@ -106,6 +123,27 @@ def user_account(request):
         return render(request, 'wnioski/user/user_account.html', {
             'user': user})
 
+    '''
+    if request.user.is_authenticated():
+        session_user = request.session['session_user']
+        user = User.objects.get(id=session_user)
+        pracownik = Pracownik.objects.get(login=user)
+        wnioski = Wniosek.objects.filter(prac_dot=pracownik.id)
+        obiekty = []
+
+        for w in wnioski:
+            try:
+                max_id = Historia.objects.filter(wniosek=w.id).aggregate(id=Max('id'))['id']
+                historia = Historia.objects.get(wniosek=w.id, id=max_id)
+            except Historia.DoesNotExist:
+                historie = None
+            if historia is not None and w.typ_id == 4 and historia.status_id == 5:
+                obiekt = Obiekt.objects.get(id=w.obiekt_id)
+                obiekty.append(obiekt)
+        return render(request, 'wnioski/user/user_account.html', {
+            'user': user, 'obiekty': obiekty})
+    '''
+
 
 @login_required(login_url='/')
 def user_view(request, user_id):
@@ -124,13 +162,50 @@ def obj_view(request, obj_id):
 
 @login_required(login_url='/')
 def wniosek_view(request, wniosek_id):
-    wniosek = Wniosek.objects.get(id=wniosek_id)
-    try:
-        historia = Historia.objects.get(wniosek=wniosek)
-    except Historia.DoesNotExist:
-        historia = None
-    return render(request, 'wnioski/views/wniosek_view.html', {
-        'wniosek': wniosek, 'historia': historia})
+    w = Wniosek.objects.get(id=wniosek_id)
+    message = ''
+    date = datetime.now()
+    if request.method == 'POST':
+        if request.POST.get('change', '') == u"Zatwierdź":
+            historia = Historia(wniosek_id=wniosek_id, status_id=5)
+            historia.save()
+            message = 'Zatwierdzono wniosek'
+            try:
+                historia = Historia.objects.filter(wniosek=wniosek_id)
+            except Historia.DoesNotExist:
+                historia = None
+            return render(request, 'wnioski/views/wniosek_view.html', {
+                'wniosek': w, 'historia': historia, 'message': message, 'date': date})
+
+        if request.POST.get('change', '') == u"Wstrzymaj":
+            historia = Historia(wniosek_id=wniosek_id, status_id=4)
+            historia.save()
+            message = 'Wstrzymano decyzję'
+            try:
+                historia = Historia.objects.filter(wniosek=wniosek_id)
+            except Historia.DoesNotExist:
+                historia = None
+            return render(request, 'wnioski/views/wniosek_view.html', {
+                'wniosek': w, 'historia': historia, 'message': message, 'date': date})
+
+        if request.POST.get('change', '') == u"Odrzuć":
+            historia = Historia(wniosek_id=wniosek_id, status_id=6)
+            historia.save()
+            message = 'Odrzucono wniosek'
+            try:
+                historia = Historia.objects.filter(wniosek=wniosek_id)
+            except Historia.DoesNotExist:
+                historia = None
+            return render(request, 'wnioski/views/wniosek_view.html', {
+                'wniosek': w, 'historia': historia, 'message': message, 'date': date})    
+
+    else:
+        try:
+            historia = Historia.objects.filter(wniosek=wniosek_id)
+        except Historia.DoesNotExist:
+            historia = None
+        return render(request, 'wnioski/views/wniosek_view.html', {
+            'wniosek': w, 'historia': historia, 'date': date})
 
 
 @login_required(login_url='/')
