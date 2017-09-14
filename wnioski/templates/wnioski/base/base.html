@@ -3,67 +3,68 @@
 <!DOCTYPE html>
 <html lang="pl">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'wnioski/style.css' %}" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-    <title>{% block title %}SODO{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'wnioski/style.css' %}" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	<title>{% block title %}SODO{% endblock %}</title>
 </head>
 <body>
 
   <div class="container menu">
-    {% block nav %}
+	{% block nav %}
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="/wnioski">SODO</a>
-            </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-              <ul class="nav navbar-nav">
-                <li><a href="/wnioski">Wnioski</a></li>
-                <li><a href="/pracownicy">Pracownicy</a></li>
-                <li><a href="/obiekty">Obiekty</a></li>
-                <li><a href="/typy_obiektow">Typy obiektów</a></li>
-                <li><a href="/jednostki">Jednostki organizacyjne</a></li>
-                <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dodaj <span class="caret"></span>
-                  <ul class="dropdown-menu">
-                    <li><a href="/create_app">Dodaj wniosek</a></li>
-                    <li><a href="/create_user">Dodaj użytkownika</a></li>
-                    <li><a href="/create_obj">Dodaj obiekt</a></li>
-                    <li><a href="/create_type">Dodaj typ obiektu</a></li>
-                    <li><a href="/create_unit">Dodaj jednostkę organizacyjną</a></li>
-                  </ul>
-                </li>
-                <li><a href="/search">Wyszukaj</a></li>
-              </ul>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="/wnioski">SODO</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+			  <ul class="nav navbar-nav">
+				<li><a href="/wnioski">Wnioski</a></li>
+				<li><a href="/pracownicy">Pracownicy</a></li>
+				<li><a href="/obiekty">Obiekty</a></li>
+				<li><a href="/typy_obiektow">Typy obiektów</a></li>
+				<li><a href="/jednostki">Jednostki organizacyjne</a></li>
+				<li class="dropdown">
+				  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dodaj <span class="caret"></span>
+				  <ul class="dropdown-menu">
+					<li><a href="/create_app">Dodaj wniosek</a></li>
+					<li><a href="/create_user">Dodaj użytkownika</a></li>
+					<li><a href="/create_obj">Dodaj obiekt</a></li>
+					<li><a href="/create_type">Dodaj typ obiektu</a></li>
+					<li><a href="/create_unit">Dodaj jednostkę organizacyjną</a></li>
+				  </ul>
+				</li>
+				<li><a href="/search">Wyszukaj</a></li>
+			  </ul>
 
-              <ul class="nav navbar-nav navbar-right">
-                <li><a href="/acc/logout/">Wyloguj</a></li>
-              </ul>
-            </div>
-        </div>
-      </nav>
+			  <ul class="nav navbar-nav navbar-right">
+				<li><a href="/acc/logout/">Wyloguj</a></li>
+			  </ul>
+			</div>
+		</div>
+	  </nav>
 
-    {% endblock %}
+	{% endblock %}
   </div>
 
-  <div id="row" class="container content">
-      <div class="row">
-            {% block content %}{% endblock %}
-      </div>
-  </div>
+	<div class="container content">
+		{% block content %}
+
+
+		{% endblock %}
+	</div>
 
 
 </body>

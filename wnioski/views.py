@@ -155,8 +155,29 @@ def user_account(request):
 def user_view(request, user_id):
     pracownicy = Pracownik.objects.get(id=user_id)
     wnioski = Wniosek.objects.filter(pracownik=user_id)
-    return render(request, 'wnioski/views/user_view.html', {
-        'pracownik': pracownicy, 'wnioski': wnioski})
+    przyjete = []
+    odrzucone = []
+    przetwarzane = []
+    for wniosek in wnioski:
+        try:
+            hist = Historia.objects.filter(
+                wniosek=wniosek).order_by('-data')[0]
+            if hist.status == '1':
+                przyjete.append(hist)
+            elif hist.status == '2':
+                odrzucone.append(hist)
+            elif hist.status == '3':
+                przetwarzane.append(hist)
+        except IndexError:
+            hist = None
+    context = {
+        'pracownik': pracownicy,
+        'wnioski': wnioski,
+        'przyjete': przyjete,
+        'odrzucone': odrzucone,
+        'przetwarzane': przetwarzane,
+    }
+    return render(request, 'wnioski/views/user_view.html', context)
 
 
 @login_required(login_url='/')
@@ -173,29 +194,20 @@ def wniosek_view(request, wniosek_id):
     date = datetime.now()
     if request.method == 'POST':
         if request.POST.get('change', '') == u"Zatwierdź":
-            historia = Historia(wniosek_id=wniosek_id, status_id=5)
+            historia = Historia(wniosek_id=wniosek_id, status='1')
             historia.save()
             message = 'Zatwierdzono wniosek'
             try:
-                historia = Historia.objects.filter(wniosek=wniosek_id)
+                historia = Historia.objects.filter(wniosek=wniosek_id).order_by('-data')
             except Historia.DoesNotExist:
                 historia = None
             return render(request, 'wnioski/views/wniosek_view.html', {
-                'wniosek': w, 'historia': historia, 'message': message, 'date': date})
-
-        if request.POST.get('change', '') == u"Wstrzymaj":
-            historia = Historia(wniosek_id=wniosek_id, status_id=4)
-            historia.save()
-            message = 'Wstrzymano decyzję'
-            try:
-                historia = Historia.objects.filter(wniosek=wniosek_id)
-            except Historia.DoesNotExist:
-                historia = None
-            return render(request, 'wnioski/views/wniosek_view.html', {
-                'wniosek': w, 'historia': historia, 'message': message, 'date': date})
-
-        if request.POST.get('change', '') == u"Odrzuć":
-            historia = Historia(wniosek_id=wniosek_id, status_id=6)
+                    'wniosek': w,
+                    'historia': historia,
+                    'message': message,
+                    'date': date, })
+        elif request.POST.get('change', '') == u"Odrzuć":
+            historia = Historia(wniosek_id=wniosek_id, status='2')
             historia.save()
             message = 'Odrzucono wniosek'
             try:
@@ -208,7 +220,7 @@ def wniosek_view(request, wniosek_id):
     else:
         try:
             historia = Historia.objects.filter(wniosek=wniosek_id).order_by('-data')
-            status = historia[0].status.nazwa
+            status = historia[0].status
         except Historia.DoesNotExist:
             historia = None
         return render(request, 'wnioski/views/wniosek_view.html', {

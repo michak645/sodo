@@ -14,7 +14,16 @@
   </div>
   <hr>
   <div class="row">
-    <h2>STATUS WNIOSKU: {{ status }}</h2>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-4">
+            <label>Status wniosku: </label>
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <p>{{ status }}</p>
+        </div>
+    </div>
+
     <div class="row">
       <div class="col-md-4 col-sm-4">
         <label>Typ wniosku: </label>
@@ -25,30 +34,21 @@
     </div>
 
     <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <label>Data złożenia: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
-        <p>{{ wniosek.data_zlo }}</p>
-      </div>
+        <div class="col-md-4 col-sm-4">
+            <label>Data: </label>
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <p>{{ wniosek.data }}</p>
+        </div>
     </div>
     
     <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <label>Pracownik składający: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
-        <p>{{ wniosek.prac_sklada }}</p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <label>Pracownik którego dotyczy: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
-        <p>{{ wniosek.prac_dot }}</p>
-      </div>
+        <div class="col-md-4 col-sm-4">
+            <label>Pracownik: </label>
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <p>{{ wniosek.pracownik }}</p>
+        </div>
     </div>
 
     <div class="row">
@@ -76,10 +76,7 @@
     <form action="/wniosek_view/{{ wniosek.id }}/" method="post">
           {% csrf_token %}
           <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
-          <input name="change" type="submit" value="Wstrzymaj" class="btn btn-warning">
           <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
-          <!--<input name="hold" type="submit" value="Wstrzymaj" class="btn btn-warning">
-          <input name="discard" type="submit" value="Odrzuć" class="btn btn-danger">-->
     </form>
   </div>
 
@@ -99,7 +96,7 @@
         {% for h in historia %}
           <tr>
             <td>{{ h.wniosek }}</td>
-            <td>{{ h.data }}</td>
+            <td>{{ h.data|date:"d M Y, H i " }}</td>
             <td>{{ h.status }}</td>
           </tr>
         {% endfor %}

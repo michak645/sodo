@@ -1,6 +1,6 @@
 {% extends "wnioski/base/base.html" %}
 
-{% block title %}Lista{% endblock %}
+{% block title %}Wyszukiwanie{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 
 	  <form action="/search" method="get">
 	  	<div class="col-md-4">
-	    	<input type="text" placeholder="nazwa użytkownika" name="username" class="form-control">
+	    	<input type="text" placeholder="nazwisko użytkownika" name="username" class="form-control">
 	    </div>
 	    <div class="col-md-1">
 	    	<input type="submit" value="Szukaj" class="btn btn-primary">
@@ -22,14 +22,7 @@
 
   <div class="row">
 
-   <p>{{ message }}</p>
-
-   <hr>
-
-   {% for wniosek in wnioski %}
-   	<table>{{ wniosek }}</table>
-   {% endfor %}
-
+      <p>{{ message }}</p>
   </div>
 
 </div>

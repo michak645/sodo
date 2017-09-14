@@ -1,136 +1,148 @@
 {% extends "wnioski/base/base.html" %}
 
-{% block title %}Lista{% endblock %}
+{% block title %}User - {{ pracownik }}{% endblock %}
 
 {% block content %}
 
 <div class="container">
 
   <div class="row">
-    <h3><b>{{ pracownik }}</b> - dane szczegółowe</h3>
+    <h3><strong>{{ pracownik }}</strong> - dane szczegółowe</h3>
     <a class="btn btn-primary" href="/user_edit/{{ pracownik.id }}">
       Edytuj <span class="glyphicon glyphicon-pencil"></span>
     </a>
   </div>
   <hr>
-  <div class="row">
-
     <div class="row">
-      <div class="col-md-4 col-sm-4">
+
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Imię: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.imie }}</p>
-      </div>
-    </div>
+        </div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Nazwisko: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.nazwisko }}</p>
-      </div>
-    </div>
+        </div>
+        </div>
 
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Email: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.email }}</p>
-      </div>
-    </div>
+        </div>
+        </div>
 
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Data zatrudnienia: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.data_zatr }}</p>
-      </div>
-    </div>
+        </div>
+        </div>
 
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Jednostka organizacyjna: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.jedn_org }}</p>
-      </div>
-    </div>
+        </div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Szkolenie: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         {% if pracownik.szkolenie %}
         <p>Przeszedł</p>
         {% else %}
         <p>Nie przeszedł</p>
         {% endif %}
-      </div>
-    </div>
+        </div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Login: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.login }}</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-md-4 col-sm-4">
         <label>Rodzaj użytkownika: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
+        </div>
+        <div class="col-md-4 col-sm-4">
         <p>{{ pracownik.rodzaj }}</p>
-      </div>
+        </div>
+        </div>
     </div>
-  </div>
 
   <hr>
 
-<div class="row">
-    <h3>Wnioski i obiekty</h3>
-    <br>
+    <div class="row">
+        <div class="col-md-6">
+            {% if przyjete or odrzucone or przetwarzane%}
+                <h2>Wnioski</h2>
+                {% if przyjete %}
+                    <div class="row">
+                        <h3>Przyjęte</h3>
+                        {% for historia in przyjete %}
+                                <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if odrzucone %}
+                <div class="row">
+                    <h3>Odrzucone</h3>
+                    {% for historia in odrzucone %}
+                        <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if przetwarzane %}
+                <div class="row">
+                    <h3>Do weryfikacji</h3>
+                    {% for historia in przetwarzane %}
+                            <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% else %}
+                <h2>Brak wniosków</h2>
+            {% endif %}
+        </div>
 
-    <div class="row table-responsive">
-      <table class="table table-hover table-striped table-bordered">
-        <tr>
-          <th>
-            Wniosek
-          </th>
-          <th>
-            Obiekt
-          </th>
-          <th>
-            Typ
-          </th>
-        </tr>
-        {% for wniosek in wnioski %}
-        <tr>
-          <td>
-            <a href="/wniosek_view/{{wniosek.id}}">{{forloop.counter}}. {{wniosek}}</a>
-          </td>
-          <td>
-            {{wniosek.obiekt}}
-          </td>
-          <td>
-            {{wniosek.typ}}
-          </td>
-        </tr>
-        {%endfor%}
-      </table>
+        <div class="col-md-6">
+            {% if przyjete %}
+                <h2>Obiekty dostępne</h2>
+                <ol>
+                {% for historia in przyjete %}
+                    <a href="/obj_view/{{ historia.wniosek.obiekt.id }}"><li>{{ historia.wniosek.obiekt }}</li></a>
+                {% endfor %}
+                </ol>
+            {% else %}
+                <h2>Brak dostępnych obiektów</h2>
+            {% endif %}
+        </div>
     </div>
-</div>
-
 
 </div>
     
