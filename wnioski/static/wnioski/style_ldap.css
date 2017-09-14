@@ -2,17 +2,23 @@ body {
     font-family: Verdana;
 }
 
+.row {
+    margin: 15px;
+}
+
+.p {
+    margin: 10px;
+}
+
 .logowanie {
 	border: solid black 1px;
 	height: 300px;
-}
-
-.main-page {
-	margin-top: 50px;
+	position: relative;
+	float: center;
 }
 
 .content {
-	margin-top: 50px;
+	margin-top: 100px;
 }
 
 .separator {
@@ -25,5 +31,28 @@ body {
 }
 
 .lista-userow {
-    margin-top: 20px;
+    margin-top: 30px;
+}
+
+.login-box{
+    float: center;
+    border: solid 1px black;
+    height: 250px;
+    width:500px;
+    margin: 0 auto;
+    box-shadow: 2px 2px 5px #888888;
+    position: relative;
+}
+
+hr {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 90%;
+    border: inset black 0.5px;
+}
+
+.button-login {
+     position: absolute;
+     bottom: 0px;
+     right: 0px;
 }

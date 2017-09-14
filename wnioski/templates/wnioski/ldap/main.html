@@ -17,14 +17,10 @@
         </div>
     </div>
 
+    <button href="">Złóż wniosek</button>
 
-    
     <div class="row">
         <h3>Złóż wniosek</h3>
-    </div>
-    
-
-	<div class="row col-md-offset-2">
 	    <form action="/ldap/main" method="post">
 	        {% csrf_token %}
 	        <table>{{ form }}</table>
@@ -39,12 +35,35 @@
 <div class="container">
 
     <div class="row">
-        <h3>Zatwierdzone wnioski</h3>
-        <ol>
-            {% for wniosek in wnioski %}
-                <li>{{ wniosek }} - {{ wniosek.typ }}</li>
-            {% endfor %}
-        </ol>
+        <h2>Wnioski</h2>
+        {% for wniosek in wnioski %}
+            <p>{{ wniosek }}<p>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <h3>Przyjęte</h3>
+
+        {% for historia in przyjete %}
+                <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+        {% endfor %}
+
+    </div>
+    <div class="row">
+        <h3>Odrzucone</h3>
+
+        {% for historia in odrzucone %}
+            <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+        {% endfor %}
+
+    </div>
+
+    <div class="row">
+        <h3>Przetwarzanie</h3>
+
+        {% for historia in przetwarzane %}
+                <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+        {% endfor %}
+
     </div>
 
 </div>

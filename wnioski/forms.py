@@ -43,7 +43,7 @@ class TypeForm(ModelForm):
 class JednostkaForm(ModelForm):
     class Meta:
         model = JednOrg
-        fields = ('id_jedn', 'nazwa')        
+        fields = ('id_jedn', 'nazwa')
 
 
 class EditPracownikForm(ModelForm):

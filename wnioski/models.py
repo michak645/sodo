@@ -103,22 +103,23 @@ class Wniosek(models.Model):
             formats.date_format(self.data, "SHORT_DATETIME_FORMAT")
         )
 
+    # def save(self, *args, **kwargs):
+    #     is_new = True if not self.id else False
+    #     if is_new:
+    #         historia = Historia(wniosek=self.id)
+    #         historia.save()
+    #     super().save(*args, **kwargs)
 
-class Status(models.Model):
-    CHOICES = (
+
+class Historia(models.Model):
+    CHOICES_LIST = (
         ('1', 'Przyjęty'),
         ('2', 'Odrzucony'),
         ('3', 'Przetwarzanie'),
     )
-    nazwa = models.CharField('Nazwa', max_length=1, choices=CHOICES, default=3)
-
-    def __str__(self):
-        return u'{0}'.format(self.nazwa)
-
-
-class Historia(models.Model):
     wniosek = models.ForeignKey(Wniosek, related_name='historia')
-    status = models.ForeignKey(Status, related_name='status')
+    status = models.CharField(
+        'Status', max_length=1, choices=CHOICES_LIST, default=3)
     data = models.DateTimeField('Data', auto_now=True, blank=False)
 
     def __str__(self):

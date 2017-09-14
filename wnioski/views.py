@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu, JednOrg
-from .forms import WniosekForm, SearchForm, ObiektForm, TypeForm, EditObiektForm, EditWniosekForm
-from django.utils import formats
+from .forms import (
+    WniosekForm, SearchForm, ObiektForm, TypeForm,
+    EditObiektForm, EditWniosekForm)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from .forms import PracownikForm, EditPracownikForm, EditTypObiektuForm, JednostkaForm, EditJednostkaForm
-from django.template.defaulttags import register
-from django.db.models import Max
+from .forms import (
+    PracownikForm, EditPracownikForm, EditTypObiektuForm, JednostkaForm,
+    EditJednostkaForm)
 from datetime import datetime
 
-@register.filter
-def get_item(dictionary, key):
-    return dictionary.get(key)
 
 @login_required(login_url='/')
 def create_app(request):
@@ -58,15 +56,18 @@ def wnioski(request):
     przyjete = []
     odrzucone = []
     przetwarzane = []
-
     for wniosek in wnioski:
-        hist = Historia.objects.filter(wniosek=wniosek).order_by('-data')[0]
-        if hist.status.nazwa == 'Przyjęty':
-            przyjete.append(hist)
-        elif hist.status.nazwa == 'Odrzucony':
-            odrzucone.append(hist)
-        elif hist.status.nazwa == 'Przetwarzanie':
-            przetwarzane.append(hist)
+        try:
+            hist = Historia.objects.filter(
+                wniosek=wniosek).order_by('-data')[0]
+            if hist.status == '1':
+                przyjete.append(hist)
+            elif hist.status == '2':
+                odrzucone.append(hist)
+            elif hist.status == '3':
+                przetwarzane.append(hist)
+        except IndexError:
+            hist = None
 
     template = "wnioski/views/wnioski.html"
     context = {
@@ -464,7 +465,24 @@ def ldap_main(request):
         return HttpResponseRedirect('/ldap/login')
     message = ''
     user = Pracownik.objects.get(login=ldap_user)
-    wnioski = Wniosek.objects.filter(prac_sklada=user).order_by('-data')
+    wnioski = Wniosek.objects.filter(pracownik=user).order_by('-data')
+
+    przyjete = []
+    odrzucone = []
+    przetwarzane = []
+    for wniosek in wnioski:
+        try:
+            hist = Historia.objects.filter(
+                wniosek=wniosek).order_by('-data')[0]
+            if hist.status == '1':
+                przyjete.append(hist)
+            elif hist.status == '2':
+                odrzucone.append(hist)
+            elif hist.status == '3':
+                przetwarzane.append(hist)
+        except IndexError:
+            hist = None
+
     if request.method == 'POST':
         form = WniosekForm(request.POST)
         if form.is_valid():
@@ -476,7 +494,10 @@ def ldap_main(request):
                 'form': form,
                 'message': message,
                 'user': user,
-                'wnioski': wnioski
+                'wnioski': wnioski,
+                'przyjete': przyjete,
+                'odrzucone': odrzucone,
+                'przetwarzane': przetwarzane,
             })
     else:
         form = WniosekForm()
@@ -485,7 +506,10 @@ def ldap_main(request):
             'form': form,
             'message': message,
             'user': user,
-            'wnioski': wnioski
+            'wnioski': wnioski,
+            'przyjete': przyjete,
+            'odrzucone': odrzucone,
+            'przetwarzane': przetwarzane,
         })
 
 

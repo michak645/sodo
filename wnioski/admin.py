@@ -7,7 +7,6 @@ from .models import (
     RodzajPracownika,
     Pracownik,
     Wniosek,
-    Status,
     Historia,
     WniosekTyp
 )
@@ -20,6 +19,5 @@ admin.site.register(Obiekt)
 admin.site.register(RodzajPracownika)
 admin.site.register(Pracownik)
 admin.site.register(Wniosek)
-admin.site.register(Status)
 admin.site.register(Historia)
 admin.site.register(WniosekTyp)

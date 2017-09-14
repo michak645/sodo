@@ -5,43 +5,25 @@
 {% block content %}
 
 <div class="container">
-	<div class="col-md-offset-3 col-md-6 col-xs-offset-2 col-xs-8 logowanie">
+	<div class="login-box">
 
 		<div class="row">
-			<div class="col-md-3 col-sm-3 col-xs-3">
-			</div>
-			<div class="col-md-6 col-sm-6 col-xs-6">
-				<h3>SODO</h3>
-			</div>
+			<h3>SODO</h3>
 		</div>
-	
-		<hr>
 
-		<div class="input-group row col-md-offset-1 col-sm-offset-1 col-xs-offset-1">
-			<form action="/acc/authentication" method="post">
-				{% csrf_token %}
-				<div class="row form-group">
-					<div class="col-md-3 col-sm-3 col-xs-3">
-						<label for="username">Login</label>
-					</div>
-					<div class="col-md-9 col-sm-9 col-xs-9">
-						<input type="text" class="form-control" placeholder="nazwa użytkownika" name="username" value="" id="username">
-					</div>
+		<div class="input-group row">
+			<form action="/acc/authentication" method="post">{% csrf_token %}
+				<div class="row input-group">
+					<label for="username" class="input-group-addon">Login</label>
+					<input type="text" class="form-control" placeholder="nazwa użytkownika" name="username" value="" id="username">
+				</div>
+				<div class="row input-group">
+					<label for="username" class="input-group-addon">Hasło</label>
+					<input type="password" class="form-control" placeholder="hasło" name="password" id="password">
 				</div>
 
-				<div class="row form-group">
-					<div class="col-md-3 col-sm-3 col-xs-3">
-						<label for="username">Hasło</label>
-					</div>
-					<div class="col-md-9 col-sm-9 col-xs-9">
-						<input type="password" class="form-control" placeholder="hasło" name="password" id="password">
-					</div>
-				</div>
-
-				<div class="row form-group">
-					<div class="col-md-6 col-xs-6 col-sm-6">
-						<input type="submit" value="Zaloguj" class="btn btn-primary">
-					</div>
+				<div class="row button-login">
+					<input type="submit" value="Zaloguj" class="btn btn-primary">
 				</div>
 
 			</form>
@@ -51,15 +33,8 @@
             </div>
             
 		</div>
-
-
-
-
-
-
 	</div>
-
 </div>
 
-        
+    
 {% endblock %}
