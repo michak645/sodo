@@ -6,36 +6,35 @@
 
 <div class="container">
 
-  <div class="row">
-    <h3>Wnioski</h3>
-  </div>
+    <div class="row">
+        <h3>Przyjęte</h3>
 
-  <hr>
-
-  <div class="row table-responsive">
-    <table class="table table-hover table-striped table-bordered">
-      <tr>
-        <th>
-          Wniosek
-        </th>
-      </tr>
-      {% for wniosek in wnioski %}
-      <tr>
-        <td>
-            {% if statusy_wnioskow|get_item:wniosek.id == 4 %}
-            <a style="color: orange;" href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. WSTRZYMANY {{ wniosek }}</a>
-            {% elif statusy_wnioskow|get_item:wniosek.id == 5 %}
-            <a style="color: green;" href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. ZATWIERDZONY {{ wniosek }}</a>
-            {% elif statusy_wnioskow|get_item:wniosek.id == 6 %}
-            <a style="color: red;" href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. ODRZUCONY {{ wniosek }}</a>
-            {% else %}
-            <a href="/wniosek_view/{{ wniosek.id }}">{{ forloop.counter }}. {{ wniosek }}</a>
+        {% for historia in przyjete %}
+            {% if historia.status.nazwa == 'Przyjęty' %}
+                <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
             {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
+        {% endfor %}
 
-    
+    </div>
+    <div class="row">
+        <h3>Odrzucone</h3>
+
+        {% for historia in odrzucone %}
+            {% if historia.status.nazwa == 'Odrzucony' %}
+                <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+    <div class="row">
+        <h3>Przetwarzanie</h3>
+
+        {% for historia in przetwarzane %}
+            {% if historia.status.nazwa == 'Przetwarzanie' %}
+                <p><a href="/wniosek_view/{{ historia.wniosek.id }}">{{ historia.wniosek }}</a></p>
+            {% endif %}
+        {% endfor %}
+
+    </div>
 {% endblock %}

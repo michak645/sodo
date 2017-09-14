@@ -47,9 +47,6 @@ class RodzajPracownika(models.Model):
 
 
 class Pracownik(models.Model):
-    # user = models.OneToOneField(
-    #    User, on_delete=models.CASCADE, related_name='pracownik'
-    # )
     imie = models.CharField(max_length=45)
     nazwisko = models.CharField(max_length=45)
     email = models.EmailField(max_length=45, null=True)
@@ -60,19 +57,19 @@ class Pracownik(models.Model):
         null=True, blank=True, verbose_name='Data zwolnienia', default=None
     )
     szkolenie = models.BooleanField(default=False)
-    rodzaj = models.ForeignKey(RodzajPracownika, null=True)
+    rodzaj = models.ForeignKey(RodzajPracownika, null=True, verbose_name='rodzaj')
     jedn_org = models.ForeignKey(
         JednOrg, null=True, verbose_name='Jedn. org.'
     )
     login = models.CharField(max_length=45, null=True, unique=True)
     haslo = models.CharField(max_length=45, null=True)
-    # admin = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return u'{0} {1}'.format(
             self.imie,
             self.nazwisko
         )
+
     # class Meta:
     #    order_with_respect_to = 'imie'
     '''
@@ -96,35 +93,33 @@ class WniosekTyp(models.Model):
 
 class Wniosek(models.Model):
     typ = models.ForeignKey(WniosekTyp, null=True)
-    data_zlo = models.DateTimeField(
-        default=datetime.now, blank=True, verbose_name='Data zło.'
-    )
-    prac_sklada = models.ForeignKey(
-        Pracownik, related_name='wnioski_sklada', verbose_name='Składający'
-    )
-    prac_dot = models.ForeignKey(
-        Pracownik, related_name='wnioski_dot', verbose_name='Dotyczy'
-    )
-    obiekt = models.ForeignKey(Obiekt, related_name='obiekt')
+    pracownik = models.ForeignKey(Pracownik, related_name='pracownik')
+    obiekt = models.ForeignKey(Obiekt, null=True)
+    data = models.DateTimeField('Data', auto_now=True, blank=True)
 
     def __str__(self):
         return u'Wniosek, {0}, data {1}'.format(
-            self.prac_sklada,
-            formats.date_format(self.data_zlo, "SHORT_DATETIME_FORMAT")
+            self.pracownik,
+            formats.date_format(self.data, "SHORT_DATETIME_FORMAT")
         )
 
 
 class Status(models.Model):
-    nazwa = models.CharField(max_length=45)
+    CHOICES = (
+        ('1', 'Przyjęty'),
+        ('2', 'Odrzucony'),
+        ('3', 'Przetwarzanie'),
+    )
+    nazwa = models.CharField('Nazwa', max_length=1, choices=CHOICES, default=3)
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
 
 
 class Historia(models.Model):
-    wniosek = models.ForeignKey(Wniosek, related_name='wniosek')
-    status = models.ForeignKey(
-        Status)
+    wniosek = models.ForeignKey(Wniosek, related_name='historia')
+    status = models.ForeignKey(Status, related_name='status')
+    data = models.DateTimeField('Data', auto_now=True, blank=False)
 
     def __str__(self):
         return u'{0} {1}'.format(self.wniosek, self.status)

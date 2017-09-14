@@ -6,7 +6,11 @@ from django import forms
 class WniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'data_zlo', 'prac_sklada', 'prac_dot', 'obiekt')
+        fields = ('typ', 'pracownik', 'obiekt')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.fields['prac_sklada'].initial = args
 
 
 class SearchForm(forms.Form):
@@ -62,7 +66,7 @@ class EditObiektForm(ModelForm):
 class EditWniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'data_zlo', 'prac_sklada', 'prac_dot', 'obiekt')
+        fields = ('typ', 'pracownik', 'obiekt')
 
 
 class EditTypObiektuForm(ModelForm):

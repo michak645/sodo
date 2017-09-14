@@ -4,51 +4,40 @@
 
 {% block content %}
 
-<div class="container">
-	<div class="col-md-offset-3 col-md-6 col-sm-offset-2 col-sm-8 col-xs-offset-2 col-xs-8 logowanie">
-
-		<div class="row">
-			<div class="col-md-3">
-			</div>
-			<div class="col-md-6">
-				<h3>LDAP</h3>
-			</div>
-		</div>
-	
-		<hr>
-
-		<div class="input-group row col-md-offset-1 col-sm-offset-1 col-xs-offset-1">
-			<form action="/ldap/auth" method="post">
-				{% csrf_token %}
-				<div class="row form-group">
-					<div class="col-md-3">
-						<label for="username">Login</label>
-					</div>
-					<div class="col-md-9">
-						<input type="text" class="form-control" placeholder="nazwa użytkownika" name="username" value="" id="username">
-					</div>
-				</div>
-
-				<div class="row form-group">
-					<div class="col-md-6">
-						<input type="submit" value="Zaloguj" class="btn btn-primary">
-					</div>
-				</div>
-
-			</form>
-            
-            <div>
-                <a class="btn btn-default" href="/">Powrót</a>
+<div class="container login-box">
+    <div>
+        <div class="row">
+            <h3>Logowanie LDAP</h3>
+        </div>
+        <hr>
+        <form action="/ldap/auth" method="post">{% csrf_token %}
+            <div class="row input-group">
+                <span for="username" class="input-group-addon">Login</span>
+                <input type="text" class="form-control" placeholder="nazwa użytkownika" name="username" value="" id="username" required>
             </div>
-            
+            </div>
+            <div class="row button-login">
+                <div class="">
+                    <input type="submit" value="Zaloguj" class="btn btn-primary">
+                    <a class="btn btn-default" href="/">Powrót</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+	<div class="row lista-userow">
+		<div class="col-md-8 col-md-offset-2">
+            <p><strong>TYMCZASOWE</strong></p>
+            <p>Lista użytkowników:</p>
+			<ol>
+				{% for pracownik in pracownicy %}
+					<li>{{ pracownik.login }} - {{ pracownik.rodzaj }}</li>
+				{% endfor %}
+			</ol>
 		</div>
-
-
-
-
-
-
-	</div>
+    </div>
 
 </div>
 

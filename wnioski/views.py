@@ -24,12 +24,7 @@ def create_app(request):
         form = WniosekForm(request.POST)
         if form.is_valid():
             form.save()
-            thanks = 'wniosek dodany w dniu {0}'.format(
-                formats.date_format(
-                    form.cleaned_data['data_zlo'],
-                    "SHORT_DATETIME_FORMAT"
-                )
-            )
+            thanks = 'Wniosek dodany.'
             return HttpResponseRedirect('wnioski/create/create_app.html')
     else:
         form = WniosekForm()
@@ -57,20 +52,30 @@ def obiekty(request):
 
 @login_required(login_url='/')
 def wnioski(request):
-    wnioski = Wniosek.objects.order_by('-data_zlo')
-    historie = Historia.objects.all()
-    statusy_wnioskow = {}
-    for w in wnioski:
-        id_historia = 0
-        id_status = 0
-        for historia in historie:
-            if historia.wniosek.id == w.id and historia.id > id_historia:
-                id_historia = historia.id
-                id_status = historia.status_id
-        statusy_wnioskow.update({w.id: id_status})
+    wnioski = Wniosek.objects.all()
+    historie = Historia.objects.all().order_by('-data')
+
+    przyjete = []
+    odrzucone = []
+    przetwarzane = []
+
+    for wniosek in wnioski:
+        hist = Historia.objects.filter(wniosek=wniosek).order_by('-data')[0]
+        if hist.status.nazwa == 'Przyjęty':
+            przyjete.append(hist)
+        elif hist.status.nazwa == 'Odrzucony':
+            odrzucone.append(hist)
+        elif hist.status.nazwa == 'Przetwarzanie':
+            przetwarzane.append(hist)
 
     template = "wnioski/views/wnioski.html"
-    context = {'wnioski': wnioski, 'historia': historie, 'statusy_wnioskow': statusy_wnioskow}
+    context = {
+        'wnioski': wnioski,
+        'historie': historie,
+        'przyjete': przyjete,
+        'odrzucone': odrzucone,
+        'przetwarzane': przetwarzane,
+    }
     return render(request, template, context)
 
 
@@ -147,10 +152,10 @@ def user_account(request):
 
 @login_required(login_url='/')
 def user_view(request, user_id):
-    pracownik = Pracownik.objects.get(id=user_id)
-    wnioski = Wniosek.objects.filter(prac_sklada=user_id)
+    pracownicy = Pracownik.objects.get(id=user_id)
+    wnioski = Wniosek.objects.filter(pracownik=user_id)
     return render(request, 'wnioski/views/user_view.html', {
-        'pracownik': pracownik, 'wnioski': wnioski})
+        'pracownik': pracownicy, 'wnioski': wnioski})
 
 
 @login_required(login_url='/')
@@ -201,11 +206,15 @@ def wniosek_view(request, wniosek_id):
 
     else:
         try:
-            historia = Historia.objects.filter(wniosek=wniosek_id)
+            historia = Historia.objects.filter(wniosek=wniosek_id).order_by('-data')
+            status = historia[0].status.nazwa
         except Historia.DoesNotExist:
             historia = None
         return render(request, 'wnioski/views/wniosek_view.html', {
-            'wniosek': w, 'historia': historia, 'date': date})
+            'wniosek': w,
+            'historia': historia,
+            'status': status,
+        })
 
 
 @login_required(login_url='/')
@@ -427,7 +436,9 @@ def jednostka_edit(request, jednostka_id):
 
 def ldap_login(request):
     template = 'wnioski/ldap/login.html'
-    context = {}
+    context = {
+        'pracownicy': Pracownik.objects.all(),
+    }
     return render(request, template, context)
 
 
@@ -453,7 +464,7 @@ def ldap_main(request):
         return HttpResponseRedirect('/ldap/login')
     message = ''
     user = Pracownik.objects.get(login=ldap_user)
-    wnioski = Wniosek.objects.filter(prac_sklada=user).order_by('-data_zlo')
+    wnioski = Wniosek.objects.filter(prac_sklada=user).order_by('-data')
     if request.method == 'POST':
         form = WniosekForm(request.POST)
         if form.is_valid():

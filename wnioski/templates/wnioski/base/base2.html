@@ -15,14 +15,11 @@
     <title>{% block title %}SODO{% endblock %}</title>
 </head>
 <body>
+    <div class="container main-page">
+            {% block content %}
 
-
-  <div id="row" class="container main-page">
-      <div class="row">
-            {% block content %}{% endblock %}
-      </div>
-  </div>
-
+            {% endblock %}
+    </div>
 </body>
 
 </html>

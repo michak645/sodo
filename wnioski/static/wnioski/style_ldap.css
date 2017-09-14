@@ -23,3 +23,7 @@ body {
 	border-collapse: separate;
     border-spacing: 10px;
 }
+
+.lista-userow {
+    margin-top: 20px;
+}
