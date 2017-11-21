@@ -1,43 +1,67 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
-from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu, JednOrg
-from .forms import (
-    WniosekForm, SearchForm, ObiektForm, TypeForm,
-    EditObiektForm, EditWniosekForm)
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.contrib import auth
-from .forms import (
-    PracownikForm, EditPracownikForm, EditTypObiektuForm, JednostkaForm,
-    EditJednostkaForm)
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, DetailView
 from datetime import datetime
 
-
-@login_required(login_url='/')
-def create_app(request):
-    thanks = ''
-    # thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
-    if request.method == 'POST':
-        form = WniosekForm(request.POST)
-        if form.is_valid():
-            form.save()
-            thanks = 'Wniosek dodany.'
-            return HttpResponseRedirect('wnioski/create/create_app.html')
-    else:
-        form = WniosekForm()
-
-    template = "wnioski/create/create_app.html"
-    context = {'form': form, 'thanks': thanks}
-    return render(request, template, context)
+from .forms import (
+    WniosekForm,
+    SearchForm,
+    ObiektForm,
+    TypeForm,
+    EditObiektForm,
+    EditWniosekForm)
+from .forms import (
+    PracownikForm,
+    EditPracownikForm,
+    EditTypObiektuForm,
+    JednostkaForm,
+    EditJednostkaForm)
+from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu, JednOrg
 
 
-@login_required(login_url='/')
-def pracownicy(request):
-    pracownicy = Pracownik.objects.all()
-    template = "wnioski/views/pracownicy.html"
-    context = {'pracownicy': pracownicy}
-    return render(request, template, context)
+# LIST VIEWS
+class PracownikListView(ListView):
+    model = Pracownik
+    template_name = 'wnioski/views/pracownicy.html'
+    context_object_name = 'pracownicy'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PracownikListView, self).dispatch(*args, **kwargs)
+
+
+class PracownikDetailView(DetailView):
+    model = Pracownik
+    template_name = 'wnioski/views/user_view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        wnioski = Wniosek.objects.filter(pracownik=self.object.id)
+        przyjete = []
+        odrzucone = []
+        przetwarzane = []
+        for wniosek in wnioski:
+            try:
+                hist = Historia.objects.filter(
+                    wniosek=wniosek).order_by('-data')[0]
+                if hist.status == '1':
+                    przyjete.append(hist)
+                elif hist.status == '2':
+                    odrzucone.append(hist)
+                elif hist.status == '3':
+                    przetwarzane.append(hist)
+            except IndexError:
+                hist = None
+        context['wnioski'] = wnioski
+        context['przyjete'] = przyjete
+        context['odrzucone'] = odrzucone
+        context['przetwarzane'] = przetwarzane
+        return context
 
 
 @login_required(login_url='/')
@@ -46,6 +70,12 @@ def obiekty(request):
     template = "wnioski/views/obiekty.html"
     context = {'obiekty': obiekty}
     return render(request, template, context)
+
+
+class ObiektListView(ListView):
+    model = Obiekt
+    template = 'wnioski/views/obiekty.html'
+    context_object_name = 'obiekty'
 
 
 @login_required(login_url='/')
@@ -77,6 +107,25 @@ def wnioski(request):
         'odrzucone': odrzucone,
         'przetwarzane': przetwarzane,
     }
+    return render(request, template, context)
+
+
+# CREATING VIEWS
+@login_required(login_url='/')
+def create_app(request):
+    thanks = ''
+    # thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
+    if request.method == 'POST':
+        form = WniosekForm(request.POST)
+        if form.is_valid():
+            form.save()
+            thanks = 'Wniosek dodany.'
+            return HttpResponseRedirect('wnioski/create/create_app.html')
+    else:
+        form = WniosekForm()
+
+    template = "wnioski/create/create_app.html"
+    context = {'form': form, 'thanks': thanks}
     return render(request, template, context)
 
 
@@ -139,45 +188,18 @@ def user_account(request):
 
         for w in wnioski:
             try:
-                max_id = Historia.objects.filter(wniosek=w.id).aggregate(id=Max('id'))['id']
+                max_id = Historia.objects.filter(wniosek=w.id).a
+                ggregate(id=Max('id'))['id']
                 historia = Historia.objects.get(wniosek=w.id, id=max_id)
             except Historia.DoesNotExist:
                 historie = None
-            if historia is not None and w.typ_id == 4 and historia.status_id == 5:
+            if historia is not None and w.typ_id == 4 
+            and historia.status_id == 5:
                 obiekt = Obiekt.objects.get(id=w.obiekt_id)
                 obiekty.append(obiekt)
         return render(request, 'wnioski/user/user_account.html', {
             'user': user, 'obiekty': obiekty})
     '''
-
-
-@login_required(login_url='/')
-def user_view(request, user_id):
-    pracownicy = Pracownik.objects.get(id=user_id)
-    wnioski = Wniosek.objects.filter(pracownik=user_id)
-    przyjete = []
-    odrzucone = []
-    przetwarzane = []
-    for wniosek in wnioski:
-        try:
-            hist = Historia.objects.filter(
-                wniosek=wniosek).order_by('-data')[0]
-            if hist.status == '1':
-                przyjete.append(hist)
-            elif hist.status == '2':
-                odrzucone.append(hist)
-            elif hist.status == '3':
-                przetwarzane.append(hist)
-        except IndexError:
-            hist = None
-    context = {
-        'pracownik': pracownicy,
-        'wnioski': wnioski,
-        'przyjete': przyjete,
-        'odrzucone': odrzucone,
-        'przetwarzane': przetwarzane,
-    }
-    return render(request, 'wnioski/views/user_view.html', context)
 
 
 @login_required(login_url='/')
@@ -198,14 +220,18 @@ def wniosek_view(request, wniosek_id):
             historia.save()
             message = 'Zatwierdzono wniosek'
             try:
-                historia = Historia.objects.filter(wniosek=wniosek_id).order_by('-data')
+                historia = Historia.objects. \
+                    filter(wniosek=wniosek_id). \
+                    order_by('-data')
             except Historia.DoesNotExist:
                 historia = None
-            return render(request, 'wnioski/views/wniosek_view.html', {
-                    'wniosek': w,
-                    'historia': historia,
-                    'message': message,
-                    'date': date, })
+            context = {
+                'wniosek': w,
+                'historia': historia,
+                'message': message,
+                'date': date,
+            }
+            return render(request, 'wnioski/views/wniosek_view.html', context)
         elif request.POST.get('change', '') == u"Odrzuć":
             historia = Historia(wniosek_id=wniosek_id, status='2')
             historia.save()
@@ -214,12 +240,19 @@ def wniosek_view(request, wniosek_id):
                 historia = Historia.objects.filter(wniosek=wniosek_id)
             except Historia.DoesNotExist:
                 historia = None
-            return render(request, 'wnioski/views/wniosek_view.html', {
-                'wniosek': w, 'historia': historia, 'message': message, 'date': date})    
+            context = {
+                'wniosek': w,
+                'historia': historia,
+                'message': message,
+                'date': date
+            }
+            return render(request, 'wnioski/views/wniosek_view.html', context)
 
     else:
         try:
-            historia = Historia.objects.filter(wniosek=wniosek_id).order_by('-data')
+            historia = Historia.objects. \
+                filter(wniosek=wniosek_id). \
+                order_by('-data')
             status = historia[0].status
         except Historia.DoesNotExist:
             historia = None

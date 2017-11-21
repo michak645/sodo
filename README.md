@@ -4,6 +4,9 @@ To do:
 * sygnał do stworzenia historii wraz ze stworzeniem wniosku
 * paginator
 * wyszukiwanie
-* FRONT
+* zmienić nazwy templatek
 
-Zmienione hasło dla "admin" na "blacktron". WTF
+Zmienione hasło dla "admin" - "blacktron". 
+
+
+TERMIN ODDANIA PROJEKTU: 

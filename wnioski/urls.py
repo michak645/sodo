@@ -1,6 +1,11 @@
 from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
 
 from . import views
+from .views import (
+    PracownikListView,
+    PracownikDetailView
+)
 
 urlpatterns = [
 
@@ -9,11 +14,13 @@ urlpatterns = [
 
     # views
     url(r'^obiekty/', views.obiekty, name='obiekty'),
-    url(r'^pracownicy/', views.pracownicy, name='pracownicy'),
+    url(r'^pracownicy/', PracownikListView.as_view(),
+        name='pracownicy'),
     url(r'^wnioski/', views.wnioski, name='wnioski'),
     url(r'^typy_obiektow/', views.typy_obiektow, name='typy_obiektow'),
     url(r'^jednostki/', views.jednostki, name='jednostki'),
-    url(r'^user_view/(?P<user_id>\d+)/', views.user_view, name='user_view'),
+    url(r'^user_view/(?P<pk>\d+)/', PracownikDetailView.as_view(),
+        name='user_view'),
     url(r'^obj_view/(?P<obj_id>\d+)/', views.obj_view, name='obj_view'),
     url(r'^wniosek_view/(?P<wniosek_id>\d+)/', views.wniosek_view,
         name='wniosek_view'),
