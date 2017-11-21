@@ -25,7 +25,7 @@ SECRET_KEY = '8%c==f@1^be$51wxv7i-^+9uw$^!$_0rd+r$wlu%3&3*1x3g9q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [u'sodo.nazwa.pl', u'77.55.230.200', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['Invalid HTTP_HOST header']
 
 
 # Application definition
