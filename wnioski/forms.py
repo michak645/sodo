@@ -21,7 +21,7 @@ class PracownikForm(ModelForm):
     class Meta:
         model = Pracownik
         fields = (
-            'imie', 'nazwisko', 'email', 'data_zatr', 'szkolenie',
+            'imie', 'nazwisko', 'email', 'szkolenie',
             'rodzaj', 'jedn_org', 'login', 'haslo'
         )
 
@@ -45,12 +45,17 @@ class JednostkaForm(ModelForm):
         model = JednOrg
         fields = ('id_jedn', 'nazwa')
 
+#class UzytkownikForm(ModelForm):
+#    class Meta:
+#        model = Pracownik
+#        fields = ('email', 'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo') 
+        
 
 class EditPracownikForm(ModelForm):
     class Meta:
         model = Pracownik
         fields = (
-            'imie', 'nazwisko', 'email', 'data_zatr',
+            'imie', 'nazwisko', 'email', 
             'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo'
         )
 
@@ -79,3 +84,8 @@ class EditJednostkaForm(ModelForm):
     class Meta:
         model = JednOrg
         fields = ('id_jedn', 'nazwa')
+        
+#class EditUzytkownikForm(ModelForm):
+#    class Meta:
+#        model = Pracownik
+#        fields = ('email', 'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo')         
