@@ -6,11 +6,12 @@ from .views import (
     PracownikListView,
     PracownikDetailView
 )
+from auth_ex.views import LoginFormView
 
 urlpatterns = [
 
     # main page
-    url(r'^$', views.login, name='loggedin'),
+    url(r'^$', LoginFormView.as_view(), name='login_form_view'),
 
     # views
     url(r'^obiekty/', views.obiekty, name='obiekty'),
