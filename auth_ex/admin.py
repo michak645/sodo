@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Pracownik, RodzajPracownika
 
-# Register your models here.
+
+admin.site.register(RodzajPracownika)
+admin.site.register(Pracownik)

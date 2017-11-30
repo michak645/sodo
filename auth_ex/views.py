@@ -1,19 +1,36 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+# from django.contrib.auth.models import User
 from django.shortcuts import render
-from django.views.generic import View
-from django.shortcuts import get_object_or_404, HttpResponseRedirect
-from wnioski.models import Pracownik
+from django.shortcuts import redirect
 
 
-class LoginFormView(View):
-    def post(self, request):
-        login = request.POST['login']
-        password = request.POST['password']
-        user = get_object_or_404(
-            Pracownik,
-            login=login,
-            haslo=password)
-
-        if user is not None:
-            return HttpResponseRedirect('/wnioski/')
+def index(request):
+    user = request.user
+    if user.is_authenticated:
+        if user.is_staff:
+            return redirect('/wnioski/')
         else:
-            return HttpResponseRedirect('/wnioski/')
+            return redirect('ldap/main')
+    return render(request, 'auth_ex/index.html')
+
+
+def auth_view(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        if user.is_staff:
+            return redirect('/wnioski/')
+        else:
+            return redirect('/ldap/main')
+    else:
+        messages.add_message(request, messages.ERROR, 'login error')
+        return render(request, 'auth_ex/index.html')
+
+
+def logout_view(request):
+    messages.add_message(request, messages.INFO, 'logout succesful')
+    logout(request)
+    return redirect('/')

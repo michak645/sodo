@@ -4,11 +4,9 @@ from .models import (
     JednOrg,
     TypObiektu,
     Obiekt,
-    RodzajPracownika,
-    Pracownik,
     Wniosek,
     Historia,
-    WniosekTyp
+    WniosekTyp,
 )
 
 
@@ -16,8 +14,6 @@ admin.site.register(Uprawnienia)
 admin.site.register(JednOrg)
 admin.site.register(TypObiektu)
 admin.site.register(Obiekt)
-admin.site.register(RodzajPracownika)
-admin.site.register(Pracownik)
 admin.site.register(Wniosek)
 admin.site.register(Historia)
 admin.site.register(WniosekTyp)

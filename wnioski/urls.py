@@ -1,18 +1,12 @@
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
 
 from . import views
 from .views import (
     PracownikListView,
     PracownikDetailView
 )
-from auth_ex.views import LoginFormView
 
 urlpatterns = [
-
-    # main page
-    url(r'^$', LoginFormView.as_view(), name='login_form_view'),
-
     # views
     url(r'^obiekty/', views.obiekty, name='obiekty'),
     url(r'^pracownicy/', PracownikListView.as_view(),
@@ -39,10 +33,6 @@ urlpatterns = [
     url(r'^search/', views.search, name='search'),
 
     # user
-    url(r'^acc/login', views.login, name='login'),
-    url(r'^acc/authentication', views.authentication, name='authentication'),
-    url(r'^acc/logout', views.logout, name='logout'),
-    url(r'^acc/invalid', views.invalid, name='invalid'),
     url(r'^user_account/', views.user_account, name='user_account'),
 
     # create apps
@@ -57,7 +47,6 @@ urlpatterns = [
     url(r'^ldap/main', views.ldap_main, name='ldap_main'),
     url(r'^ldap/auth', views.ldap_auth, name='ldap_auth'),
     url(r'^ldap/obj_list', views.obj_list, name='obj_list'),
-    url(r'^ldap/logout', views.ldap_logout, name='ldap_logout'),
     url(r'^ldap/wniosek_view_ldap/(?P<wniosek_id>\d+)',
         views.wniosek_view_ldap, name='wniosek_view_ldap')
 ]
