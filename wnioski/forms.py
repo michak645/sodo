@@ -10,7 +10,7 @@ class WniosekForm(ModelForm):
         fields = ('typ', 'pracownik', 'obiekt')
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(WniosekForm, self).__init__(*args, **kwargs)
         # self.fields['prac_sklada'].initial = args
 
 
