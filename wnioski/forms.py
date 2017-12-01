@@ -1,6 +1,7 @@
 from django.forms import ModelForm
-from .models import Wniosek, Pracownik, Obiekt, TypObiektu, JednOrg
+from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
+from auth_ex.models import JednOrg, Pracownik
 
 
 class WniosekForm(ModelForm):

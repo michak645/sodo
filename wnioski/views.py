@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
 from datetime import datetime
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .forms import (
     WniosekForm,
@@ -21,7 +22,8 @@ from .forms import (
     EditTypObiektuForm,
     JednostkaForm,
     EditJednostkaForm)
-from .models import Pracownik, Wniosek, Obiekt, Historia, TypObiektu, JednOrg
+from .models import Wniosek, Obiekt, Historia, TypObiektu
+from auth_ex.models import JednOrg, Pracownik
 
 
 # LIST VIEWS
@@ -79,6 +81,7 @@ class ObiektListView(ListView):
 
 
 @login_required(login_url='/')
+@staff_member_required
 def wnioski(request):
     wnioski = Wniosek.objects.all()
     historie = Historia.objects.all().order_by('-data')
@@ -365,36 +368,6 @@ def create_unit(request):
     return render(request, template, args)
 
 
-def login(request):
-    request.session['ldap_user'] = None
-    template = "wnioski/index.html"
-    context = {}
-    return render(request, template, context)
-
-
-def authentication(request):
-    username = request.POST.get('username', '')
-    password = request.POST.get('password', '')
-    user_auth = auth.authenticate(username=username, password=password)
-
-    if user_auth is not None:
-
-        auth.login(request, user_auth)
-        request.session['session_user'] = user_auth.id
-        return HttpResponseRedirect('/wnioski')
-    else:
-            return HttpResponseRedirect('/acc/invalid/')
-
-
-def logout(request):
-    auth.logout(request)
-    return render(request, 'wnioski/user/logout.html', {})
-
-
-def invalid(request):
-    return render(request, 'wnioski/user/invalid.html', {})
-
-
 @login_required(login_url='/')
 def user_edit(request, user_id):
     user = Pracownik.objects.get(id=user_id)
@@ -480,84 +453,6 @@ def jednostka_edit(request, jednostka_id):
     })
 
 
-def ldap_login(request):
-    template = 'wnioski/ldap/login.html'
-    context = {
-        'pracownicy': Pracownik.objects.all(),
-    }
-    return render(request, template, context)
-
-
-# do zrobienia
-def ldap_auth(request):
-    username = ''
-    username = request.POST.get('username', '')
-    request.session['ldap_user'] = username
-    try:
-        user_auth = Pracownik.objects.get(login=username)
-        user_auth.id
-        return HttpResponseRedirect('/ldap/main')
-    except Pracownik.DoesNotExist:
-        user_auth = None
-        return HttpResponseRedirect('/ldap/login')
-
-
-def ldap_main(request):
-    ldap_user = request.session['ldap_user']
-    try:
-        user = Pracownik.objects.get(login=ldap_user)
-    except Pracownik.DoesNotExist:
-        return HttpResponseRedirect('/ldap/login')
-    message = ''
-    user = Pracownik.objects.get(login=ldap_user)
-    wnioski = Wniosek.objects.filter(pracownik=user).order_by('-data')
-
-    przyjete = []
-    odrzucone = []
-    przetwarzane = []
-    for wniosek in wnioski:
-        try:
-            hist = Historia.objects.filter(
-                wniosek=wniosek).order_by('-data')[0]
-            if hist.status == '1':
-                przyjete.append(hist)
-            elif hist.status == '2':
-                odrzucone.append(hist)
-            elif hist.status == '3':
-                przetwarzane.append(hist)
-        except IndexError:
-            hist = None
-
-    if request.method == 'POST':
-        form = WniosekForm(request.POST)
-        if form.is_valid():
-            form.save()
-            form = WniosekForm()
-            message = 'wniosek dodany'
-            template = "wnioski/ldap/main.html"
-            return render(request, template, {
-                'form': form,
-                'message': message,
-                'user': user,
-                'wnioski': wnioski,
-                'przyjete': przyjete,
-                'odrzucone': odrzucone,
-                'przetwarzane': przetwarzane,
-            })
-    else:
-        form = WniosekForm()
-        template = "wnioski/ldap/main.html"
-        return render(request, template, {
-            'form': form,
-            'message': message,
-            'user': user,
-            'wnioski': wnioski,
-            'przyjete': przyjete,
-            'odrzucone': odrzucone,
-            'przetwarzane': przetwarzane,
-        })
-
-
 def obj_list(request):
     ldap_user = request.session['ldap_user']
     try:
@@ -582,7 +477,69 @@ def wniosek_view_ldap(request, wniosek_id):
         'wniosek': wniosek})
 
 
-def ldap_logout(request):
-    request.session['ldap_user'] = ''
-    return HttpResponseRedirect('/ldap/login')
-# ========================================================================
+def ldap_main(request):
+    user = User.objects.get(id=request.user.id)
+    # wnioski = Wniosek.objects.filter(pracownik=user).order_by('-data')
+
+    # przyjete = []
+    # odrzucone = []
+    # przetwarzane = []
+    # for wniosek in wnioski:
+    #     try:
+    #         hist = Historia.objects.filter(
+    #             wniosek=wniosek).order_by('-data')[0]
+    #         if hist.status == '1':
+    #             przyjete.append(hist)
+    #         elif hist.status == '2':
+    #             odrzucone.append(hist)
+    #         elif hist.status == '3':
+    #             przetwarzane.append(hist)
+    #     except IndexError:
+    #         hist = None
+
+    # if request.method == 'POST':
+    #     form = WniosekForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #         form = WniosekForm()
+    #         message = 'wniosek dodany'
+    #         template = "wnioski/ldap/main.html"
+    #         return render(request, template, {
+    #             'form': form,
+    #             'message': message,
+    #             'user': user,
+    #             'wnioski': wnioski,
+    #             'przyjete': przyjete,
+    #             'odrzucone': odrzucone,
+    #             'przetwarzane': przetwarzane,
+    #         })
+    # else:
+    form = WniosekForm()
+    template = "wnioski/ldap/main.html"
+    return render(request, template, {
+        'form': form,
+        'user': user,
+        # 'wnioski': wnioski,
+    })
+
+
+def ldap_login(request):
+    template = 'wnioski/ldap/login.html'
+    context = {
+        'pracownicy': Pracownik.objects.all(),
+    }
+    return render(request, template, context)
+
+
+# do zrobienia
+def ldap_auth(request):
+    username = ''
+    username = request.POST.get('username', '')
+    request.session['ldap_user'] = username
+    try:
+        user_auth = Pracownik.objects.get(login=username)
+        user_auth.id
+        return HttpResponseRedirect('/ldap/main')
+    except Pracownik.DoesNotExist:
+        user_auth = None
+        return HttpResponseRedirect('/ldap/login')
