@@ -58,14 +58,7 @@ class RodzajPracownika(models.Model):
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
-
-        
-class RodzajUzytkownika(models.Model):
-    nazwa = models.CharField(max_length=9, unique=True)
-
-    def __str__(self):
-        return u'{0}'.format(self.nazwa)
-
+    
         
 class Pracownik(models.Model):
     imie = models.CharField(max_length=81, validators=[validate_name])
@@ -74,33 +67,13 @@ class Pracownik(models.Model):
     szkolenie = models.BooleanField(default=False)
     rodzaj_pracownika = models.ForeignKey(RodzajPracownika, on_delete = models.CASCADE, null=True, verbose_name='Rodzaj pracownika')
     jedn_org = models.ForeignKey(JednOrg, on_delete = models.CASCADE, null=True, verbose_name='Jednostka organizacyjna')
+    login = models.CharField(max_length=45, null=True, unique=True)
+    haslo = models.CharField(max_length=45, null=True)
     numer_ax = models.CharField(max_length=6, unique=True)
     czy_pracuje = models.BooleanField(null=True)
     
     def __str__(self):
         return u'{0} {1} {2}'.format(self.imie, self.nazwisko, self.rodzaj_pracownika)
-
-    # class Meta:
-    #    order_with_respect_to = 'imie'
-    '''
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            Pracownik.objects.create(user=instance)
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.pracownik.save()
-    '''
-
-class Uzytkownik(models.Model):
-    login = models.CharField(max_length=45, null=True, unique=True)
-    haslo = models.CharField(max_length=45, null=True)
-    rodzaj_uzytkownika = models.ForeignKey(RodzajUzytkownika, on_delete = models.CASCADE, null=True, verbose_name='Rodzaj użytkownika')
-    id_pracownika = models.ForeignKey(Pracownik, on_delete = models.CASCADE)
-    
-    def __str__(self):
-        return u'{0}'.format(self.rodzaj_uzytkownika)
 
     # class Meta:
     #    order_with_respect_to = 'imie'
