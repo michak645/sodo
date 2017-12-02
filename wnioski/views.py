@@ -17,8 +17,6 @@ from .forms import (
     EditObiektForm,
     EditWniosekForm)
 from .forms import (
-    PracownikForm,
-    EditPracownikForm,
     EditTypObiektuForm,
     JednostkaForm,
     EditJednostkaForm)

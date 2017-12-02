@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user }}</title>
+</head>
+<body>
+    <a href="{% url 'user_detail' user.id %}">Return</a><br>
+    <form method="post" action="">{% csrf_token %}
+        {{ user_form.as_p }}
+        {{ pracownik_form.as_p }}
+        <input type="submit" value="Update">
+    </form>
+</body>
+</html>

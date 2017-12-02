@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pracownik list</title>
+</head>
+<body>
+    Lista pracowników:
+    {% for user in users %}
+        <p><a href="{% url 'user_detail' user.pk %}">{{ user }}</a></p>
+    {% endfor %}
+
+    <hr>
+    <a href="/user/add">Dodaj pracownika</a><br>
+    <a href="{% url 'rodzaj_create' %}">Dodaj rodzaj prac.</a>
+</body>
+</html>
