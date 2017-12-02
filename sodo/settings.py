@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auth_ex'
+    'auth_ex',
+    'pdf_generator'
 ]
 
 MIDDLEWARE_CLASSES = [
