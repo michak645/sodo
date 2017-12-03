@@ -5,6 +5,13 @@
     <title>Pracownik list</title>
 </head>
 <body>
+
+    {% if messages %}
+		{% for message in messages %}
+			<p>{{ message }}</p>
+		{% endfor %}
+	{% endif %}
+
     Lista pracowników:
     {% for user in users %}
         <p><a href="{% url 'user_detail' user.pk %}">{{ user }}</a></p>

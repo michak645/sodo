@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.forms import ModelForm
 from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
@@ -7,12 +8,14 @@ from auth_ex.models import JednOrg
 class WniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'pracownik', 'obiekt')
+        fields = ('typ', 'user', 'obiekt')
+        widgets = {
+            'user': forms.HiddenInput(),
+        }
 
-    def __init__(self, *args, **kwargs):
-        super(WniosekForm, self).__init__(*args, **kwargs)
-        # self.fields['prac_sklada'].initial = args
-
+    def clean_user(self):
+        user = self.cleaned_data['user']
+        return user
 
 class SearchForm(forms.Form):
     username = forms.CharField(max_length=100)
@@ -49,7 +52,7 @@ class EditObiektForm(ModelForm):
 class EditWniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'pracownik', 'obiekt')
+        fields = ('typ', 'user', 'obiekt')
 
 
 class EditTypObiektuForm(ModelForm):
