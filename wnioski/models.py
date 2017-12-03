@@ -65,12 +65,12 @@ class Pracownik(models.Model):
     nazwisko = models.CharField(max_length=55, validators=[validate_surname])
     email = models.EmailField(null=True, unique=True)
     szkolenie = models.BooleanField(default=False)
-    rodzaj_pracownika = models.ForeignKey(RodzajPracownika, on_delete = models.CASCADE, null=True, verbose_name='Rodzaj pracownika')
+    rodzaj = models.ForeignKey(RodzajPracownika, on_delete = models.CASCADE, null=True, verbose_name='Rodzaj pracownika')
     jedn_org = models.ForeignKey(JednOrg, on_delete = models.CASCADE, null=True, verbose_name='Jednostka organizacyjna')
     login = models.CharField(max_length=45, null=True, unique=True)
     haslo = models.CharField(max_length=45, null=True)
-    numer_ax = models.CharField(max_length=6, unique=True)
-    czy_pracuje = models.BooleanField(null=True)
+    numer_ax = models.CharField(max_length=6, unique=True, null=True)
+    czy_pracuje = models.BooleanField(default=0)
     
     def __str__(self):
         return u'{0} {1} {2}'.format(self.imie, self.nazwisko, self.rodzaj_pracownika)
@@ -89,7 +89,7 @@ class Pracownik(models.Model):
     '''
 
 class WniosekTyp(models.Model):
-    nazwa = models.CharField(unique=True, max_length=255)
+    nazwa = models.CharField(unique=True, max_length=255, default="Zwykły")
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
@@ -98,7 +98,7 @@ class WniosekTyp(models.Model):
 class Wniosek(models.Model):
     data = models.DateTimeField('Data złożenia', auto_now=True)
     typ = models.ForeignKey(WniosekTyp, on_delete = models.CASCADE, null=True)
-    pracownik = models.ForeignKey(Pracownik, on_delete = models.CASCADE, related_name='pracownik', unique=True)
+    pracownik = models.ForeignKey(Pracownik, on_delete = models.CASCADE, related_name='pracownik')
     obiekt = models.ForeignKey(Obiekt, on_delete = models.CASCADE, null=True)
 
     def __str__(self):
