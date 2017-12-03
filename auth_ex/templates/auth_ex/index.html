@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="{% static 'auth_ex/style.css' %}">
+	<title></title>
+</head>
+<body>
+	{% if messages %}
+		{% for message in messages %}
+			<p>{{ message }}</p>
+		{% endfor %}
+	{% endif %}
+	<form method="POST" action="/authentication">{% csrf_token %}
+		<input type="text" name="username" placeholder="login">
+		<input type="password" name="password" placeholder="password">
+		<input type="submit" name="submit" value="login">
+	</form>
+
+</body>
+
+<script type="text/javascript" src="{% static 'auth_ex/scripts.js' %}">
+
+</script>
+
+</html>

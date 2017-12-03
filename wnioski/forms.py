@@ -1,6 +1,7 @@
 from django.forms import ModelForm
-from .models import Wniosek, Pracownik, Obiekt, TypObiektu, JednOrg
+from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
+from auth_ex.models import JednOrg, Pracownik
 
 
 class WniosekForm(ModelForm):
@@ -9,7 +10,7 @@ class WniosekForm(ModelForm):
         fields = ('typ', 'pracownik', 'obiekt')
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(WniosekForm, self).__init__(*args, **kwargs)
         # self.fields['prac_sklada'].initial = args
 
 
@@ -45,11 +46,6 @@ class JednostkaForm(ModelForm):
         model = JednOrg
         fields = ('id', 'nazwa')
 
-#class UzytkownikForm(ModelForm):
-#    class Meta:
-#        model = Pracownik
-#        fields = ('email', 'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo') 
-        
 
 class EditPracownikForm(ModelForm):
     class Meta:
@@ -84,8 +80,3 @@ class EditJednostkaForm(ModelForm):
     class Meta:
         model = JednOrg
         fields = ('id', 'nazwa')
-        
-#class EditUzytkownikForm(ModelForm):
-#    class Meta:
-#        model = Pracownik
-#        fields = ('email', 'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo')         
