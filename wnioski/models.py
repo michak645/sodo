@@ -30,7 +30,7 @@ class Uprawnienia(models.Model):
 
 
 class JednOrg(models.Model):
-    id_jedn = models.CharField(primary_key=True, max_length=11, unique=True)
+    id = models.CharField(primary_key=True, max_length=11)
     #nazwa = models.CharField(max_length=255)
     nazwa = models.TextField(db_index=False)
 	
@@ -79,7 +79,7 @@ class Pracownik(models.Model):
     czy_pracuje = models.BooleanField(default=1)
     
     def __str__(self):
-        return u'{0} {1} {2}'.format(self.imie, self.nazwisko, self.rodzaj_pracownika)
+        return u'{0} {1} {2}'.format(self.imie, self.nazwisko, self.rodzaj)
 
     # class Meta:
     #    order_with_respect_to = 'imie'
