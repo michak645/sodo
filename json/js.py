@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "PupilPremiumTable.db")
 
 host = "http://150.254.76.229/EodService/AXDWService.asmx/"
-model = "wnioski_"
+#model = "wnioski_"
 domain = "@amu.edu.pl"
 
 # Parametry: EmpId
@@ -215,7 +215,7 @@ def start_org():
     #database = "db.sqlite3"
     #connection = sqlite3.connect("db.sqlite3", timeout = 10)
     
-    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="zpi", charset="utf8")
     #print ("Database: ")
     #print (database)
     #query = """INSERT into " + model + "jednorg VALUES(%d, %s, %s)"""
@@ -238,7 +238,7 @@ def start_org():
         #print (organization_keys[j])
         #print (organization_descs[j])
         #values.append((organization_keys[j], organization_descs[j]))
-        query = "INSERT into wnioski_jednorg(id_jedn, nazwa) values('{}', '{}')".format(organization_keys[j], organization_descs[j])
+        query = "INSERT into auth_ex_jednorg(id, nazwa) values('{}', '{}')".format(organization_keys[j], organization_descs[j])
         print ("Query: ")
         print (query)
         cursor.execute(query)
@@ -288,13 +288,13 @@ def start_typ():
     employee_types = set(employee_types)
     employee_types = list(employee_types)
     counts = len(employee_types)
-    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="zpi", charset="utf8")
     cursor = database.cursor()
     #j = 0
     #values = []
     
     for j in range(counts):
-        query = "INSERT into wnioski_rodzajpracownika(nazwa) values('{}')".format(employee_types[j])
+        query = "INSERT into auth_ex_rodzajpracownika(nazwa) values('{}')".format(employee_types[j])
         cursor.execute(query)
     database.commit()
     database.close()
@@ -350,7 +350,7 @@ def start_emp():
     
     
     
-    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="zpi", charset="utf8")
     cursor = database.cursor()
     
     '''
@@ -369,7 +369,7 @@ def start_emp():
     '''
     
     for k in range(amount):
-        groups_query = u"SELECT * from wnioski_rodzajpracownika where nazwa = '{}'".format(employee_groups[k])
+        groups_query = u"SELECT * from auth_ex_rodzajpracownika where nazwa = '{}'".format(employee_groups[k])
         cursor.execute(groups_query)
         row = cursor.fetchone()
         employee_groups[k] = row[0]
@@ -388,7 +388,7 @@ def start_emp():
     
     print ("Amount: " + str(amount))
     for j in range(amount):
-        query = u"INSERT into wnioski_pracownik(imie, nazwisko, email, jedn_org_id, rodzaj_id, numer_ax, czy_pracuje) values('{}', '{}', '{}', '{}', '{}', '{}', '{}') on duplicate key UPDATE imie=imie, nazwisko=nazwisko, email=email, jedn_org_id=jedn_org_id, rodzaj_id=rodzaj_id, numer_ax=numer_ax, czy_pracuje=czy_pracuje".format(employee_names[j], employee_surnames[j], employee_uids[j], employee_organization_keys[j], employee_groups[j], employee_ax[j], employee_statuses[j])
+        query = u"INSERT into auth_ex_pracownik(imie, nazwisko, email, jedn_org_id, rodzaj_id, numer_ax, czy_pracuje) values('{}', '{}', '{}', '{}', '{}', '{}', '{}') on duplicate key UPDATE imie=imie, nazwisko=nazwisko, email=email, jedn_org_id=jedn_org_id, rodzaj_id=rodzaj_id, numer_ax=numer_ax, czy_pracuje=czy_pracuje".format(employee_names[j], employee_surnames[j], employee_uids[j], employee_organization_keys[j], employee_groups[j], employee_ax[j], employee_statuses[j])
         print ("Query: ")
         print (query)
         cursor.execute(query)

@@ -56,7 +56,8 @@ class Pracownik(models.Model):
     user = models.OneToOneField(
         User,
         related_name='+',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        default=None)
 
     def __str__(self):
         return u'{0} {1}'.format(
