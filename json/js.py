@@ -89,7 +89,7 @@ def EmpListByLastName(name):
     #response = requests.get(url = EmpListByLastName, params = parameters)
     response = requests.get(url = urlEmpListByLastName)
     data = json.loads(response.text)
-    print (data)
+    #print (data)
     return data
 
 def EmpListByOrgDesc(org_desc):
@@ -99,7 +99,7 @@ def EmpListByOrgDesc(org_desc):
     #response = requests.get(url = EmpListByOrgDesc, params = parameters)
     response = requests.get(url = urlEmpListByOrgDesc)
     data = json.loads(response.text)
-    print (data)
+    #print (data)
     return data
     
 def EmpListByUid(uid, status):
@@ -176,6 +176,7 @@ def start_org():
                 #    value.encode(encoding="UTF-8", errors="strict")
                 #    print ("Value after encoding UTF-8: " + value)
                 #value.encode("utf8")
+                '''
                 value = value.replace('ą', 'a')
                 value = value.replace('ć', 'c')
                 value = value.replace('ę', 'e')
@@ -196,6 +197,7 @@ def start_org():
                 value = value.replace('Ż', 'Z')
                 value = value.replace('\u2026', "...")
                 value = value.replace('\u0150', 'O')
+                '''
                 value = value.replace('\u0027', ' ')
                 organization_descs.append(value)
             
@@ -213,7 +215,7 @@ def start_org():
     #database = "db.sqlite3"
     #connection = sqlite3.connect("db.sqlite3", timeout = 10)
     
-    database = MySQLdb.connect("localhost", "root", "password", "sodo")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
     #print ("Database: ")
     #print (database)
     #query = """INSERT into " + model + "jednorg VALUES(%d, %s, %s)"""
@@ -261,6 +263,7 @@ def start_typ():
     for i in range(amount):
         for key, value in typ[i].items():
             if key == "grupa_pracownika":
+                '''
                 value = value.replace('ą', 'a')
                 value = value.replace('ć', 'c')
                 value = value.replace('ę', 'e')
@@ -279,12 +282,13 @@ def start_typ():
                 value = value.replace('Ś', 'S')
                 value = value.replace('Ź', 'Z')
                 value = value.replace('Ż', 'Z')
+                '''
                 #employee_types.update(value)
                 employee_types.append(value)
     employee_types = set(employee_types)
     employee_types = list(employee_types)
     counts = len(employee_types)
-    database = MySQLdb.connect("localhost", "root", "password", "sodo")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
     cursor = database.cursor()
     #j = 0
     #values = []
@@ -343,15 +347,48 @@ def start_emp():
                 employee_organization_keys.append(value)
             elif key == "status":
                 employee_statuses.append(value)
-
-    database = MySQLdb.connect("localhost", "root", "password", "sodo")
+    
+    
+    
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
     cursor = database.cursor()
+    
+    '''
+    organizations_query = "SELECT * from wnioski_jednorg"
+    cursor.execute(organizations_query)
+    row = cursor.fetchone()
+    
+    k = 0   
+    while row is not None:
+        while k < amount:
+            if employee_organization_keys[k] == row[1]:
+                employee_organization_keys[k] = row[0]
+            k += 1
+            print (str(row[0]) + ' ' + row[1] + ' ' + row[2])
+        row = cursor.fetchone()
+    '''
+    
+    for k in range(amount):
+        groups_query = u"SELECT * from wnioski_rodzajpracownika where nazwa = '{}'".format(employee_groups[k])
+        cursor.execute(groups_query)
+        row = cursor.fetchone()
+        employee_groups[k] = row[0]
+    '''    
+    k = 0
+    while row is not None:
+        if employee_groups[k] == row[1]:
+            employee_groups[k] = row[0]
+            k += 1
+        print (str(row[0]) + ' ' + row[1])
+        row = cursor.fetchone()
+    '''
+    #sys.exit()
     #j = 0
     #values = []
     
     print ("Amount: " + str(amount))
     for j in range(amount):
-        query = u"INSERT into wnioski_pracownik(imie, nazwisko, email, jedn_org_id, rodzaj_id, numer_ax, czy_pracuje) values('{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(employee_names[j], employee_surnames[j], employee_uids[j], 4610, 8, employee_ax[j], employee_statuses[j])
+        query = u"INSERT into wnioski_pracownik(imie, nazwisko, email, jedn_org_id, rodzaj_id, numer_ax, czy_pracuje) values('{}', '{}', '{}', '{}', '{}', '{}', '{}') on duplicate key UPDATE imie=imie, nazwisko=nazwisko, email=email, jedn_org_id=jedn_org_id, rodzaj_id=rodzaj_id, numer_ax=numer_ax, czy_pracuje=czy_pracuje".format(employee_names[j], employee_surnames[j], employee_uids[j], employee_organization_keys[j], employee_groups[j], employee_ax[j], employee_statuses[j])
         print ("Query: ")
         print (query)
         cursor.execute(query)
