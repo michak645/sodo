@@ -215,7 +215,7 @@ def start_org():
     #database = "db.sqlite3"
     #connection = sqlite3.connect("db.sqlite3", timeout = 10)
     
-    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="zpi", charset="utf8")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
     #print ("Database: ")
     #print (database)
     #query = """INSERT into " + model + "jednorg VALUES(%d, %s, %s)"""
@@ -294,7 +294,7 @@ def start_typ():
     employee_types = set(employee_types)
     employee_types = list(employee_types)
     counts = len(employee_types)
-    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="zpi", charset="utf8")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
     cursor = database.cursor()
     #j = 0
     #values = []
@@ -356,7 +356,7 @@ def start_emp():
     
     
     
-    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="zpi", charset="utf8")
+    database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
     cursor = database.cursor()
     
     '''
