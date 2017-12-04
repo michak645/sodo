@@ -10,3 +10,6 @@ TODO:
 
 
 Zmienione hasło dla "admin" - "blacktron". 
+
+Potrzebne do działania:
+- xhtml2pdf, instalujemy za pomocą 'pip install --pre xhtml2pdf'
