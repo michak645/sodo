@@ -52,20 +52,6 @@
              Data zlozenia: {{ datazlozenia }} </br>
             <hr class='hrItem' />
          </div>
-         <div>
-             <h1>Zmiany statusu dokumentu:</h1>
-             <table width=400px>
-             <tr>
-                <td>Data:</td>
-                <td>Status zmieniono na:</td>
-              </tr>
-             {% for h in historia %}
-              <tr>
-                <td>{{ h.data|date:"d M Y, H i " }}</td>
-                <td align="center">{{ h.status }}</td>
-              </tr>
-            {% endfor %}
-             </table>
-         </div>
+
      </body>
  </html>
