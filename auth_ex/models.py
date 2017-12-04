@@ -37,7 +37,7 @@ class Pracownik(models.Model):
     #nazwisko = models.CharField(max_length=45)
     nazwisko = models.CharField(max_length=55, validators=[validate_surname])
     #email = models.EmailField(max_length=45, null=True)
-    szkolenie = models.BooleanField(default=0)
+    szkolenie = models.BooleanField(default=False)
     email = models.EmailField(null=True, unique=True)
     #data_zatr = models.DateField(default=datetime.now, blank=True, verbose_name='Data zatr.')
     rodzaj = models.ForeignKey(
@@ -52,7 +52,7 @@ class Pracownik(models.Model):
     login = models.CharField(max_length=45, null=True, unique=True)
     haslo = models.CharField(max_length=45, null=True)
     numer_ax = models.CharField(max_length=6, unique=True, null=True)
-    czy_pracuje = models.BooleanField(default=1)
+    czy_pracuje = models.BooleanField(default=True)
     user = models.OneToOneField(
         User,
         related_name='+',

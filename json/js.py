@@ -227,6 +227,11 @@ def start_org():
     j = 0
     values = []
     
+    #select_query = "SELECT COUNT(id) from auth_ex_jednorg"
+    #cursor.execute(select_query)
+    #row = cursor.fetchone()
+    #count = row[0]
+
     print ("Amount: " + str(amount))
     for j in range(amount):
         #print ("Id jednostki: " + organization_keys[j] + "    nazwa jednostki: " + organization_descs[j])
@@ -237,8 +242,9 @@ def start_org():
         #cursor.execute(query, values)
         #print (organization_keys[j])
         #print (organization_descs[j])
+        
         #values.append((organization_keys[j], organization_descs[j]))
-        query = "INSERT into auth_ex_jednorg(id, nazwa) values('{}', '{}')".format(organization_keys[j], organization_descs[j])
+        query = "INSERT into auth_ex_jednorg(id, nazwa) values('{}', '{}') on duplicate key UPDATE id=id, nazwa=nazwa".format(organization_keys[j], organization_descs[j])
         print ("Query: ")
         print (query)
         cursor.execute(query)
@@ -294,7 +300,7 @@ def start_typ():
     #values = []
     
     for j in range(counts):
-        query = "INSERT into auth_ex_rodzajpracownika(nazwa) values('{}')".format(employee_types[j])
+        query = "INSERT into auth_ex_rodzajpracownika(nazwa) values('{}') on duplicate key UPDATE nazwa=nazwa".format(employee_types[j])
         cursor.execute(query)
     database.commit()
     database.close()
@@ -571,6 +577,12 @@ def update_types():
 def update_organizations():
     return None
 
+# Automatyczne uzupełnianie danych na początku oraz ich prototypowa aktualizacja
+start_org()
+start_typ()
+start_emp()
+    
+'''
 print ("Opcje: ")
 print ("a) EmpByEmpId\nb) EmpHolidayHoursEmpId\nc) EmpListByLastName\nd) EmpListByOrgDesc\ne) EmpListByUid\nf) OrgById\ng) OrgListByDesc")
 opcja = input("Wybierz opcję\n")
@@ -600,7 +612,7 @@ elif (opcja == 'f'):
 elif (opcja == 'g'):
     o_d = input("Podaj nazwę jednostki organizacyjnej: ")
     OrgListByDesc(o_d)    
-    
+'''    
 '''
 elif (opcja = 'b'):
     id = input("Podaj id pracownika")
