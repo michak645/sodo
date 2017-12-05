@@ -122,3 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/acc/login'
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: "/user_detail/%s/" % u.pk,
+}

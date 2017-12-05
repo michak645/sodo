@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user }}</title>
+</head>
+<body>
+    <h1>{{ user.username }}</h1>
+    <p>{{ user.first_name }}</p>
+    <p>{{ user.last_name }}</p>
+    <p>{{ user.email }}</p>
+    <p>{{ user.pracownik.rodzaj }}</p>
+    <p>{{ user.pracownik.jedn_org }}</p>
+    <a href="{% url 'user_update' user.pk %}">Update information</a><br>
+    <a href="{% url 'user_delete' user.pk %}">Delete user</a><br>
+    <a href="{% url 'user_list' %}">Return</a>
+</body>
+</html>

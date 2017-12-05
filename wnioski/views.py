@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 from datetime import datetime
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -17,8 +17,6 @@ from .forms import (
     EditObiektForm,
     EditWniosekForm)
 from .forms import (
-    PracownikForm,
-    EditPracownikForm,
     EditTypObiektuForm,
     JednostkaForm,
     EditJednostkaForm)
@@ -478,8 +476,14 @@ def wniosek_view_ldap(request, wniosek_id):
 
 
 def ldap_main(request):
-    user = User.objects.get(id=request.user.id)
-    # wnioski = Wniosek.objects.filter(pracownik=user).order_by('-data')
+    user = request.user
+    wnioski = Wniosek.objects.filter(user=user)
+    historia = Historia.objects.filter(wniosek__in=wnioski)
+    template = "wnioski/ldap/main.html"
+    return render(request, template, {
+        'user': user,
+        'historia': historia,
+    })
 
     # przyjete = []
     # odrzucone = []
@@ -514,32 +518,22 @@ def ldap_main(request):
     #             'przetwarzane': przetwarzane,
     #         })
     # else:
-    form = WniosekForm()
-    template = "wnioski/ldap/main.html"
-    return render(request, template, {
-        'form': form,
-        'user': user,
-        # 'wnioski': wnioski,
-    })
 
 
-def ldap_login(request):
-    template = 'wnioski/ldap/login.html'
-    context = {
-        'pracownicy': Pracownik.objects.all(),
-    }
-    return render(request, template, context)
-
-
-# do zrobienia
-def ldap_auth(request):
-    username = ''
-    username = request.POST.get('username', '')
-    request.session['ldap_user'] = username
-    try:
-        user_auth = Pracownik.objects.get(login=username)
-        user_auth.id
-        return HttpResponseRedirect('/ldap/main')
-    except Pracownik.DoesNotExist:
-        user_auth = None
-        return HttpResponseRedirect('/ldap/login')
+def WniosekCreateView(request):
+    if request.method == 'POST':
+        post = request.POST.copy()
+        post['user'] = request.user.id
+        form = WniosekForm(post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Successfully add application')
+            return HttpResponseRedirect('/ldap/main')
+        else:
+            messages.error(request, 'There was some errors')
+            return HttpResponseRedirect('/ldap/app_add')
+    else:
+        form = WniosekForm()
+        return render(request, 'wnioski/ldap/app_add.html', {
+            'form': form,
+        })
