@@ -3,8 +3,8 @@ from django.conf.urls import url
 from . import views
 from .views import (
     PracownikListView,
-    PracownikDetailView
-)
+    PracownikDetailView,
+    WniosekCreateView)
 
 urlpatterns = [
     # views
@@ -43,9 +43,8 @@ urlpatterns = [
     url(r'^create_unit', views.create_unit, name='create_unit'),
 
     # LDAP
-    url(r'^ldap/login', views.ldap_login, name='ldap_login'),
     url(r'^ldap/main', views.ldap_main, name='ldap_main'),
-    url(r'^ldap/auth', views.ldap_auth, name='ldap_auth'),
+    url(r'^ldap/app_add', WniosekCreateView, name='app_add'),
     url(r'^ldap/obj_list', views.obj_list, name='obj_list'),
     url(r'^ldap/wniosek_view_ldap/(?P<wniosek_id>\d+)',
         views.wniosek_view_ldap, name='wniosek_view_ldap')

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
 from django.db import models
-from auth_ex.models import Pracownik, JednOrg
+from auth_ex.models import JednOrg
 
 
 class Uprawnienia(models.Model):
@@ -36,14 +37,14 @@ class WniosekTyp(models.Model):
 
 class Wniosek(models.Model):
     typ = models.ForeignKey(WniosekTyp, null=True)
-    pracownik = models.ForeignKey(Pracownik, related_name='pracownik')
+    user = models.ForeignKey(User, related_name='user')
     obiekt = models.ForeignKey(Obiekt, null=True)
     data = models.DateTimeField('Data', auto_now=True, blank=False)
 
     def __str__(self):
         return u'{0}. {1}, {2}, {3}'.format(
             self.id,
-            self.pracownik,
+            self.user,
             self.obiekt,
             self.typ
         )
@@ -67,4 +68,7 @@ class Historia(models.Model):
     data = models.DateTimeField('Data', auto_now=True, blank=False)
 
     def __str__(self):
-        return u'{0} {1}'.format(self.wniosek, self.status)
+        return '{0}'.format(self.wniosek)
+
+    def get_status(self):
+        return '{0}'.format(self.get_status_display())
