@@ -5,10 +5,10 @@ from django.contrib.auth.models import User
 from auth_ex.models import Pracownik
 
 
-class UserForm(UserCreationForm):
+class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email']
         widgets = {
             'email': forms.EmailInput(),
         }

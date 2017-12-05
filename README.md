@@ -1,12 +1,11 @@
 # sodo
 
 TODO:
-- Połączyc tabele pracownik z user - sprawdzic jakie tabele pasuja
-- dopracowac widoki
-- rozdzielic ldap na osobna aplikacje?
-- zmienic widoki na klasowe
 - dopisac dekoratory do klas
 - potworzyc zabezpieczenia
+- dodać lokalne biblioteki do js, jquery i bootstrapa
 
 
-Zmienione hasło dla "admin" - "blacktron". 
+Do testów:
+Hasło do admina - 'blacktron'
+Hasło do zwykłego użytkownika (login 'michal') - 'haslo123'

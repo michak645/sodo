@@ -2,56 +2,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{% static 'auth_ex/style.css' %}">
-	<title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'auth_ex/style.css' %}">
+    <title>SODO</title>
 </head>
 
 <body>
 
-	<div class="container">
-    <div class="row colored">
-        <div id="contentdiv" class="contcustom">
-            <span class="fa fa-spinner  bigicon fa-pulse fa-3x fa-fw"></span>
-            <h2>SODO</h2>
-            <div>
-	<form method="POST" action="/authentication">{% csrf_token %}
-		<input id="username" type="text" name="username" placeholder="Login" style="text-align: center" onkeypress="check_values();">
-		<input id="password" type="password" name="password" placeholder="Password" style="text-align: center" onkeypress="check_values();">
-		<button id="button1" class="btn btn-default wide hidden" type="submit" name="submit" value="login" ><span class="fa fa-check med" ></span></button>
-			<span id="lock1" class="fa fa-lock medhidden redborder"></span>
-		</form>
+    <div class="container">
+        <div class="row colored">
+            <div id="contentdiv" class="contcustom">
+                <span class="fa fa-spinner  bigicon fa-pulse fa-3x fa-fw"></span>
+                <h2>SODO</h2>
+                <div>
+                    <form method="POST" action="/authentication">{% csrf_token %}
+                        <input id="username" type="text" name="username" placeholder="Login" style="text-align: center" onkeypress="check_values();">
+                        <input id="password" type="password" name="password" placeholder="Password" style="text-align: center" onkeypress="check_values();">
+                        <button id="button1" class="btn btn-default wide hidden" type="submit" name="submit" value="login" ><span class="fa fa-check med" ></span></button>
+                        <span id="lock1" class="fa fa-lock medhidden redborder"></span>
+                    </form>
 
 
-	{% if messages %}
-		{% for message in messages %}
-		<p{% if message.tags == "error" %} class="alert alert-danger alert-dismissible fade show"  role="alert" {% endif %}>{{ message }}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button> </p>
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == "error" %}
+                            <p class="alert alert-danger alert-dismissible fade show"  role="alert" >{{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button> </p>
+                            {% endif %}
+                            {% if message.tags == "warning" %}
+                            <p class="alert alert-warning alert-dismissible fade show"  role="alert" >{{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button> </p>
+                            {% endif %}
+                            {% if message.tags == "success" %}
+                            <p class="alert alert-success alert-dismissible fade show"  role="alert" >{{ message }}
+                                <:8button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </:8button> </p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
-<p{% if message.tags == "warning" %} class="alert alert-warning alert-dismissible fade show"  role="alert" {% endif %}>{{ message }}
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button> </p>
+    <script type="text/javascript" src="{% static 'auth_ex/scripts.js' %}">
 
-<p{% if message.tags == "success" %} class="alert alert-success alert-dismissible fade show"  role="alert" {% endif %}>{{ message }}
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button> </p>
-
-{% endfor %}
-	{% endif %}
-</div>
-</div>
-</div>
-</div>
-
-<script type="text/javascript" src="{% static 'auth_ex/scripts.js' %}">
-
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
