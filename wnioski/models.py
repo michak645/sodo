@@ -32,7 +32,7 @@ class WniosekTyp(models.Model):
     typ = models.CharField(max_length=45)
 
     def __str__(self):
-        return u'{0}'.format(self.typ)
+        return '{0}'.format(self.typ)
 
 
 class Wniosek(models.Model):
@@ -42,11 +42,10 @@ class Wniosek(models.Model):
     data = models.DateTimeField('Data', auto_now=True, blank=False)
 
     def __str__(self):
-        return u'{0}. {1}, {2}, {3}'.format(
-            self.id,
-            self.user,
+        return '{0} do obiektu \'{1}\', dla użytkownika {2}'.format(
+            self.typ,
             self.obiekt,
-            self.typ
+            self.user
         )
 
     def save(self, *args, **kwargs):
