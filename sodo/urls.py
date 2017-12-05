@@ -5,4 +5,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('wnioski.urls')),
     url(r'^', include('auth_ex.urls')),
+    url(r'^', include('pdf_generator.urls'))
 ]

@@ -260,7 +260,7 @@ def wniosek_view(request, wniosek_id):
         return render(request, 'wnioski/views/wniosek_view.html', {
             'wniosek': w,
             'historia': historia,
-            'status': status,
+            'status': status
         })
 
 
