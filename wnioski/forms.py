@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
-from auth_ex.models import JednOrg
+from auth_ex.models import JednOrg, Pracownik
 
 
 class WniosekForm(ModelForm):
@@ -15,6 +15,7 @@ class WniosekForm(ModelForm):
     def clean_user(self):
         user = self.cleaned_data['user']
         return user
+
 
 class SearchForm(forms.Form):
     username = forms.CharField(max_length=100)
@@ -37,7 +38,16 @@ class TypeForm(ModelForm):
 class JednostkaForm(ModelForm):
     class Meta:
         model = JednOrg
-        fields = ('id_jedn', 'nazwa')
+        fields = ('id', 'nazwa')
+
+
+# class EditPracownikForm(ModelForm):
+#     class Meta:
+#         model = Pracownik
+#         fields = (
+#             'imie', 'nazwisko', 'email',
+#             'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo'
+#         )
 
 
 class EditObiektForm(ModelForm):

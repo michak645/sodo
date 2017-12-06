@@ -254,9 +254,7 @@ def wniosek_view(request, wniosek_id):
             historia = Historia.objects. \
                 filter(wniosek=wniosek_id). \
                 order_by('-data')
-            print (historia)
             status = historia[0].status
-            print ("Status " + status)
         except Historia.DoesNotExist:
             historia = None
         return render(request, 'wnioski/views/wniosek_view.html', {
