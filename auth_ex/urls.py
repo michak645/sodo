@@ -3,7 +3,12 @@ from .views import (
     index,
     auth_view,
     logout_view,
-    UserListView, UserCreateView, UserDetailView, RodzajCreateView, UserDeleteView, UserUpdateView)
+    UserListView,
+    UserDetailView,
+    UserDeleteView,
+    UserUpdateView,
+    workspace,
+)
 
 
 urlpatterns = [
@@ -13,7 +18,6 @@ urlpatterns = [
     url(r'^user_list', UserListView.as_view(), name='user_list'),
     url(r'^user_detail/(?P<pk>[0-9]+)/', UserDetailView.as_view(), name='user_detail'),
     url(r'^user_update/(?P<pk>[0-9]+)/', UserUpdateView, name='user_update'),
-    url(r'^user/add', UserCreateView.as_view(), name='user_create'),
     url(r'^user/delete/(?P<pk>[0-9]+)/', UserDeleteView.as_view(), name='user_delete'),
-    url(r'^kind/add', RodzajCreateView.as_view(), name='rodzaj_create'),
+    url(r'^workspace/', workspace, name='workspace'),
 ]

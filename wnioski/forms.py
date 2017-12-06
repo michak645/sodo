@@ -1,20 +1,19 @@
 from django.forms import ModelForm
 from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
-from auth_ex.models import JednOrg, Pracownik
 
 
 class WniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'user', 'obiekt')
-        widgets = {
-            'user': forms.HiddenInput(),
-        }
+        fields = ('typ', 'pracownik', 'obiekt')
+        # widgets = {
+        #     'pracownik': forms.HiddenInput(),
+        # }
 
-    def clean_user(self):
-        user = self.cleaned_data['user']
-        return user
+    # def clean_user(self):
+    #     user = self.cleaned_data['user']
+    #     return user
 
 
 class SearchForm(forms.Form):
@@ -35,21 +34,6 @@ class TypeForm(ModelForm):
         fields = ('nazwa', )
 
 
-class JednostkaForm(ModelForm):
-    class Meta:
-        model = JednOrg
-        fields = ('id', 'nazwa')
-
-
-# class EditPracownikForm(ModelForm):
-#     class Meta:
-#         model = Pracownik
-#         fields = (
-#             'imie', 'nazwisko', 'email',
-#             'szkolenie', 'rodzaj', 'jedn_org', 'login', 'haslo'
-#         )
-
-
 class EditObiektForm(ModelForm):
     class Meta:
         model = Obiekt
@@ -61,16 +45,10 @@ class EditObiektForm(ModelForm):
 class EditWniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'user', 'obiekt')
+        fields = ('typ', 'pracownik', 'obiekt')
 
 
 class EditTypObiektuForm(ModelForm):
     class Meta:
         model = TypObiektu
         fields = ('nazwa', )
-
-
-class EditJednostkaForm(ModelForm):
-    class Meta:
-        model = JednOrg
-        fields = ('id_jedn', 'nazwa')

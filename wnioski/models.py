@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.db import models
-from auth_ex.models import JednOrg
+from auth_ex.models import JednOrg, Pracownik
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as ul
 import re
@@ -24,34 +24,18 @@ class Uprawnienia(models.Model):
         return u'{0}'.format(self.nazwa)
 
 
-# from auth_ex.models import Pracownik, JednOrg
-#
-#
-# class Uprawnienia(models.Model):
-#     #nazwa = models.CharField(max_length=45)
-#     nazwa = models.TextField(db_index=False)
-#
-#     def __str__(self):
-#         return u'{0}'.format(self.nazwa)
-
-
 class TypObiektu(models.Model):
-    #nazwa = models.CharField(max_length=45)
-    nazwa = models.TextField(db_index=False)
-    
+    nazwa = models.CharField(max_length=45)
+
     def __str__(self):
         return u'{0}'.format(self.nazwa)
 
 
 class Obiekt(models.Model):
-    #nazwa = models.CharField(max_length=45)
-    nazwa = models.TextField(db_index=False)
-    opis = models.TextField(db_index=False)
-    #typ = models.ForeignKey(TypObiektu)
-    typ = models.ForeignKey(TypObiektu, on_delete = models.CASCADE)
-    #jedn_org = models.ForeignKey(JednOrg)
-    jedn_org = models.ForeignKey(JednOrg, on_delete = models.CASCADE)
-    #opis = models.CharField(max_length=45)
+    nazwa = models.CharField(max_length=45)
+    typ = models.ForeignKey(TypObiektu)
+    jedn_org = models.ForeignKey(JednOrg)
+    opis = models.CharField(max_length=45)
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
@@ -59,8 +43,7 @@ class Obiekt(models.Model):
 
 class WniosekTyp(models.Model):
     typ = models.CharField(max_length=45)
-    # nazwa = models.TextField(db_index=False, default="Zwykły")
-    
+
     def __str__(self):
         return '{0}'.format(self.typ)
 
@@ -68,16 +51,14 @@ class WniosekTyp(models.Model):
 class Wniosek(models.Model):
     data = models.DateTimeField('Data', auto_now=True, blank=False)
     typ = models.ForeignKey(WniosekTyp, on_delete=models.CASCADE, null=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pracownik')
-    # pracownik = models.ForeignKey(Pracownik, on_delete = models.CASCADE, related_name='pracownik')
-    obiekt = models.ForeignKey(Obiekt, on_delete=models.CASCADE, null=True)
-    # data = models.DateTimeField('Data', auto_now=True, blank=False)
+    pracownik = models.ForeignKey(Pracownik, related_name='pracownik')
+    obiekt = models.ForeignKey(Obiekt, null=True)
 
     def __str__(self):
         return '{0} do obiektu \'{1}\', dla użytkownika {2}'.format(
             self.typ,
             self.obiekt,
-            self.user
+            self.pracownik
         )
 
     def save(self, *args, **kwargs):

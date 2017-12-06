@@ -5,10 +5,18 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView
 
-from auth_ex.forms import UserForm, PracownikForm
-from auth_ex.models import RodzajPracownika
+from auth_ex.forms import PracownikForm
+from auth_ex.models import JednOrg
+
+
+def workspace(request):
+    jednostki = JednOrg.objects.all()
+    context = {
+        'jednostki': jednostki,
+    }
+    return render(request, 'auth_ex/workspace/workspace.html', context)
 
 
 def index(request):
@@ -54,12 +62,6 @@ class UserDetailView(DetailView):
     context_object_name = 'user'
 
 
-class UserCreateView(CreateView):
-    model = User
-    form_class = UserForm
-    template_name = 'auth_ex/user_form.html'
-
-
 def UserUpdateView(request, pk):
     user = User.objects.get(pk=pk)
     if request.method == 'POST':
@@ -88,12 +90,3 @@ class UserDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('user_list')
-
-
-class RodzajCreateView(CreateView):
-    model = RodzajPracownika
-    template_name = 'auth_ex/rodzaj_create.html'
-    fields = ['nazwa']
-
-    def get_success_url(self):
-        return reverse('user_list')

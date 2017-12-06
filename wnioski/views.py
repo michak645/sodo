@@ -16,10 +16,7 @@ from .forms import (
     TypeForm,
     EditObiektForm,
     EditWniosekForm)
-from .forms import (
-    EditTypObiektuForm,
-    JednostkaForm,
-    EditJednostkaForm)
+from .forms import EditTypObiektuForm
 from .models import Wniosek, Obiekt, Historia, TypObiektu
 from auth_ex.models import JednOrg, Pracownik
 
