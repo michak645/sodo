@@ -8,40 +8,62 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, DeleteView
 
 from auth_ex.forms import PracownikForm
-from auth_ex.models import JednOrg
+from auth_ex.models import JednOrg, Labi
+
+
+def find_labi(jedn):
+    jednostka = JednOrg.objects.get(id=jedn)
+    if jednostka.czy_labi:
+        return Labi.objects.get(jednostka=jednostka.id)
+    else:
+        return find_labi(jednostka.parent.id)
 
 
 def workspace(request):
-    jednostki = JednOrg.objects.all()
+    jednostki = JednOrg.objects.all().order_by('id')
+    adminy = Labi.objects.all()
     context = {
         'jednostki': jednostki,
+        'adminy': adminy,
     }
+    if request.method == 'POST':
+        jednostka = request.POST['jedn']
+        try:
+            jedn = JednOrg.objects.get(id=jednostka)
+            messages.success(request, 'Success')
+        except Labi.DoesNotExist:
+            jedn = None
+            messages.error(request, 'Error')
+
+        if jedn:
+            parent = find_labi(jedn.id)
+
+        context['jedn'] = jedn
+        context['parent'] = parent
+        return render(request, 'auth_ex/workspace/workspace.html', context)
+
     return render(request, 'auth_ex/workspace/workspace.html', context)
 
 
 def index(request):
-    user = request.user
-    if user.is_authenticated:
-        if user.is_staff:
-            return redirect('/wnioski/')
+    if request.method == 'POST':
+        login = request.POST['login']
+        try:
+            admin = Labi.objects.get(login=login)
+            request.session['admin'] = admin.id
+        except Labi.DoesNotExist:
+            admin = None
+        if admin:
+            messages.success(request, 'success')
+            return redirect('wnioski')
         else:
-            return redirect('ldap/main')
-    return render(request, 'auth_ex/index.html')
+            messages.error(request, 'error')
+            return redirect('index')
+    return render(request, 'auth_ex/index_temp.html')
 
 
 def auth_view(request):
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        if user.is_staff:
-            return redirect('/wnioski/')
-        else:
-            return redirect('/ldap/main')
-    else:
-        messages.add_message(request, messages.ERROR, 'login error')
-        return render(request, 'auth_ex/index.html')
+    pass
 
 
 def logout_view(request):

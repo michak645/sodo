@@ -23,6 +23,7 @@ class RodzajPracownika(models.Model):
 
 
 class Pracownik(models.Model):
+    login = models.CharField('Login', max_length=60, unique=True)
     imie = models.CharField('Imie', max_length=60)
     nazwisko = models.CharField('Nazwisko', max_length=60)
     email = models.EmailField('Email', max_length=60)
@@ -47,13 +48,11 @@ class Pracownik(models.Model):
 
 
 class Labi(models.Model):
-    imie = models.CharField('Imie', max_length=60)
-    nazwisko = models.CharField('Nazwisko', max_length=60)
-    email = models.EmailField('Email', max_length=60)
+    login = models.CharField('login', max_length=60, unique=True)
     jednostka = models.ForeignKey(JednOrg, related_name='+', null=True)
 
     def __str__(self):
-        return 'LABI {0} {1}'.format(self.imie, self.nazwisko)
+        return '{0}'.format(self.login)
 
 
 class Drzewo(models.Model):

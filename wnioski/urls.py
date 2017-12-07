@@ -9,8 +9,7 @@ from .views import (
 urlpatterns = [
     # views
     url(r'^obiekty/', views.obiekty, name='obiekty'),
-    url(r'^pracownicy/', PracownikListView.as_view(),
-        name='pracownicy'),
+    url(r'^pracownicy/', PracownikListView.as_view(), name='pracownicy'),
     url(r'^wnioski/', views.wnioski, name='wnioski'),
     url(r'^typy_obiektow/', views.typy_obiektow, name='typy_obiektow'),
     url(r'^jednostki/', views.jednostki, name='jednostki'),
@@ -41,11 +40,4 @@ urlpatterns = [
     url(r'^create_obj', views.create_obj, name='create_obj'),
     url(r'^create_type', views.create_type, name='create_type'),
     url(r'^create_unit', views.create_unit, name='create_unit'),
-
-    # LDAP
-    url(r'^ldap/main', views.ldap_main, name='ldap_main'),
-    url(r'^ldap/app_add', WniosekCreateView, name='app_add'),
-    url(r'^ldap/obj_list', views.obj_list, name='obj_list'),
-    url(r'^ldap/wniosek_view_ldap/(?P<wniosek_id>\d+)',
-        views.wniosek_view_ldap, name='wniosek_view_ldap')
 ]

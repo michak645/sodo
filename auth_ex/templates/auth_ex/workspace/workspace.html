@@ -3,14 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Workspace</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 </head>
 <body>
+<div class="container">
     <h1>Workspace</h1>
 
-    {% for jednostka in jednostki %}
-        {{ jednostka }}<br>
-    {% endfor %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6">
+            {% for jednostka in jednostki %}
+                <p>{{ jednostka }}</p>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            {% for admin in adminy %}
+                <p>{{ admin }}</p>
+            {% endfor %}
+        </div>
+    </div>
 
 
+    <form method="post" action="">{% csrf_token %}
+        <input type="text" name="jedn" placeholder="jedn">
+        <input type="submit" value="Submit">
+    </form>
+
+    <div>
+        {% if jedn %}
+            <p><strong>jednostka:</strong> {{ jedn }} - {{ jedn.parent.id }}</p>
+            <p><strong>parent:</strong> {{ parent }}</p>
+
+
+        {% endif %}
+    </div>
+
+</div>
 </body>
 </html>

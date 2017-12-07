@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from django.contrib import auth, messages
+import pdb
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView
 from datetime import datetime
-from django.contrib.admin.views.decorators import staff_member_required
 
+from auth_ex.views import find_labi
 from .forms import (
     WniosekForm,
     SearchForm,
@@ -18,7 +20,47 @@ from .forms import (
     EditWniosekForm)
 from .forms import EditTypObiektuForm
 from .models import Wniosek, Obiekt, Historia, TypObiektu
-from auth_ex.models import JednOrg, Pracownik
+from auth_ex.models import JednOrg, Pracownik, Labi
+
+
+# WNIOSKI
+def wnioski(request):
+    wnioski = Wniosek.objects.all()
+    admin_id = request.session['admin']
+    admin = Labi.objects.get(id=admin_id)
+    to_approve = []
+    for wniosek in wnioski:
+        wniosek_labi = find_labi(wniosek.obiekt.jedn_org.id)
+        if wniosek_labi == admin:
+            to_approve.append(wniosek)
+
+    # historie = Historia.objects.all().order_by('-data')
+    # przyjete = []
+    # odrzucone = []
+    # przetwarzane = []
+    # for wniosek in wnioski:
+    #     try:
+    #         hist = Historia.objects.filter(
+    #             wniosek=wniosek).order_by('-data')[0]
+    #         if hist.status == '1':
+    #             przyjete.append(hist)
+    #         elif hist.status == '2':
+    #             odrzucone.append(hist)
+    #         elif hist.status == '3':
+    #             przetwarzane.append(hist)
+    #     except IndexError:
+    #         hist = None
+
+    context = {
+        'admin': admin,
+        'wnioski': wnioski,
+        'to_approve': to_approve,
+        # 'historie': historie,
+        # 'przyjete': przyjete,
+        # 'odrzucone': odrzucone,
+        # 'przetwarzane': przetwarzane,
+    }
+    return render(request, 'wnioski/wniosek/wniosek_list.html', context)
 
 
 # LIST VIEWS
@@ -61,7 +103,6 @@ class PracownikDetailView(DetailView):
         return context
 
 
-@login_required(login_url='/')
 def obiekty(request):
     obiekty = Obiekt.objects.all()
     template = "wnioski/views/obiekty.html"
@@ -75,41 +116,7 @@ class ObiektListView(ListView):
     context_object_name = 'obiekty'
 
 
-@login_required(login_url='/')
-@staff_member_required
-def wnioski(request):
-    wnioski = Wniosek.objects.all()
-    historie = Historia.objects.all().order_by('-data')
-
-    przyjete = []
-    odrzucone = []
-    przetwarzane = []
-    for wniosek in wnioski:
-        try:
-            hist = Historia.objects.filter(
-                wniosek=wniosek).order_by('-data')[0]
-            if hist.status == '1':
-                przyjete.append(hist)
-            elif hist.status == '2':
-                odrzucone.append(hist)
-            elif hist.status == '3':
-                przetwarzane.append(hist)
-        except IndexError:
-            hist = None
-
-    template = "wnioski/views/wnioski.html"
-    context = {
-        'wnioski': wnioski,
-        'historie': historie,
-        'przyjete': przyjete,
-        'odrzucone': odrzucone,
-        'przetwarzane': przetwarzane,
-    }
-    return render(request, template, context)
-
-
 # CREATING VIEWS
-@login_required(login_url='/')
 def create_app(request):
     thanks = ''
     # thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
@@ -127,7 +134,6 @@ def create_app(request):
     return render(request, template, context)
 
 
-@login_required(login_url='/')
 def typy_obiektow(request):
     typy_obiektow = TypObiektu.objects.all()
     template = "wnioski/views/typy_obiektow.html"
@@ -135,7 +141,6 @@ def typy_obiektow(request):
     return render(request, template, context)
 
 
-@login_required(login_url='/')
 def jednostki(request):
     jednostki = JednOrg.objects.order_by('nazwa')
     template = "wnioski/views/jednostki.html"
@@ -143,7 +148,6 @@ def jednostki(request):
     return render(request, template, context)
 
 
-@login_required(login_url='/')
 def search(request):
 
     if request.method == 'GET':
@@ -168,7 +172,6 @@ def search(request):
     return render(request, 'wnioski/search/search.html')
 
 
-@login_required(login_url='/')
 def user_account(request):
     if request.user.is_authenticated():
         session_user = request.session['session_user']
@@ -200,14 +203,12 @@ def user_account(request):
     '''
 
 
-@login_required(login_url='/')
 def obj_view(request, obj_id):
     obiekt = Obiekt.objects.get(id=obj_id)
     return render(request, 'wnioski/views/obj_view.html', {
         'obiekt': obiekt})
 
 
-@login_required(login_url='/')
 def wniosek_view(request, wniosek_id):
     w = Wniosek.objects.get(id=wniosek_id)
     message = ''
@@ -229,7 +230,8 @@ def wniosek_view(request, wniosek_id):
                 'message': message,
                 'date': date,
             }
-            return render(request, 'wnioski/views/wniosek_view.html', context)
+            return render(request,
+                          'wnioski/views/templates/wnioski/wniosek/wniosek_detail.html', context)
         elif request.POST.get('change', '') == u"Odrzuć":
             historia = Historia(wniosek_id=wniosek_id, status='2')
             historia.save()
@@ -244,7 +246,8 @@ def wniosek_view(request, wniosek_id):
                 'message': message,
                 'date': date
             }
-            return render(request, 'wnioski/views/wniosek_view.html', context)
+            return render(request,
+                          'wnioski/views/templates/wnioski/wniosek/wniosek_detail.html', context)
 
     else:
         try:
@@ -254,28 +257,26 @@ def wniosek_view(request, wniosek_id):
             status = historia[0].status
         except Historia.DoesNotExist:
             historia = None
-        return render(request, 'wnioski/views/wniosek_view.html', {
+        return render(request,
+                      'wnioski/views/templates/wnioski/wniosek/wniosek_detail.html', {
             'wniosek': w,
             'historia': historia,
             'status': status
         })
 
 
-@login_required(login_url='/')
 def typ_obiektu_view(request, typ_obiektu_id):
     typ_obiektu = TypObiektu.objects.get(id=typ_obiektu_id)
     return render(request, 'wnioski/views/typ_obiektu_view.html', {
         'typ_obiektu': typ_obiektu})
 
 
-@login_required(login_url='/')
 def jednostka_view(request, jednostka_id):
     jednostka = JednOrg.objects.get(id=jednostka_id)
     return render(request, 'wnioski/views/jednostka_view.html', {
         'jednostka': jednostka})
 
 
-@login_required(login_url='/')
 def create_user(request):
     message = ''
     if request.method == 'POST':
@@ -297,7 +298,6 @@ def create_user(request):
     return render(request, template, args)
 
 
-@login_required(login_url='/')
 def create_obj(request):
     message = ''
     if request.method == 'POST':
@@ -319,7 +319,6 @@ def create_obj(request):
     return render(request, template, args)
 
 
-@login_required(login_url='/')
 def create_type(request):
     message = ''
     if request.method == 'POST':
@@ -341,7 +340,6 @@ def create_type(request):
     return render(request, template, args)
 
 
-@login_required(login_url='/')
 def create_unit(request):
     message = ''
     if request.method == 'POST':
@@ -363,7 +361,6 @@ def create_unit(request):
     return render(request, template, args)
 
 
-@login_required(login_url='/')
 def user_edit(request, user_id):
     user = Pracownik.objects.get(id=user_id)
     form = EditPracownikForm(request.POST or None, instance=user)
@@ -380,7 +377,6 @@ def user_edit(request, user_id):
     })
 
 
-@login_required(login_url='/')
 def app_edit(request, app_id):
     wniosek = Wniosek.objects.get(id=app_id)
     form = EditWniosekForm(request.POST or None, instance=wniosek)
@@ -397,7 +393,6 @@ def app_edit(request, app_id):
     })
 
 
-@login_required(login_url='/')
 def obj_edit(request, obj_id):
     obiekt = Obiekt.objects.get(id=obj_id)
     form = EditObiektForm(request.POST or None, instance=obiekt)
@@ -414,7 +409,6 @@ def obj_edit(request, obj_id):
     })
 
 
-@login_required(login_url='/')
 def typ_obiektu_edit(request, typ_obiektu_id):
     typ_obiektu = TypObiektu.objects.get(id=typ_obiektu_id)
     form = EditTypObiektuForm(request.POST or None, instance=typ_obiektu)
@@ -431,7 +425,6 @@ def typ_obiektu_edit(request, typ_obiektu_id):
     })
 
 
-@login_required(login_url='/')
 def jednostka_edit(request, jednostka_id):
     jednostka = JednOrg.objects.get(id=jednostka_id)
     form = EditJednostkaForm(request.POST or None, instance=jednostka)
