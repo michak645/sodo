@@ -1,0 +1,43 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default">
+                <div class="panel-heading"> {{ wniosek }}</div>
+                <div class="panel-body">
+                    <p><strong>Data:</strong> {{ wniosek.data }}</p>
+                    <p><strong>Typ wniosku:</strong> {{ wniosek.typ }}</p>
+                    <p><strong>Pracownik składający:</strong> {{ wniosek.pracownik }}</p>
+                    <p><strong>Obiekt:</strong> {{ wniosek.obiekt }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Lp.</th>
+                <th scope="col">Typ</th>
+                <th scope="col">Obiekt</th>
+                <th scope="col">Status</th>
+                <th scope="col">Data</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for wniosek in historia %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ wniosek.wniosek.typ }}</td>
+                    <td>{{ wniosek.wniosek.obiekt }}</td>
+                    <td>{{ wniosek.get_status }}</td>
+                    <td>{{ wniosek.data }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

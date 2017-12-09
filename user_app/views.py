@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.views.generic import DetailView
 
 from auth_ex.models import Pracownik
 from user_app.forms import AddApplicationForm
@@ -83,3 +84,15 @@ def user_profile(request):
         'pracownik': pracownik,
     }
     return render(request, 'user_app/user_profile.html', context)
+
+
+class AppDetailView(DetailView):
+    model = Wniosek
+    context_object_name = 'wniosek'
+    template_name = 'user_app/user_app_detail.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['historia'] = Historia.objects.filter(wniosek=self.kwargs['pk'])
+        return context
+

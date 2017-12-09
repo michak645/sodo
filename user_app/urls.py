@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from user_app.views import user_index, user_objects, user_add_app, user_app_accepted, user_app_rejected, \
-    user_profile
+    user_profile, AppDetailView
 
 urlpatterns = [
     url(r'^user_index', user_index, name='user_index'),
@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^user_app_accepted', user_app_accepted, name='user_app_accepted'),
     url(r'^user_app_rejected', user_app_rejected, name='user_app_rejected'),
     url(r'^user_profile', user_profile, name='user_profile'),
+    url(r'^user_app_detail/(?P<pk>\d+)/$', AppDetailView.as_view(), name='user_app_detail'),
 ]
