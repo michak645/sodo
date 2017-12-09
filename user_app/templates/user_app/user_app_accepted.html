@@ -1,17 +1,12 @@
 {% extends 'user_app/base_site/base_site.html' %}
-{% block title %}{{ pracownik }} - panel{% endblock %}
-
-
 
 {% block content %}
-    <div class="row">
-        <h2 class="center">Witaj, {{ pracownik }} </h2>
-      <p class="center">  Witaj w centrum zarządzania swoim kontem w systemie SODO
-        Wnioski oczekujące na decyzję: </p>
-
-    </div>
 
     {% if historia %}
+        <div class="row">
+            <h2 class="center">Wnioski przyjęte:</h2>
+        </div>
+
         <div class="row">
             <table class="table table-hover">
                 <thead>
@@ -35,6 +30,10 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
+    {% else %}
+        <div class="row">
+            <h2 class="center">Brak przyjętych wniosków</h2>
         </div>
     {% endif %}
 

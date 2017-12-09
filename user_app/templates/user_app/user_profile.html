@@ -1,0 +1,67 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block title %}
+    Profil użytkownika
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ pracownik }} profil</div>
+                <div class="panel-body">
+                    <p><strong>Imię i nazwisko:</strong> {{ pracownik }}</p>
+                    <p><strong>E-mail:</strong> {{ pracownik.email }}</p>
+                    <p><strong>Rodzaj:</strong> {{ pracownik.rodzaj }}</p>
+                    <p><strong>Jednostka org:</strong> {{ pracownik.jedn_org.opis }}</p>
+                    <p><strong>Numer AX:</strong> {{ pracownik.numer_ax }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+{#        <div class="col-md-6 col-md-offset-3">#}
+{#        <table class="table">#}
+{#            <tr>#}
+{#                <th>Imię</th>#}
+{#                <td>{{ pracownik.imie }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Nazwisko</th>#}
+{#                <td>{{ pracownik.nazwisko }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Imię</th>#}
+{#                <td>{{ pracownik.imie }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th scope="row">Email</th>#}
+{#                <td>{{ pracownik.email }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Data zatrudnienie</th>#}
+{#                <td>{{ pracownik.data_zat }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Rodzaj</th>#}
+{#                <td>{{ pracownik.rodzaj }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Jednostka organizacyjna</th>#}
+{#                <td>{{ pracownik.jedn_org.opis }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Numer AX</th>#}
+{#                <td>{{ pracownik.numer_ax }}</th>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>Aktywny</th>#}
+{#                <td>{{ pracownik.aktywny }}</th>#}
+{#            </tr>#}
+{#        </table>#}
+{#        </div>#}
+
+    </div>
+{% endblock %}
