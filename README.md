@@ -2,12 +2,8 @@
 
 TODO:
 
-WAŻNE
-Zmienić składanie wniosku na wybór obiektu - z widoku obiektu "złóż wniosek"
+Dodać aplikacje do wyszukiwania, na razie jest ustawione na wyszukiwanie po głównym polu (polach)
 
-- dopisac dekoratory do klas
-- potworzyc zabezpieczenia
-- dodać lokalne biblioteki do js, jquery i bootstrapa
 
 Do testów:
 Hasło do admina - 'blacktron'
