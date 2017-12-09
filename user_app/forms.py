@@ -8,5 +8,5 @@ class AddApplicationForm(forms.ModelForm):
         model = Wniosek
         fields = ['pracownik', 'typ', 'obiekt']
         widgets = {
-            'pracownik': forms.HiddenInput()
+            'pracownik': forms.HiddenInput(),
         }

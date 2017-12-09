@@ -1,11 +1,29 @@
 {% extends 'user_app/base_site/base_site.html' %}
 
+
 {% block content %}
 
-    {% if obiekty %}
+    <div class="row">
         <div class="row">
-            <h2 class="center">Dostępne obiekty:</h2>
+            <h2 class="center">Wszystkie obiekty</h2>
         </div>
+
+        <div class="row">
+            <form class="form-inline" action="" method="post">{% csrf_token %}
+                <div class="form-group mx-sm-3">
+                    <label for="inputPassword2" class="sr-only">Obiekt</label>
+                    <input type="text" class="form-control" name="search" placeholder="Obiekt">
+                </div>
+                <button type="submit" class="btn btn-primary">Szukaj</button>
+                <a class="btn btn-primary" href="{% url 'user_objects_list' %}">Pokaż wszystkie</a>
+            </form>
+        </div>
+
+        {% if search_phrase %}
+            <div class="row">
+                <p>Szukana fraza: {{ search_phrase }}</p>
+            </div>
+        {% endif %}
 
         <div class="row">
             <table class="table table-hover">
@@ -16,6 +34,7 @@
                     <th scope="col">Typ</th>
                     <th scope="col">Jednostka organizacyjna</th>
                     <th scope="col">Opis</th>
+                    <th scope="col">Złóż wniosek</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -26,15 +45,13 @@
                         <td>{{ obiekt.typ }}</td>
                         <td>{{ obiekt.jedn_org.opis }}</td>
                         <td>{{ obiekt.opis }}</td>
+                        <td><a href="{% url 'user_app_add_object' obiekt.id %}">Wniosek</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
-    {% else %}
-        <div class="row">
-            <h2 class="center">Brak dostępnych obiektów</h2>
-        </div>
-    {% endif %}
+    </div>
 
 {% endblock %}
+

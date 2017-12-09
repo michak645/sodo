@@ -1,5 +1,7 @@
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.generic import DetailView
 
 from auth_ex.models import Pracownik
@@ -18,18 +20,54 @@ def user_index(request):
     return render(request, 'user_app/user_index.html', context)
 
 
-def user_objects(request):
+def user_objects_available(request):
     pracownik = Pracownik.objects.get(id=request.session['pracownik'])
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = Historia.objects.filter(wniosek__in=wnioski, status=1)
-    obiekty = []
+    dostepne_obiekty = []
     for wniosek in historia:
-        obiekty.append(wniosek.wniosek.obiekt)
+        dostepne_obiekty.append(wniosek.wniosek.obiekt)
+    context = {
+        'pracownik': pracownik,
+        'dostepne_obiekty': dostepne_obiekty,
+    }
+    return render(request, 'user_app/user_objects_available.html', context)
+
+
+def user_objects_list(request):
+    pracownik = Pracownik.objects.get(id=request.session['pracownik'])
+    wnioski = Wniosek.objects.filter(pracownik=pracownik)
+    historia = Historia.objects.filter(wniosek__in=wnioski, status=1)
+    dostepne_obiekty = []
+    obiekty = Obiekt.objects.all()
+    if request.method == 'POST':
+        search = request.POST['search']
+        try:
+            obiekty = Obiekt.objects.filter(nazwa__contains=search)
+        except Obiekt.DoesNotExist:
+            messages.error(request, 'Nie znaleziono obiektu')
+        if obiekty:
+            context = {
+                'pracownik': pracownik,
+                'obiekty': obiekty,
+                'search_phrase': search
+            }
+            return render(request, 'user_app/user_objects_list.html', context)
+        else:
+            context = {
+                'pracownik': pracownik,
+                'obiekty': obiekty,
+                'search_phrase': search
+            }
+            return render(request, 'user_app/user_objects_list.html', context)
+
+    for wniosek in historia:
+        dostepne_obiekty.append(wniosek.wniosek.obiekt)
     context = {
         'pracownik': pracownik,
         'obiekty': obiekty,
     }
-    return render(request, 'user_app/user_objects.html', context)
+    return render(request, 'user_app/user_objects_list.html', context)
 
 
 def user_add_app(request):
@@ -51,6 +89,36 @@ def user_add_app(request):
         'form': form,
     }
     return render(request, 'user_app/user_add_app.html', context)
+
+
+def user_app_add_object(request, pk):
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(id=pracownik_id)
+    obiekt = Obiekt.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = AddApplicationForm(request.POST, initial={
+            'pracownik': pracownik,
+            'obiekt': obiekt
+        })
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Dodano wniosek')
+            return redirect('user_index')
+        else:
+            messages.warning(request, 'Popraw formularz')
+            messages.warning(request, '{0}'.format(form.errors.as_text()))
+            return HttpResponseRedirect(reverse('user_app_add_object', kwargs={'pk': pk}))
+    else:
+        form = AddApplicationForm(initial={
+            'pracownik': pracownik,
+            'obiekt': obiekt.id
+        })
+    context = {
+        'form': form,
+        'obiekt': obiekt,
+        'pracownik': pracownik,
+    }
+    return render(request, 'user_app/user_app_add_object.html', context)
 
 
 def user_app_accepted(request):
@@ -86,13 +154,14 @@ def user_profile(request):
     return render(request, 'user_app/user_profile.html', context)
 
 
-class AppDetailView(DetailView):
-    model = Wniosek
-    context_object_name = 'wniosek'
-    template_name = 'user_app/user_app_detail.html'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['historia'] = Historia.objects.filter(wniosek=self.kwargs['pk'])
-        return context
-
+def user_app_detail(request, pk):
+    wniosek = Wniosek.objects.get(pk=pk)
+    historia = Historia.objects.filter(wniosek=pk)
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(id=pracownik_id)
+    context = {
+        'wniosek': wniosek,
+        'historia': historia,
+        'pracownik': pracownik,
+    }
+    return render(request, 'user_app/user_app_detail.html', context)
