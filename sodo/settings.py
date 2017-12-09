@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'auth_ex',
     'pdf_generator',
     'xhtml2pdf',
+    'user_app',
 ]
 
 MIDDLEWARE = [
