@@ -48,23 +48,23 @@ def workspace(request):
 def index(request):
     if request.method == 'POST':
         login = request.POST['login']
-        is_admin = False
         try:
             admin = Labi.objects.get(login=login)
             request.session['admin'] = admin.id
-            is_admin = True
         except Labi.DoesNotExist:
             admin = None
         if admin is None:
             try:
-                admin = Pracownik.objects.get(login=login)
+                pracownik = Pracownik.objects.get(login=login)
+                request.session['pracownik'] = pracownik.id
             except Pracownik.DoesNotExist:
                 admin = None
+                pracownik = None
 
-        if admin and is_admin:
+        if admin:
             messages.success(request, 'success')
             return redirect('wnioski')
-        elif admin and not is_admin:
+        elif pracownik:
             messages.success(request, 'success')
             return redirect('user_index')
         else:

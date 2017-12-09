@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User panel</title>
+</head>
+<body>
+    <h2>Welcome {{ pracownik }}</h2>
+
+    <ul>
+        <li><a href="{% url 'user_applications' %}">Wnioski</a></li>
+        <li><a href="{% url 'user_add_app' %}">Dodaj wniosek</a></li>
+    </ul>
+
+    <p><a href="{% url 'index' %}">Logout</a></p>
+</body>
+</html>
