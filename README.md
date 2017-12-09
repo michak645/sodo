@@ -2,6 +2,9 @@
 
 TODO:
 
+WAŻNE
+Zmienić składanie wniosku na wybór obiektu - z widoku obiektu "złóż wniosek"
+
 - dopisac dekoratory do klas
 - potworzyc zabezpieczenia
 - dodać lokalne biblioteki do js, jquery i bootstrapa
