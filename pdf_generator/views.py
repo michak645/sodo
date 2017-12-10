@@ -5,52 +5,27 @@ from django.views.generic import *
 from xhtml2pdf import pisa
 from .models import *
 import datetime
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import weasyprint
 
+def gen_app_pdf(request,pk):
+    wniosek = Wniosek.objects.get(pk=pk)
+    pracownik = Pracownik.objects.get(pk=wniosek.pracownik.pk)
+    html = render_to_string('PDF_wnioski/wniosek_v1.html', {'wniosek': wniosek , 'pracownik': pracownik})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="wniosek.pdf"'.format(wniosek)
+    weasyprint.HTML(string=html).write_pdf(response)
+    return response
 
-def render_to_pdf(template_src, context_dict={}):
-    template = get_template(template_src)
-    html = template.render(context_dict)
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode('utf-8')), result)
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
-    return None
+def gen_app_raport_pdf(request,pk):
+    wniosek = Wniosek.objects.get(pk=pk)
+    pracownik = Pracownik.objects.get(pk=wniosek.pracownik.pk)
+    historia = Historia.objects.filter(wniosek=pk)
+    html = render_to_string('PDF_wnioski/wniosek_v2.html', {'wniosek': wniosek , 'pracownik': pracownik, 'historia': historia})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="wniosek.pdf"'.format(wniosek)
+    weasyprint.HTML(string=html).write_pdf(response)
+    return response
 
-
-class GenerateRaportPdf(View):
-    def get(self, *args, **kwargs):
-        wniosek = Wniosek.objects.get(id=kwargs.pop('pk'))
-        historia = Historia.objects.filter(wniosek_id=1).order_by('-data')
-        print(historia)
-
-        data = {
-            'id' : wniosek.pk,
-            'pracownik' : wniosek.user,
-            'typ' : wniosek.typ,
-            'obiekt' : wniosek.obiekt,
-            'datazlozenia' : wniosek.data,
-            'datawygenerowania' : datetime.datetime.now(),
-            'historia' : historia
-
-        }
-        pdf = render_to_pdf('PDF_wnioski/wniosek_v1.html', data)
-        return HttpResponse(pdf, content_type='application/pdf')
-
-
-class GenerateWniosekPdf(View):
-    def get(self, *args, **kwargs):
-        wniosek = Wniosek.objects.get(id=kwargs.pop('pk'))
-        historia = Historia.objects.filter(wniosek_id=1).order_by('-data')
-        print(historia)
-
-        data = {
-            'id' : wniosek.pk,
-            'pracownik' : wniosek.user,
-            'typ' : wniosek.typ,
-            'obiekt' : wniosek.obiekt,
-            'datazlozenia' : wniosek.data,
-            'datawygenerowania' : datetime.datetime.now(),
-
-        }
-        pdf = render_to_pdf('PDF_wnioski/wniosek_v2.html', data)
-        return HttpResponse(pdf, content_type='application/pdf')

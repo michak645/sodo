@@ -10,5 +10,5 @@ Hasło do admina - 'blacktron'
 Hasło do zwykłego użytkownika (login 'michal') - 'haslo123'
 
 Potrzebne do działania:
-- xhtml2pdf, instalujemy za pomocą 'pip install --pre xhtml2pdf'
+- weasyprint - generowanie pdfów z wzorca w html, https://weasyprint.readthedocs.io/en/stable/install.html
 
