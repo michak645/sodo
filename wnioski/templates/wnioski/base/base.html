@@ -59,12 +59,31 @@
   </div>
 
 	<div class="container content">
+     {% block messages %}
+        {% if messages %}
+            {% for message in messages %}
+                <p {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}  role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </p>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
 		{% block content %}
 
 
 		{% endblock %}
 	</div>
 
+
+
+<footer class="footer">
+  <div class="container">
+      SODO @COPYRIGHT 2017
+  </div>
+</footer>
 
 </body>
 
