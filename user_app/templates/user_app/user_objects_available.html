@@ -1,0 +1,40 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    {% if dostepne_obiekty %}
+        <div class="row">
+            <h2 class="center">Dostępne obiekty:</h2>
+        </div>
+
+        <div class="row">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Lp.</th>
+                    <th scope="col">Nazwa</th>
+                    <th scope="col">Typ</th>
+                    <th scope="col">Jednostka organizacyjna</th>
+                    <th scope="col">Opis</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obiekt in dostepne_obiekty %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ obiekt.nazwa }}</td>
+                        <td>{{ obiekt.typ }}</td>
+                        <td>{{ obiekt.jedn_org.opis }}</td>
+                        <td>{{ obiekt.opis }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="row">
+            <h2 class="center">Brak dostępnych obiektów</h2>
+        </div>
+    {% endif %}
+
+{% endblock %}

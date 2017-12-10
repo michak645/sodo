@@ -1,0 +1,41 @@
+{% extends 'user_app/base_site/base_site.html' %}
+{% block title %}{{ pracownik }} - panel{% endblock %}
+
+
+
+{% block content %}
+    <div class="row">
+        <h2 class="center">Witaj, {{ pracownik }} </h2>
+      <p class="center">  Witaj w centrum zarządzania swoim kontem w systemie SODO
+        Wnioski oczekujące na decyzję: </p>
+
+    </div>
+
+    {% if historia %}
+        <div class="row">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Lp.</th>
+                    <th scope="col">Wniosek</th>
+                    <th scope="col">Typ</th>
+                    <th scope="col">Obiekt</th>
+                    <th scope="col">Data</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for wniosek in historia %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{% url 'user_app_detail' wniosek.id %}">{{ wniosek }}</a></td>
+                        <td>{{ wniosek.wniosek.typ }}</td>
+                        <td>{{ wniosek.wniosek.obiekt }}</td>
+                        <td>{{ wniosek.data }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+{% endblock %}

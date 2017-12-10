@@ -8,7 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, DeleteView
 
 from auth_ex.forms import PracownikForm
-from auth_ex.models import JednOrg, Labi
+from auth_ex.models import JednOrg, Labi, Pracownik
 
 
 def find_labi(jedn):
@@ -53,9 +53,20 @@ def index(request):
             request.session['admin'] = admin.id
         except Labi.DoesNotExist:
             admin = None
+        if admin is None:
+            try:
+                pracownik = Pracownik.objects.get(login=login)
+                request.session['pracownik'] = pracownik.id
+            except Pracownik.DoesNotExist:
+                admin = None
+                pracownik = None
+
         if admin:
             messages.success(request, 'success')
             return redirect('wnioski')
+        elif pracownik:
+            messages.success(request, 'success')
+            return redirect('user_index')
         else:
             messages.error(request, 'error')
             return redirect('index')

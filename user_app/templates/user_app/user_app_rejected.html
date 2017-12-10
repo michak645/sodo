@@ -1,0 +1,42 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    {% if historia %}
+
+        <div class="row">
+            <h2 class="center">Wnioski odrzucone:</h2>
+        </div>
+
+        <div class="row">
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Lp.</th>
+                    <th scope="col">Wniosek</th>
+                    <th scope="col">Typ</th>
+                    <th scope="col">Obiekt</th>
+                    <th scope="col">Data</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for wniosek in historia %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{% url 'user_app_detail' wniosek.id %}">{{ wniosek }}</a></td>
+                        <td>{{ wniosek.wniosek.typ }}</td>
+                        <td>{{ wniosek.wniosek.obiekt }}</td>
+                        <td>{{ wniosek.data }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    {% else %}
+        <h2 class="center">Brak odrzuconych wniosków.</h2>
+    {% endif %}
+
+{% endblock %}

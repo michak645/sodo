@@ -1,0 +1,27 @@
+.content {
+    margin-top: 100px;
+}
+
+.row {
+    margin-bottom: 30px;
+}
+
+.margin-top-50 {
+    margin-top: 50px;
+}
+
+.center {
+   text-align: center;
+}
+
+.panel-heading {
+    font-size: 23px;
+}
+
+.panel-body {
+    font-size: 16px;
+}
+
+.right {
+    float: right;
+}

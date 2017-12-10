@@ -1,0 +1,37 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <label for="typ" class="col-sm-3 col-form-label">Typ wniosku</label>
+                    <div class="col-md-9">
+                        <select id="typ" class="form-control" name="{{ form.typ.html_name }}" required>
+                            {% for key, value in form.fields.typ.choices %}
+                                <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="obiekt" class="col-md-3 col-form-label">Obiekt</label>
+                    <div class="col-md-9">
+                        <select id="obiekt" class="form-control" name="{{ form.obiekt.html_name }}" required>
+                            {% for key, value in form.fields.obiekt.choices %}
+                                <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                {{ form.pracownik }}
+
+                <button type="submit" class="btn btn-primary right">Złóż wniosek</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
