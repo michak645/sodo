@@ -17,9 +17,9 @@ urlpatterns = [
         name='user_view'),
     url(r'^obj_view/(?P<obj_id>\d+)/', views.obj_view, name='obj_view'),
     url(r'^wniosek_view/(?P<wniosek_id>\d+)/', views.wniosek_view,
-        name='wniosek_view'),
+        name='wniosek_detail'),
     url(r'^typ_obiektu_view/(?P<typ_obiektu_id>\d+)/', views.typ_obiektu_view, name='typ_obiektu_view'),
-    url(r'^jednostka_view/(?P<jednostka_id>\d+)/', views.jednostka_view, name='jednostka_view'),
+    url(r'^jednostka_view/(?P<pk>\d+)/', views.jednostka_view, name='jednostka_view'),
 
     # edit
     url(r'^user_edit/(?P<user_id>\d+)/', views.user_edit, name='user_edit'),

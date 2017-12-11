@@ -1,6 +1,6 @@
 from django import forms
 
-from auth_ex.models import Pracownik
+from auth_ex.models import Pracownik, JednOrg
 
 
 class PracownikForm(forms.ModelForm):
@@ -12,3 +12,9 @@ class PracownikForm(forms.ModelForm):
         widgets = {
             'email': forms.EmailInput(),
         }
+
+
+class JednostkaForm(forms.ModelForm):
+    class Meta:
+        model = JednOrg
+        fields = ['id', 'parent', 'czy_labi', 'opis']

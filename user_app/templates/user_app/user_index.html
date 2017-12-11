@@ -27,7 +27,7 @@
                 {% for wniosek in historia %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td><a href="{% url 'user_app_detail' wniosek.id %}">{{ wniosek }}</a></td>
+                        <td><a href="{% url 'user_app_detail' wniosek.wniosek.id %}">{{ wniosek }}</a></td>
                         <td>{{ wniosek.wniosek.typ }}</td>
                         <td>{{ wniosek.wniosek.obiekt }}</td>
                         <td>{{ wniosek.data }}</td>

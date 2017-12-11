@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    {% if historia %}
+    {% if historie %}
         <div class="row">
             <h2 class="center">Wnioski przyjęte:</h2>
         </div>
@@ -19,10 +19,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for wniosek in historia %}
+                {% for wniosek in historie %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td><a href="{% url 'user_app_detail' wniosek.id %}">{{ wniosek }}</a></td>
+                        <td><a href="{% url 'user_app_detail' wniosek.wniosek.id %}">{{ wniosek }}</a></td>
                         <td>{{ wniosek.wniosek.typ }}</td>
                         <td>{{ wniosek.wniosek.obiekt }}</td>
                         <td>{{ wniosek.data }}</td>

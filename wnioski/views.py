@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
 from datetime import datetime
 
+from auth_ex.forms import JednostkaForm
 from auth_ex.views import find_labi
 from .forms import (
     WniosekForm,
@@ -32,33 +33,16 @@ def wnioski(request):
     for wniosek in wnioski:
         wniosek_labi = find_labi(wniosek.obiekt.jedn_org.id)
         if wniosek_labi == admin:
-            to_approve.append(wniosek)
-
-    # historie = Historia.objects.all().order_by('-data')
-    # przyjete = []
-    # odrzucone = []
-    # przetwarzane = []
-    # for wniosek in wnioski:
-    #     try:
-    #         hist = Historia.objects.filter(
-    #             wniosek=wniosek).order_by('-data')[0]
-    #         if hist.status == '1':
-    #             przyjete.append(hist)
-    #         elif hist.status == '2':
-    #             odrzucone.append(hist)
-    #         elif hist.status == '3':
-    #             przetwarzane.append(hist)
-    #     except IndexError:
-    #         hist = None
+            historia = Historia.objects.filter(
+                wniosek=wniosek.id,
+            ).order_by('-data')[0]
+            if historia.get_status() == 'Przetwarzanie':
+                to_approve.append(historia)
 
     context = {
         'admin': admin,
         'wnioski': wnioski,
         'to_approve': to_approve,
-        # 'historie': historie,
-        # 'przyjete': przyjete,
-        # 'odrzucone': odrzucone,
-        # 'przetwarzane': przetwarzane,
     }
     return render(request, 'wnioski/wniosek/wniosek_list.html', context)
 
@@ -142,7 +126,7 @@ def typy_obiektow(request):
 
 
 def jednostki(request):
-    jednostki = JednOrg.objects.order_by('nazwa')
+    jednostki = JednOrg.objects.order_by('id')
     template = "wnioski/views/jednostki.html"
     context = {'jednostki': jednostki}
     return render(request, template, context)
@@ -210,14 +194,13 @@ def obj_view(request, obj_id):
 
 
 def wniosek_view(request, wniosek_id):
+    template = 'wnioski/wniosek/wniosek_detail.html'
     w = Wniosek.objects.get(id=wniosek_id)
-    message = ''
     date = datetime.now()
     if request.method == 'POST':
         if request.POST.get('change', '') == u"Zatwierdź":
             historia = Historia(wniosek_id=wniosek_id, status='1')
             historia.save()
-            message = 'Zatwierdzono wniosek'
             try:
                 historia = Historia.objects. \
                     filter(wniosek=wniosek_id). \
@@ -227,11 +210,9 @@ def wniosek_view(request, wniosek_id):
             context = {
                 'wniosek': w,
                 'historia': historia,
-                'message': message,
                 'date': date,
             }
-            return render(request,
-                          'wnioski/views/templates/wnioski/wniosek/wniosek_detail.html', context)
+            return HttpResponseRedirect('/wnioski')
         elif request.POST.get('change', '') == u"Odrzuć":
             historia = Historia(wniosek_id=wniosek_id, status='2')
             historia.save()
@@ -246,19 +227,17 @@ def wniosek_view(request, wniosek_id):
                 'message': message,
                 'date': date
             }
-            return render(request,
-                          'wnioski/views/templates/wnioski/wniosek/wniosek_detail.html', context)
+            return HttpResponseRedirect('/wnioski')
 
     else:
         try:
             historia = Historia.objects. \
                 filter(wniosek=wniosek_id). \
                 order_by('-data')
-            status = historia[0].status
+            status = historia[0].get_status()
         except Historia.DoesNotExist:
             historia = None
-        return render(request,
-                      'wnioski/views/templates/wnioski/wniosek/wniosek_detail.html', {
+        return render(request, template, {
             'wniosek': w,
             'historia': historia,
             'status': status
@@ -271,10 +250,20 @@ def typ_obiektu_view(request, typ_obiektu_id):
         'typ_obiektu': typ_obiektu})
 
 
-def jednostka_view(request, jednostka_id):
-    jednostka = JednOrg.objects.get(id=jednostka_id)
+def jednostka_view(request, pk):
+    jednostka = JednOrg.objects.get(pk=pk)
+    if jednostka.czy_labi:
+        try:
+            labi = Labi.objects.get(jednostka=pk)
+        except Labi.DoesNotExist:
+            labi = find_labi(pk)
+    else: 
+        labi = find_labi(pk)
+
     return render(request, 'wnioski/views/jednostka_view.html', {
-        'jednostka': jednostka})
+        'jednostka': jednostka,
+        'labi': labi,
+    })
 
 
 def create_user(request):
@@ -341,24 +330,21 @@ def create_type(request):
 
 
 def create_unit(request):
-    message = ''
+    template = 'wnioski/create/create_unit.html'
     if request.method == 'POST':
         form = JednostkaForm(request.POST)
         if form.is_valid():
             form.save()
-            message = 'Dodano jednostkę organizacyjną'
-            form = JednostkaForm()
-            return render(
-                request, 'wnioski/create/create_unit.html',
-                {'message': message, 'form': form}
-            )
+            messages.success(request, 'Dodano pomyślnie')
+            return HttpResponseRedirect('/jednostki')
+        else:
+            messages.error(request, 'Błąd w formularzu')
     else:
         form = JednostkaForm()
-
-    template = "wnioski/create/create_unit.html"
-    args = {}
-    args['form'] = JednostkaForm()
-    return render(request, template, args)
+    context = {
+        'form': form,
+    }
+    return render(request, template, context)
 
 
 def user_edit(request, user_id):

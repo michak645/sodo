@@ -9,10 +9,17 @@ from user_app.forms import AddApplicationForm
 from wnioski.models import Historia, Wniosek, Obiekt
 
 
+def get_latest_history(wniosek_id):
+    return Historia.objects.filter(wniosek=wniosek_id).order_by('-data')[0]
+
+
 def user_index(request):
     pracownik = Pracownik.objects.get(id=request.session['pracownik'])
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
-    historia = Historia.objects.filter(wniosek__in=wnioski, status=3)
+    historia = []
+    for wniosek in wnioski:
+        if get_latest_history(wniosek.id).status == '3':
+            historia.append(get_latest_history(wniosek.id))
     context = {
         'pracownik': pracownik,
         'historia': historia,
@@ -23,7 +30,10 @@ def user_index(request):
 def user_objects_available(request):
     pracownik = Pracownik.objects.get(id=request.session['pracownik'])
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
-    historia = Historia.objects.filter(wniosek__in=wnioski, status=1)
+    historia = []
+    for wniosek in wnioski:
+        if get_latest_history(wniosek.id).status == '1':
+            historia.append(get_latest_history(wniosek.id))
     dostepne_obiekty = []
     for wniosek in historia:
         dostepne_obiekty.append(wniosek.wniosek.obiekt)
@@ -125,10 +135,14 @@ def user_app_accepted(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(id=pracownik_id)
     wnioski = Wniosek.objects.filter(pracownik=pracownik_id)
-    historia = Historia.objects.filter(wniosek__in=wnioski, status=1)
+    historie = []
+    for wniosek in wnioski:
+        historia = Historia.objects.filter(wniosek=wniosek.pk).order_by('-data')[0]
+        if historia.status == '1':
+            historie.append(historia)
     context = {
         'pracownik': pracownik,
-        'historia': historia,
+        'historie': historie,
     }
     return render(request, 'user_app/user_app_accepted.html', context)
 
@@ -137,10 +151,14 @@ def user_app_rejected(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(id=pracownik_id)
     wnioski = Wniosek.objects.filter(pracownik=pracownik_id)
-    historia = Historia.objects.filter(wniosek__in=wnioski, status=2)
+    historie = []
+    for wniosek in wnioski:
+        historia = Historia.objects.filter(wniosek=wniosek.pk).order_by('-data')[0]
+        if historia.status == '2':
+            historie.append(historia)
     context = {
         'pracownik': pracownik,
-        'historia': historia,
+        'historie': historie,
     }
     return render(request, 'user_app/user_app_rejected.html', context)
 
@@ -156,7 +174,7 @@ def user_profile(request):
 
 def user_app_detail(request, pk):
     wniosek = Wniosek.objects.get(pk=pk)
-    historia = Historia.objects.filter(wniosek=pk)
+    historia = Historia.objects.filter(wniosek=pk).order_by('-data')
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(id=pracownik_id)
     context = {

@@ -3,22 +3,35 @@
 {% block title %}Lista{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <h2>hello {{ admin }}!</h2>
-    </div>
-    <div class="row">
-        <h3>Wszystkie</h3>
-        {% for wniosek in wnioski %}
-            <p>{{ forloop.counter }}. {{ wniosek.obiekt.jedn_org }}</p>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h3>To approve</h3>
-        {% for wniosek in to_approve %}
-            <p>{{ wniosek }}</p>
-        {% endfor %}
-    </div>
 
-</div>
+    {% if to_approve %}
+        <div class="row">
+            <h3>Najnowsze do zatwierdzenia</h3>
+        </div>
+        <div class="row">
+            <div class="row table-responsive">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>Wniosek</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                    </tr>
+                    {% for historia in to_approve %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'wniosek_detail' historia.wniosek.id %}">{{ forloop.counter }}. {{ historia.wniosek }}</a>
+                            </td>
+                            <td>{{ historia.get_status }}</td>
+                            <td>{{ historia.data }}</td>
+                        </tr>
+                    {%endfor%}
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <h3>Brak wniosków do zatwierdzenia</h3>
+        </div>
+    {% endif %}
+
 {% endblock %}

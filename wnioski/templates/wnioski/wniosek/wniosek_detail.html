@@ -4,116 +4,105 @@
 
 {% block content %}
 
-<div class="container">
+    <div class="container">
 
-  <div class="row">
-    <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
-    <a class="btn btn-primary" href="/app_edit/{{ wniosek.id }}">
-      Edytuj <span class="glyphicon glyphicon-pencil"></span>
-    </a>
-    <a target="_blank" class="btn btn-primary" href="/wniosekpdf/{{ wniosek.id }}">
-     Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
-    </a>
-    <a target="_blank" class="btn btn-primary" href="/wniosekraport/{{ wniosek.id }}">
-      Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
-    </a>
-  </div>
-  <hr>
-  <div class="row">
-
-    <div class="row">
-        <div class="col-md-4 col-sm-4">
-            <label>Status wniosku: </label>
+        <div class="row">
+            <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
+            <a class="btn btn-primary" href="/app_edit/{{ wniosek.id }}">
+                Edytuj <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+            <a target="_blank" class="btn btn-primary" href="/wniosekpdf/{{ wniosek.id }}">
+                Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
+            </a>
+            <a target="_blank" class="btn btn-primary" href="/wniosekraport/{{ wniosek.id }}">
+                Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
+            </a>
         </div>
-        <div class="col-md-4 col-sm-4">
-            <p>{{ status }}</p>
+        <hr>
+        <div class="row">
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Status wniosku: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ status }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Typ wniosku: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.typ }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Data: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.data }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Pracownik: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.pracownik }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Obiekt: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.obiekt }}</p>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <label>Typ wniosku: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
-        <p>{{ wniosek.typ }}</p>
-      </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-4 col-sm-4">
-            <label>Data: </label>
+        <div class="row">
+            <form action="{% url 'wniosek_detail' wniosek.pk %}" method="post">
+                {% csrf_token %}
+                <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
+                <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
+            </form>
         </div>
-        <div class="col-md-4 col-sm-4">
-            <p>{{ wniosek.data }}</p>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-4 col-sm-4">
-            <label>Pracownik: </label>
-        </div>
-        <div class="col-md-4 col-sm-4">
-            <p>{{ wniosek.pracownik }}</p>
-        </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <label>Obiekt: </label>
-      </div>
-      <div class="col-md-4 col-sm-4">
-        <p>{{ wniosek.obiekt }}</p>
-      </div>
-    </div>
-  </div>
+        <hr>
+        {% if historia %}
+            <div class="row">
+                <h3>Historia wniosku</h3>
+            </div>
 
-  <hr>
-  <!-- Dodać if jeżeli nie ma historii -->
-  <div class="row">
+            <div class="row table">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>Wniosek</th>
+                        <th>Data zmiany</th>
+                        <th>Status</th>
+                    </tr>
+                    {% for h in historia %}
+                        <tr>
+                            <td>{{ h.wniosek }}</td>
+                            <td>{{ h.data|date:"d M Y, H i " }}</td>
+                            <td>{{ h.get_status }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% else %}
+            <div class="row">
+                <h3>Brak historii wniosku</h3>
+            </div>
+        {% endif %}
 
-    {% if message %}
-      <p style="color: grey;">{{ message }}</p>
-    {% endif %}
-    
-    <!--<a class="btn btn-success">Zatwierdź</a>
-    <a class="btn btn-warning">Wstrzymaj</a>
-    <a class="btn btn-danger">Odrzuć</a>-->
-
-    <form action="/wniosek_view/{{ wniosek.id }}/" method="post">
-          {% csrf_token %}
-          <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
-          <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
-    </form>
-  </div>
-
-  <hr>
-  {% if historia %}
-    <div class="row">
-      <h3>Historia wniosku</h3>
     </div>
 
-    <div class="row table">
-      <table class="table table-hover table-striped table-bordered">
-        <tr>
-          <th>Wniosek</th>
-          <th>Data zmiany</th>
-          <th>Status</th>
-        </tr>
-        {% for h in historia %}
-          <tr>
-            <td>{{ h.wniosek }}</td>
-            <td>{{ h.data|date:"d M Y, H i " }}</td>
-            <td>{{ h.status }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
-  {% else %}
-    <div class="row">
-      <h3>Brak historii wniosku</h3>
-    </div>
-  {% endif %}
-
-</div>
-    
 {% endblock %}

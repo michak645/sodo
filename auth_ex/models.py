@@ -48,6 +48,8 @@ class Pracownik(models.Model):
 
 
 class Labi(models.Model):
+    # pracownik = models.OneToOneField(
+    #     Pracownik, null=True, blank=True, related_name='pracownik')
     login = models.CharField('login', max_length=60, unique=True)
     jednostka = models.ForeignKey(JednOrg, related_name='+', null=True)
 
