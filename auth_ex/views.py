@@ -70,11 +70,7 @@ def index(request):
         else:
             messages.error(request, 'error')
             return redirect('index')
-    return render(request, 'auth_ex/index_temp.html')
-
-
-def auth_view(request):
-    pass
+    return render(request, 'auth_ex/index.html')
 
 
 def logout_view(request):

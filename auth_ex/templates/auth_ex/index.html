@@ -16,8 +16,8 @@
                 <span class="fa fa-spinner  bigicon fa-pulse fa-3x fa-fw"></span>
                 <h2>SODO</h2>
                 <div>
-                    <form method="POST" action="/authentication">{% csrf_token %}
-                        <input id="username" type="text" name="username" placeholder="Login" style="text-align: center" onkeypress="check_values();">
+                    <form method="POST" action="">{% csrf_token %}
+                        <input id="username" type="text" name="login" placeholder="Login" style="text-align: center" onkeypress="check_values();">
                         <input id="password" type="password" name="password" placeholder="Password" style="text-align: center" onkeypress="check_values();">
                         <button id="button1" class="btn btn-default wide hidden" type="submit" name="submit" value="login" ><span class="fa fa-check med" ></span></button>
                         <span id="lock1" class="fa fa-lock medhidden redborder"></span>
