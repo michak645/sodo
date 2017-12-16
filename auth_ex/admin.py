@@ -4,11 +4,9 @@ from .models import (
     RodzajPracownika,
     JednOrg,
     Labi,
-    Drzewo
 )
 
 admin.site.register(RodzajPracownika)
 admin.site.register(Pracownik)
 admin.site.register(JednOrg)
 admin.site.register(Labi)
-admin.site.register(Drzewo)

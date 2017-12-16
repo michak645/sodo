@@ -50,7 +50,7 @@ class Wniosek(models.Model):
                                   on_delete=models.CASCADE)
     obiekt = models.ForeignKey(Obiekt, on_delete=models.CASCADE, null=True)
     uprawnienia = models.CharField('Uprawnienia', max_length=1,
-                                   choices=uprawnienia)
+                                   choices=uprawnienia, default='1')
 
     def __str__(self):
         return '{0} do obiektu \'{1}\', dla użytkownika {2}'.format(
@@ -90,7 +90,7 @@ class PracownicyObiektyUprawnienia(models.Model):
     login = models.ForeignKey(Pracownik, on_delete=models.CASCADE)
     id_obiektu = models.ForeignKey(Obiekt, on_delete=models.CASCADE)
     uprawnienia = models.CharField('Uprawnienia', max_length=1,
-                                   choices=uprawnienia)
+                                   choices=uprawnienia, default='1')
 
     def __str__(self):
         return u'{0} {1} {2}'.format(
