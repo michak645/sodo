@@ -24,3 +24,5 @@ czy się nie powtarzają, jeśli tak to przekierowanie do wniosku z opcją 'wysl
 Jeżeli LABI zatwierdzi wniosek to trafia on do potrójnej tabeli. Jeżeli zostanie zatwierdzony wniosek o usuniecie uprawnienia to usuwamy z tabeli. Odrzucone wnioski nie trafiają do tabeli.
 Pracownik + obiekt + uprawnienie.
 
+
+Jeśli wniosek jest przetwarzany to nie możemy dodać takiego samego wniosku jeszcze raz. 

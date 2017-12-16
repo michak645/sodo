@@ -20,7 +20,8 @@ from .forms import (
     EditObiektForm,
     EditWniosekForm)
 from .forms import EditTypObiektuForm
-from .models import Wniosek, Obiekt, Historia, TypObiektu
+from .models import (
+    Wniosek, Obiekt, Historia, TypObiektu, PracownicyObiektyUprawnienia)
 from auth_ex.models import JednOrg, Pracownik, Labi
 
 
@@ -196,7 +197,7 @@ def obj_view(request, obj_id):
 def wniosek_view(request, wniosek_id):
     template = 'wnioski/wniosek/wniosek_detail.html'
     w = Wniosek.objects.get(id=wniosek_id)
-    date = datetime.now()
+    # date = datetime.now()
     if request.method == 'POST':
         if request.POST.get('change', '') == u"Zatwierdź":
             historia = Historia(wniosek_id=wniosek_id, status='1')
@@ -207,26 +208,40 @@ def wniosek_view(request, wniosek_id):
                     order_by('-data')
             except Historia.DoesNotExist:
                 historia = None
-            context = {
-                'wniosek': w,
-                'historia': historia,
-                'date': date,
-            }
+
+            if w.typ == '1':
+                PracownicyObiektyUprawnienia.objects.get_or_create(
+                    login=w.pracownik,
+                    id_obiektu=w.obiekt,
+                    uprawnienia=w.uprawnienia
+                )
+            elif w.typ == '2':
+                try:
+                    PracownicyObiektyUprawnienia.objects.get(
+                        login=w.pracownik,
+                        id_obiektu=w.obiekt,
+                        uprawnienia=w.uprawnienia
+                    ).delete()
+                except PracownicyObiektyUprawnienia.DoesNotExist:
+                    pass
+            # context = {
+            #     'wniosek': w,
+            #     'historia': historia,
+            #     'date': date,
+            # }
             return HttpResponseRedirect('/wnioski')
         elif request.POST.get('change', '') == u"Odrzuć":
             historia = Historia(wniosek_id=wniosek_id, status='2')
             historia.save()
-            message = 'Odrzucono wniosek'
             try:
                 historia = Historia.objects.filter(wniosek=wniosek_id)
             except Historia.DoesNotExist:
                 historia = None
-            context = {
-                'wniosek': w,
-                'historia': historia,
-                'message': message,
-                'date': date
-            }
+            # context = {
+            #     'wniosek': w,
+            #     'historia': historia,
+            #     'date': date
+            # }
             return HttpResponseRedirect('/wnioski')
 
     else:

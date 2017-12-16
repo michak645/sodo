@@ -16,16 +16,20 @@
                     <th scope="col">Typ</th>
                     <th scope="col">Jednostka organizacyjna</th>
                     <th scope="col">Opis</th>
+                    <th scope="col">Uprawnienia</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for obiekt in dostepne_obiekty %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ obiekt.nazwa }}</td>
-                        <td>{{ obiekt.typ }}</td>
-                        <td>{{ obiekt.jedn_org.opis }}</td>
-                        <td>{{ obiekt.opis }}</td>
+                        {% with obiekt.id_obiektu as obiekt %}
+                            <td>{{ obiekt.nazwa }}</td>
+                            <td>{{ obiekt.typ }}</td>
+                            <td>{{ obiekt.jedn_org }}</td>
+                            <td>{{ obiekt.opis }}</td>
+                        {% endwith %}
+                        <td>{{ obiekt.get_uprawnienia_display }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

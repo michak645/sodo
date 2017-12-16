@@ -2,11 +2,12 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import DetailView
 
 from auth_ex.models import Pracownik
 from user_app.forms import AddApplicationForm
-from wnioski.models import Historia, Wniosek, Obiekt
+from wnioski.models import (
+    Historia, Wniosek, Obiekt, PracownicyObiektyUprawnienia
+)
 
 
 def get_latest_history(wniosek_id):
@@ -29,17 +30,12 @@ def user_index(request):
 
 def user_objects_available(request):
     pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    wnioski = Wniosek.objects.filter(pracownik=pracownik)
-    historia = []
-    for wniosek in wnioski:
-        if get_latest_history(wniosek.id).status == '1':
-            historia.append(get_latest_history(wniosek.id))
-    dostepne_obiekty = []
-    for wniosek in historia:
-        dostepne_obiekty.append(wniosek.wniosek.obiekt)
+    obiekty = PracownicyObiektyUprawnienia.objects.filter(
+        login=pracownik
+    )
     context = {
         'pracownik': pracownik,
-        'dostepne_obiekty': dostepne_obiekty,
+        'dostepne_obiekty': obiekty,
     }
     return render(request, 'user_app/user_objects_available.html', context)
 
@@ -84,8 +80,57 @@ def user_add_app(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     if request.method == 'POST':
-        form = AddApplicationForm(request.POST, initial={'pracownik': pracownik})
+        form = AddApplicationForm(request.POST, initial={
+            'pracownik': pracownik})
         if form.is_valid():
+            try:
+                query = Wniosek.objects.filter(
+                    pracownik=form.cleaned_data['pracownik'],
+                    typ=form.cleaned_data['typ'],
+                    uprawnienia=form.cleaned_data['uprawnienia'],
+                    obiekt=form.cleaned_data['obiekt']
+                ).order_by('-data')[0]
+            except IndexError:
+                query = None
+
+            if query:
+                wnioski = Wniosek.objects.filter(
+                    pracownik=form.cleaned_data['pracownik'],
+                    obiekt=form.cleaned_data['obiekt'],
+                    uprawnienia=form.cleaned_data['uprawnienia']
+                )
+                historia = Historia.objects.filter(
+                    wniosek__in=wnioski
+                ).order_by('-data')[0]
+                '''
+                status zatwierdzony/przetwarzanie/odrzucony
+                dla przetwarzanego odrzucamy zawsze
+                '''
+                if historia.status == '3':
+                    messages.warning(
+                        request,
+                        'Wniosek do obiektu {0} o uprawnieniu {1}'
+                        ' jest przetwarzany'.
+                        format(
+                            historia.wniosek.obiekt,
+                            historia.wniosek.get_uprawnienia_display()
+                        )
+                    )
+                    return redirect('user_index')
+
+                '''
+                typ wniosku, przyznanie uprawnien lub odrzucenie
+                jeśli przyznano uprawnienia, to zezwalamy tylko na
+                odrzucanie i na odwrót
+                '''
+                if historia.wniosek.typ == form.cleaned_data['typ'] \
+                   and historia.status == '1':
+                    messages.warning(
+                        request,
+                        'Taki wniosek został już złożony i zatwierdzony'
+                    )
+                    return redirect('user_index')
+
             form.save()
             messages.success(request, 'Dodano wniosek')
             return redirect('user_index')

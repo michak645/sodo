@@ -46,11 +46,11 @@ class Wniosek(models.Model):
                                    choices=uprawnienia, default='1')
 
     def __str__(self):
-        return '{0} do obiektu \'{1}\', dla użytkownika {2}'.format(
+        return '{0} - {1}, {2} do \'{3}\''.format(
+            self.pracownik,
+            self.obiekt,
             self.get_typ_display(),
             self.get_uprawnienia_display(),
-            self.obiekt,
-            self.pracownik
         )
 
     def save(self, *args, **kwargs):
