@@ -14,7 +14,7 @@ def get_latest_history(wniosek_id):
 
 
 def user_index(request):
-    pracownik = Pracownik.objects.get(id=request.session['pracownik'])
+    pracownik = Pracownik.objects.get(login=request.session['pracownik'])
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = []
     for wniosek in wnioski:
@@ -28,7 +28,7 @@ def user_index(request):
 
 
 def user_objects_available(request):
-    pracownik = Pracownik.objects.get(id=request.session['pracownik'])
+    pracownik = Pracownik.objects.get(login=request.session['pracownik'])
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = []
     for wniosek in wnioski:
@@ -45,7 +45,7 @@ def user_objects_available(request):
 
 
 def user_objects_list(request):
-    pracownik = Pracownik.objects.get(id=request.session['pracownik'])
+    pracownik = Pracownik.objects.get(login=request.session['pracownik'])
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = Historia.objects.filter(wniosek__in=wnioski, status=1)
     dostepne_obiekty = []
@@ -82,7 +82,7 @@ def user_objects_list(request):
 
 def user_add_app(request):
     pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(id=pracownik_id)
+    pracownik = Pracownik.objects.get(login=pracownik_id)
     if request.method == 'POST':
         form = AddApplicationForm(request.POST, initial={'pracownik': pracownik})
         if form.is_valid():
@@ -103,7 +103,7 @@ def user_add_app(request):
 
 def user_app_add_object(request, pk):
     pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(id=pracownik_id)
+    pracownik = Pracownik.objects.get(login=pracownik_id)
     obiekt = Obiekt.objects.get(pk=pk)
     if request.method == 'POST':
         form = AddApplicationForm(request.POST, initial={
@@ -133,7 +133,7 @@ def user_app_add_object(request, pk):
 
 def user_app_accepted(request):
     pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(id=pracownik_id)
+    pracownik = Pracownik.objects.get(login=pracownik_id)
     wnioski = Wniosek.objects.filter(pracownik=pracownik_id)
     historie = []
     for wniosek in wnioski:
@@ -149,7 +149,7 @@ def user_app_accepted(request):
 
 def user_app_rejected(request):
     pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(id=pracownik_id)
+    pracownik = Pracownik.objects.get(login=pracownik_id)
     wnioski = Wniosek.objects.filter(pracownik=pracownik_id)
     historie = []
     for wniosek in wnioski:
@@ -165,7 +165,7 @@ def user_app_rejected(request):
 
 def user_profile(request):
     pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(id=pracownik_id)
+    pracownik = Pracownik.objects.get(login=pracownik_id)
     context = {
         'pracownik': pracownik,
     }
@@ -176,7 +176,7 @@ def user_app_detail(request, pk):
     wniosek = Wniosek.objects.get(pk=pk)
     historia = Historia.objects.filter(wniosek=pk).order_by('-data')
     pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(id=pracownik_id)
+    pracownik = Pracownik.objects.get(login=pracownik_id)
     context = {
         'wniosek': wniosek,
         'historia': historia,

@@ -8,7 +8,7 @@ class PracownikForm(forms.ModelForm):
         model = Pracownik
         fields = [
             'imie', 'nazwisko', 'numer_ax', 'email',
-            'jedn_org', 'rodzaj', 'aktywny', 'data_zat']
+            'jedn_org', 'rodzaj']
         widgets = {
             'email': forms.EmailInput(),
         }
@@ -17,4 +17,4 @@ class PracownikForm(forms.ModelForm):
 class JednostkaForm(forms.ModelForm):
     class Meta:
         model = JednOrg
-        fields = ['id', 'parent', 'czy_labi', 'opis']
+        fields = ['id', 'parent', 'czy_labi', 'nazwa']

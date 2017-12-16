@@ -56,7 +56,7 @@ def index(request):
         if admin is None:
             try:
                 pracownik = Pracownik.objects.get(login=login)
-                request.session['pracownik'] = pracownik.id
+                request.session['pracownik'] = pracownik.login
             except Pracownik.DoesNotExist:
                 admin = None
                 pracownik = None

@@ -6,19 +6,22 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as ul
 import re
 
-
-def validate_name(name):
-    if bool(re.search(r"\d", name)):
-        raise ValidationError(ul("Imię nie może zawierać cyfr!"), params={"name": name}, )
-
-
-def validate_surname(surname):
-    if bool(re.search(r"\d", surname)):
-        raise ValidationError(ul("Nazwisko nie może zawierać cyfr!"), params={"surname": surname}, )        
-
-        
+  
 class Uprawnienia(models.Model):
-    nazwa = models.TextField(unique=True)
+    '''
+    CHOICES_LIST_3 = (
+        ('1', 'Wgląd'),
+        ('2', 'Tworzenie'),
+        ('3', 'Modyfikacja'),
+        ('4', 'Przetwarzanie na serwerze i w biurze'),
+        ('5', 'Przechowywanie'),
+        ('6', 'Usuwanie, niszczenie'),
+        ('7', 'Udostępnianie, powierzanie, przesyłanie'),
+    )
+   
+    nazwa = models.CharField('Uprawnienie', max_length=1, choices=CHOICES_LIST_3, default=1)
+    '''
+    nazwa = models.CharField('Uprawnienie', max_length=255)
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
@@ -33,16 +36,22 @@ class TypObiektu(models.Model):
 
 class Obiekt(models.Model):
     nazwa = models.CharField(max_length=45)
-    typ = models.ForeignKey(TypObiektu)
-    jedn_org = models.ForeignKey(JednOrg)
-    opis = models.CharField(max_length=45)
+    typ = models.ForeignKey(TypObiektu, on_delete=models.CASCADE)
+    jedn_org = models.ForeignKey(JednOrg, on_delete=models.CASCADE)
+    opis = models.TextField()
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
 
 
 class WniosekTyp(models.Model):
-    typ = models.CharField(max_length=45)
+    CHOICES_LIST_2 = (
+        ('1', 'Nadanie uprawnień'), 
+        ('2', 'Odebranie uprawnień'), 
+        ('3', 'Zmiana uprawnień'), 
+    )
+    typ = models.CharField('Typ', max_length=1, choices=CHOICES_LIST_2, default=1)
+    #typ = models.CharField(max_length=45)
 
     def __str__(self):
         return '{0}'.format(self.typ)
@@ -50,9 +59,9 @@ class WniosekTyp(models.Model):
 
 class Wniosek(models.Model):
     data = models.DateTimeField('Data', auto_now=True, blank=False)
-    typ = models.ForeignKey(WniosekTyp, on_delete=models.CASCADE, null=True)
-    pracownik = models.ForeignKey(Pracownik, related_name='pracownik')
-    obiekt = models.ForeignKey(Obiekt, null=True)
+    typ = models.ForeignKey(WniosekTyp, on_delete=models.CASCADE, default=1)
+    pracownik = models.ForeignKey(Pracownik, related_name='pracownik', on_delete=models.CASCADE)
+    obiekt = models.ForeignKey(Obiekt, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return '{0} do obiektu \'{1}\', dla użytkownika {2}'.format(
@@ -70,7 +79,7 @@ class Wniosek(models.Model):
 
 class Historia(models.Model):
     CHOICES_LIST = (
-        ('1', 'Przyjęty'),
+        ('1', 'Zatwierdzony'),
         ('2', 'Odrzucony'),
         ('3', 'Przetwarzanie'),
     )
@@ -84,3 +93,15 @@ class Historia(models.Model):
 
     def get_status(self):
         return '{0}'.format(self.get_status_display())
+
+class PracownicyObiektyUprawnienia(models.Model):
+    login = models.ForeignKey(Pracownik, on_delete=models.CASCADE)
+    id_obiektu = models.ForeignKey(Obiekt, on_delete=models.CASCADE)
+    id_uprawnienia = models.ForeignKey(Uprawnienia, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return u'{0} {1} {2}'.format(
+            self.login,
+            self.id_obiektu,
+            self.id_uprawnienia
+        )

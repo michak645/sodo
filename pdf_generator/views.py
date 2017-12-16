@@ -2,7 +2,6 @@ from io import BytesIO
 from django.template.loader import get_template
 from django.http import HttpResponse
 from django.views.generic import *
-from xhtml2pdf import pisa
 from .models import *
 import datetime
 from django.conf import settings
