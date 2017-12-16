@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'auth_ex',
     'pdf_generator',
-    'xhtml2pdf',
     'user_app',
 ]
 

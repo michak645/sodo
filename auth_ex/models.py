@@ -3,37 +3,35 @@ from datetime import datetime
 
 
 class JednOrg(models.Model):
-    id = models.CharField('ID', primary_key=True, max_length=20)
-    parent = models.ForeignKey('self', null=True, blank=True)
+    id = models.CharField('ID', primary_key=True, max_length=11)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     czy_labi = models.BooleanField(default=False)
-    opis = models.CharField('Opis', max_length=45)
+    nazwa = models.CharField('Nazwa', max_length=255, default="Wydział Matematyki i Informatyki")
 
     def __str__(self):
-        return '{0}. {1}'.format(self.id, self.opis)
+        return '{0}. {1}'.format(self.id, self.nazwa)
 
     def get_ancestor(self):
         return 
 
 
 class RodzajPracownika(models.Model):
-    rodzaj = models.CharField(max_length=45)
+    rodzaj = models.CharField(max_length=255)
 
     def __str__(self):
         return '{0}'.format(self.rodzaj)
 
 
 class Pracownik(models.Model):
-    login = models.CharField('Login', max_length=60, unique=True)
-    imie = models.CharField('Imie', max_length=60)
-    nazwisko = models.CharField('Nazwisko', max_length=60)
+    login = models.CharField('Login', max_length=15, unique=True, primary_key=True)
+    imie = models.CharField('Imie', max_length=90)
+    nazwisko = models.CharField('Nazwisko', max_length=90)
     email = models.EmailField('Email', max_length=60)
-    data_zat = models.DateField('Data zatrudnienia', default=datetime.now, blank=True)
     # Czy szkolenie jest nam potrzebne? Co to będzie zmieniać w systemie?
     # szkolenie = models.BooleanField(default=False)
-    rodzaj = models.ForeignKey(RodzajPracownika, related_name='+', null=True)
-    jedn_org = models.ForeignKey(JednOrg, related_name='+', null=True)
+    rodzaj = models.ForeignKey(RodzajPracownika, related_name='+', null=True, on_delete=models.CASCADE)
+    jedn_org = models.ForeignKey(JednOrg, related_name='+', null=True, on_delete=models.CASCADE)
     numer_ax = models.CharField(max_length=6, unique=True, null=True)
-    aktywny = models.BooleanField(default=True)
 
     def __str__(self):
         return u'{0} {1}'.format(
@@ -50,16 +48,16 @@ class Pracownik(models.Model):
 class Labi(models.Model):
     # pracownik = models.OneToOneField(
     #     Pracownik, null=True, blank=True, related_name='pracownik')
-    login = models.CharField('login', max_length=60, unique=True)
-    jednostka = models.ForeignKey(JednOrg, related_name='+', null=True)
+    login = models.ForeignKey(Pracownik, 'login')
+    jednostka = models.ForeignKey(JednOrg, related_name='+', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{0}'.format(self.login)
 
 
 class Drzewo(models.Model):
-    labi = models.ForeignKey(Labi)
-    jednostka = models.ForeignKey(JednOrg)
+    labi = models.ForeignKey(Labi, on_delete=models.CASCADE)
+    jednostka = models.ForeignKey(JednOrg, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{0} - {1}'.format(self.labi, self.jednostka)
