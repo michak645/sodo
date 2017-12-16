@@ -16,6 +16,7 @@ Przy dodawaniu wniosku sprawdzamy 4 rzeczy
 - obiekt 
 - upraweninia
 - typ wniosku
+
 czy się nie powtarzają, jeśli tak to przekierowanie do wniosku z opcją 'wyslij ponownie' jeśli został odrzucony, natomiast jeśli został przyjęty to mamy wgląd do wniosku wraz z opcją zniesienia uprawnienia (do przemyślenia). Jesli nie to stworzenie nowego. 
 
 
