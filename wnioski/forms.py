@@ -6,10 +6,10 @@ from django import forms
 class WniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'pracownik', 'obiekt')
-        # widgets = {
-        #     'pracownik': forms.HiddenInput(),
-        # }
+        fields = ('typ', 'uprawnienia', 'pracownik', 'obiekt')
+        widgets = {
+            'uprawnienia': forms.Select(),
+        }
 
     # def clean_user(self):
     #     user = self.cleaned_data['user']

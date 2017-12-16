@@ -31,21 +31,14 @@ class Obiekt(models.Model):
         return u'{0}'.format(self.nazwa)
 
 
-class WniosekTyp(models.Model):
+class Wniosek(models.Model):
     typy = (
         ('1', 'Nadanie uprawnień'),
         ('2', 'Odebranie uprawnień'),
         ('3', 'Zmiana uprawnień'),
     )
-    typ = models.CharField('Typ', max_length=1, choices=typy, default=1)
-
-    def __str__(self):
-        return '{0}'.format(self.typ)
-
-
-class Wniosek(models.Model):
     data = models.DateTimeField('Data', auto_now=True, blank=False)
-    typ = models.ForeignKey(WniosekTyp, on_delete=models.CASCADE, default=1)
+    typ = models.CharField('Typ', max_length=1, choices=typy, default='1')
     pracownik = models.ForeignKey(Pracownik, related_name='pracownik',
                                   on_delete=models.CASCADE)
     obiekt = models.ForeignKey(Obiekt, on_delete=models.CASCADE, null=True)
@@ -54,8 +47,8 @@ class Wniosek(models.Model):
 
     def __str__(self):
         return '{0} do obiektu \'{1}\', dla użytkownika {2}'.format(
-            self.typ,
-            self.get_uprawnienia_status(),
+            self.get_typ_display(),
+            self.get_uprawnienia_display(),
             self.obiekt,
             self.pracownik
         )
@@ -96,5 +89,5 @@ class PracownicyObiektyUprawnienia(models.Model):
         return u'{0} {1} {2}'.format(
             self.login,
             self.id_obiektu,
-            self.get_uprawnienia_status()
+            self.get_uprawnienia_display()
         )

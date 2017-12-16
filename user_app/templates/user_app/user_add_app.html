@@ -15,6 +15,16 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label for="uprawnienia" class="col-sm-3 col-form-label">Uprawnienie</label>
+                    <div class="col-md-9">
+                        <select id="uprawnienia" class="form-control" name="{{ form.uprawnienia.html_name }}" required>
+                            {% for key, value in form.fields.uprawnienia.choices %}
+                                <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
                 <div class="form-group row">
                     <label for="obiekt" class="col-md-3 col-form-label">Obiekt</label>
