@@ -13,7 +13,7 @@ class JednOrg(models.Model):
 
 
 class RodzajPracownika(models.Model):
-    rodzaj = models.CharField(max_length=255)
+    rodzaj = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return '{0}'.format(self.rodzaj)
