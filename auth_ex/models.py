@@ -1,10 +1,17 @@
 from django.db import models
 
-
+'''
+def get_parent_from_org(parent):
+    return JednOrg.objects.get(id=parent)[0]
+    
+def get_parent_from_emp(jedn_org):
+    return JednOrg.objects.get(id=jedn_org)[0]
+'''
+    
 class JednOrg(models.Model):
     id = models.CharField('ID', primary_key=True, max_length=11)
-    parent = models.ForeignKey('self', null=True, blank=True,
-                               on_delete=models.CASCADE)
+    #parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET(get_parent_from_org))
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     czy_labi = models.BooleanField(default=False)
     nazwa = models.CharField('Nazwa', max_length=255, null=False, blank=False)
 
@@ -13,22 +20,21 @@ class JednOrg(models.Model):
 
 
 class RodzajPracownika(models.Model):
-    rodzaj = models.CharField(max_length=255, unique=True)
+    rodzaj = models.CharField(max_length=255, unique=True, default="Zwykły")
 
     def __str__(self):
         return '{0}'.format(self.rodzaj)
 
 
 class Pracownik(models.Model):
-    login = models.CharField('Login', max_length=15, unique=True,
-                             primary_key=True)
+    login = models.CharField('Login', primary_key=True, max_length=15, unique=True)
     imie = models.CharField('Imie', max_length=90)
     nazwisko = models.CharField('Nazwisko', max_length=90)
     email = models.EmailField('Email', max_length=60)
-    rodzaj = models.ForeignKey(RodzajPracownika, related_name='+', null=True,
-                               on_delete=models.CASCADE)
-    jedn_org = models.ForeignKey(JednOrg, related_name='+', null=True,
-                                 on_delete=models.CASCADE)
+    #rodzaj = models.ForeignKey(RodzajPracownika, related_name='+', null=True, on_delete=models.SET_DEFAULT)
+    rodzaj = models.ForeignKey(RodzajPracownika, related_name='+', null=True, on_delete=models.CASCADE)
+    #jedn_org = models.ForeignKey(JednOrg, related_name='+', null=True, on_delete=models.SET(get_parent_from_emp))
+    jedn_org = models.ForeignKey(JednOrg, related_name='+', null=True, on_delete=models.CASCADE)
     numer_ax = models.CharField(max_length=6, unique=True, null=True)
 
     def __str__(self):
@@ -36,9 +42,9 @@ class Pracownik(models.Model):
 
 
 class Labi(models.Model):
+    #login = models.ForeignKey(Pracownik, 'login', on_delete=models.CASCADE)
     login = models.ForeignKey(Pracownik, 'login')
-    jednostka = models.ForeignKey(JednOrg, related_name='+', null=True,
-                                  on_delete=models.CASCADE)
+    jednostka = models.ForeignKey(JednOrg, related_name='+', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{0}'.format(self.login.login)

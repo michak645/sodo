@@ -11,7 +11,15 @@ import sqlite3
 #import os.path
 
 #   TERMINY ODNOŚNIE PRACY
-#   - obrony od 7 do 12 stycznia
+#   - obrony od 9 do 12 stycznia (wstępnie piątek, 9 stycznia pokazać ostateczną wersję)
+#   + podział na 2 bazy (do testów i do obrony)
+#   - dodać do skryptu początkowego wypełnianie pozostałych tabel (np. Uprawnienia)
+#   - zamiana nazw tabel i kolejności kolumn
+#   - Transakcje
+#   - obsługa konfliktów (przy usuwaniu, dodawaniu wierszy)
+#   - skrypt podzielony na INSERT (na początku) i UPDATE
+#   - zamiana SQL na ORM
+#   - optymalizacja
 #   
 
 #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +29,7 @@ host = "http://150.254.76.229/EodService/AXDWService.asmx/"
 wnioski_model = "wnioski_"
 auth_ex_model = "auth_ex_"
 domain = "@amu.edu.pl"
-database = "db.sqlite3"
+database = "db — kopia.sqlite3"
 organization_descs = []
 
 
@@ -136,9 +144,9 @@ def start_org():
             # Przyjmuję, że czy_labi oznacza tylko LABI
             if key == "OrganizationLevel":
                 if value == "1":
-                    organization_labi.append(True)
+                    organization_labi.append(1)
                 else:
-                    organization_labi.append(False)
+                    organization_labi.append(0)
             if key == "OrganizationDesc":
                 value = value.replace('\u0027', ' ')
                 organization_descs.append(value)
