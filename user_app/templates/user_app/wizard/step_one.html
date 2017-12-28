@@ -1,0 +1,17 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    <div class="row">
+
+        <form method="post" action="">{% csrf_token %}
+
+            {{ form.as_p }}
+
+            <input class="btn btn-primary" type="submit" value="Przejdź dalej">
+
+        </form>  
+
+    </div>
+
+{% endblock %}

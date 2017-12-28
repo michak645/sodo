@@ -16,13 +16,13 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="uprawnienia" class="col-sm-3 col-form-label">Uprawnienie</label>
                     <div class="col-md-9">
-                        <select id="uprawnienia" class="form-control" name="{{ form.uprawnienia.html_name }}" required>
-                            {% for key, value in form.fields.uprawnienia.choices %}
-                                <option value="{{ key }}">{{ value }}</option>
-                            {% endfor %}
-                        </select>
+                        {% for key, value in form.fields.uprawnienia.choices %}
+                            <div class="ui slider checkbox">
+                                <input id="uprawnienia-{{ forloop.counter }}" name="{{ form.uprawnienia.html_name }}" type="checkbox" value="{{ key }}"{% if key in checked_uprawnienia %} checked="checked"{% endif %}>
+                                <label for="uprawnienia-{{ forloop.counter }}">{{ value }}</label>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
 

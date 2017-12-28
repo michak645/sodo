@@ -1,0 +1,44 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Obiekty</h3>
+            <ul>
+                {% for obiekt in cart.obiekty.all %}
+                    <li>{{ obiekt }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3>Pracownicy</h3>
+            <ul>
+                {% for prac in cart.pracownicy.all %}
+                    <li>{{ prac }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <form method="post" action="">{% csrf_token %}
+            <div class="col-md-6">
+                <h3>Uprawnienia</h3>
+                {% for key, value in form.fields.uprawnienia.choices %}
+                    <div class="ui slider checkbox">
+                        <input id="uprawnienia-{{ forloop.counter }}" name="{{ form.uprawnienia.html_name }}" type="checkbox" value="{{ key }}"{% if key in checked_uprawnienia %} checked="checked"{% endif %}>
+                        <label for="uprawnienia-{{ forloop.counter }}">{{ value }}</label>
+                    </div>
+                {% endfor %}
+                <a href=""></a>
+            </div>
+            <div class="col-md-6">
+                <h3>Typ wniosku</h3>
+            </div>
+            <div class="col-md-12 center">
+                <a href="{% url 'step_two' key %}" class="btn btn-primary">Powrót</a>
+                <input class="btn btn-primary" type="submit" value="Przejdź dalej">
+            </div>
+        </form>
+    </div>
+{% endblock %}

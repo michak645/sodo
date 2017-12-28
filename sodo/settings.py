@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'auth_ex',
     'pdf_generator',
     'user_app',
+    'multiselectfield',
 ]
 
 MIDDLEWARE = [

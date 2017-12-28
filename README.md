@@ -7,6 +7,7 @@ LABI - 'admin_wmi', 'admin_fizyka'
 
 Potrzebne do działania:
 - weasyprint - generowanie pdfów z wzorca w html, https://weasyprint.readthedocs.io/en/stable/install.html
+- multiselectfield - instalowanie: pip3 install django-multiselectfield
 
 
 <b>Ustalenia:</b>
@@ -26,3 +27,16 @@ Pracownik + obiekt + uprawnienie.
 
 
 Jeśli wniosek jest przetwarzany to nie możemy dodać takiego samego wniosku jeszcze raz. 
+
+
+<i>Do zrobienia w wizardzie</i>
+<ul>
+	<li>Step 1 - uwzględnić wybór</li>
+	<li>Step 2 - Czyszczenie wyborów</li>
+	<li>Step 3 - typ wniosku</li>
+	<li>Step 4 - podsumowanie i złożenie</li>
+	<li>Ogólne anulowanie wizarda koło progresu</li>
+</ul>
+Zmienić tabele wniosku aby móc tworzyć dla wielu użytkowników i obiektów 
+Powrót do carta jeżeli się wyjdzie - zapisywać stan carta (najlepiej w modelu)
+Key - dodać do carta

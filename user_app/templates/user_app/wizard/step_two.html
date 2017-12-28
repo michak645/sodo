@@ -1,0 +1,80 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+    <div class="row">
+    	<div class="col-md-6">
+    		<form method="post" action="">{% csrf_token %}
+	            {{ form.jednostka }}
+	            <input class="btn btn-primary" type="submit" value="Wyświetl">
+	        </form>
+	        <br>
+    		{% if obj_list %}
+    			{% for obj in obj_list %}
+					<form method="post" action="">{% csrf_token %}
+						<input type="checkbox" name="add" value="True" checked hidden>
+						<input type="text" value="{{ obj.id }}" name="obj" hidden>
+    					<p>
+    						{{ obj }}
+	    					<input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
+    					</p>
+					</form>
+    			{% endfor %}
+    		{% else%}
+    			<p>Nie ma żadnych obiektów</p>
+    		{% endif %}
+    	</div>
+    	
+    	<div class="col-md-6">
+    		{% for obj in objs_cart %}
+ 				<form method="post" action="">{% csrf_token %}
+					<input type="text" value="{{ obj.id }}" name="obj" hidden>
+					<input type="checkbox" name="delete" value="True" checked hidden>
+					<p>
+						{{ obj }}
+    					<input class="btn btn-warning" type="submit" value="Usuń">
+					</p>
+				</form>
+ 			{% endfor %}
+    	</div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+    	<div class="col-md-6">
+    		{% for prac in pracownicy %}
+    			<form method="post" action="">{% csrf_token %}
+					<input type="checkbox" name="add_prac" value="True" checked hidden>
+					<input type="text" value="{{ prac.login }}" name="prac" hidden>
+					<p>
+						{{ prac }}
+    					<input class="btn btn-success" type="submit" value="Dodaj" {% if prac in prac_cart %}disabled{% endif %}>
+					</p>
+				</form>
+    		{% endfor %}
+    	</div>
+    	<div class="col-md-6">
+    		{% for prac in prac_cart %}
+    			<form method="post" action="">{% csrf_token %}
+					<input type="text" value="{{ prac.login }}" name="prac" hidden>
+					<input type="checkbox" name="delete_prac" value="True" checked hidden>
+					<p>
+						{{ prac }}
+    					<input class="btn btn-warning" type="submit" value="Usuń">
+					</p>
+				</form>
+    		{% endfor %}
+    	</div>
+    </div>
+
+    <div class="row">
+    	<div class="col-md-6">
+    		<a class="btn btn-primary" href="">Powrót</a>
+    	</div>
+    	<div class="col-md-6">
+    		<a class="btn btn-primary" href="{% url 'step_three' %}">Przejdź dalej</a>
+    	</div>
+    </div>
+
+{% endblock %}
