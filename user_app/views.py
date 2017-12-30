@@ -306,6 +306,11 @@ def step_three(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
+    aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
+        login__in=cart.pracownicy.all()
+    ).filter(
+        id_obiektu__in=cart.obiekty.all()
+    )
     if request.method == 'POST':
         form = WizardUprawnienia(request.POST)
         if form.is_valid():
@@ -318,6 +323,7 @@ def step_three(request):
         'key': key,
         'pracownik': pracownik,
         'cart': cart,
+        'aktualne_uprawnienia': aktualne_uprawnienia,
         'form': form
     }
     return render(request, 'user_app/wizard/step_three.html', context)
