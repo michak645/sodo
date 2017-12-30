@@ -1,10 +1,11 @@
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from .models import Cart
-from auth_ex.models import Pracownik
+from auth_ex.models import Pracownik, JednOrg
 from user_app.forms import (
     AddApplicationForm,
     WizardStepOne,
@@ -244,13 +245,12 @@ def user_app_detail(request, pk):
 def step_one(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
+    cart, created = Cart.objects.get_or_create(id=pracownik_id)
     if request.method == 'POST':
         form = WizardStepOne(request.POST)
         if form.is_valid():
-            key = form.cleaned_data['typ']
-            request.session['key'] = key
-            return HttpResponseRedirect(
-                reverse('step_two', kwargs={'key': key}))
+            cart.key = form.cleaned_data['typ']
+            return HttpResponseRedirect('/wizard/step_two')
     else:
         form = WizardStepOne()
     context = {
@@ -260,14 +260,28 @@ def step_one(request):
     return render(request, 'user_app/wizard/step_one.html', context)
 
 
-def step_two(request, key):
+def step_two(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     pracownicy = Pracownik.objects.all()
-    cart, created = Cart.objects.get_or_create(id=pracownik_id)
+    cart = Cart.objects.get(id=pracownik_id)
     obj_list = None
+    jednostki = JednOrg.objects.all()
+
+    paginator = Paginator(jednostki, 5)
+    page = request.GET.get('page')
+    try:
+        jedn = paginator.page(page)
+    except PageNotAnInteger:
+        jedn = paginator.page(1)
+    except EmptyPage:
+        jedn = paginator.page(paginator.num_pages)
+
     if request.method == 'POST':
-        form = WizardObiekt(request.POST)
+        clear = request.POST.get('clear')
+        if clear:
+            cart.obiekty.clear()
+            cart.pracownicy.clear()
         obj = request.POST.get('obj')
         add = request.POST.get('add')
         prac = request.POST.get('prac')
@@ -277,8 +291,9 @@ def step_two(request, key):
             cart.obiekty.remove(Obiekt.objects.get(id=obj))
         if add:
             cart.obiekty.add(Obiekt.objects.get(id=obj))
-        if form.is_valid():
-            jednostka = form.cleaned_data['jednostka']
+        show = request.POST.get('show')
+        if show:
+            jednostka = request.POST.get('jednostka')
             obj_list = Obiekt.objects.filter(jedn_org=jednostka)
         if add_prac:
             cart.pracownicy.add(Pracownik.objects.get(login=prac))
@@ -286,11 +301,9 @@ def step_two(request, key):
         if delete_prac:
             cart.pracownicy.remove(Pracownik.objects.get(login=prac))
     else:
-        form = WizardObiekt(request.POST)
         obj_list = None
     context = {
-        'key': key,
-        'form': form,
+        'jednostki': jedn,
         'obj_list': obj_list,
         'pracownik': pracownik,
         'pracownicy': pracownicy,
@@ -307,14 +320,14 @@ def step_three(request):
     pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
-        login__in=cart.pracownicy.all()
-    ).filter(
+        login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
     )
     if request.method == 'POST':
         form = WizardUprawnienia(request.POST)
         if form.is_valid():
             cart.uprawnienia = form.cleaned_data['uprawnienia']
+            cart.typ_wniosku = form.cleaned_data['typ_wniosku']
             cart.save()
             return HttpResponseRedirect('step_four')
     else:

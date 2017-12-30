@@ -14,12 +14,19 @@ class Cart(models.Model):
         ('6', 'Usuwanie, niszczenie'),
         ('7', 'Udostępnianie, powierzanie, przesyłanie'),
     )
+    typ_choices = (
+        ('1', 'Nadanie uprawnień'),
+        ('2', 'Odebranie uprawnień'),
+        ('3', 'Zmiana uprawnień'),
+    )
 
     id = models.CharField(max_length=255, primary_key=True)
     pracownicy = models.ManyToManyField(Pracownik, blank=True)
     obiekty = models.ManyToManyField(Obiekt, blank=True)
     uprawnienia = MultiSelectField('Uprawnienia', max_length=25,
                                    choices=uprawnienia_choices)
+    key = models.CharField('Klucz', max_length=10, blank=True)
+    typ_wniosku = models.CharField('Typ', max_length=10, choices=typ_choices)
 
     def __str__(self):
         return '{0}'.format(self.id)

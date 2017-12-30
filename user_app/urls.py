@@ -21,7 +21,7 @@ urlpatterns = [
         name='user_app_add_object'),
 
     url(r'^wizard/step_one', step_one, name='step_one'),
-    url(r'^wizard/step_two/(?P<key>\d+)/$', step_two, name='step_two'),
+    url(r'^wizard/step_two', step_two, name='step_two'),
     url(r'^wizard/step_three', step_three, name='step_three'),
     url(r'^wizard/step_four', step_four, name='step_four'),
 ]

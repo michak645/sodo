@@ -2,13 +2,24 @@
 
 {% block content %}
 
+	<div class="progress">
+		<div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Krok 1</div>
+	</div>
     <div class="row">
 
         <form method="post" action="">{% csrf_token %}
-
-            {{ form.as_p }}
-
-            <input class="btn btn-primary" type="submit" value="Przejdź dalej">
+        	<div class="row">
+	            {% for key, value in form.fields.typ.choices %}
+	                <div>
+	                    <input id="typ-{{ forloop.counter }}" name="{{ form.typ.html_name }}" type="radio" value="{{ key }}"{% if key in checked_typ %}checked="checked"{% endif %} required>
+	                    <label for="typ-{{ forloop.counter }}">{{ value }}</label>
+	                </div>
+	            {% endfor %}
+        	</div>
+	        <div class="row center">
+				<a class="btn btn-primary" href="{% url 'user_index' %}">Anuluj</a>
+	        	<input class="btn btn-primary" type="submit" value="Dalej">
+	        </div>
 
         </form>  
 

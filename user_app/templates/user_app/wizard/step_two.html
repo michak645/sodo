@@ -2,22 +2,72 @@
 
 {% block content %}
 
+    <div class="row progress">
+        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">Krok 2</div>
+    </div>
+
     <div class="row">
+        <form method="post" action="">{% csrf_token %}
+            <input type="checkbox" name="clear" value="True" checked hidden>
+            <input type="submit" class="btn" value="Wyczyść wszystko">
+        </form>
+    </div>
+
+    <div class="row">
+
     	<div class="col-md-6">
-    		<form method="post" action="">{% csrf_token %}
-	            {{ form.jednostka }}
-	            <input class="btn btn-primary" type="submit" value="Wyświetl">
-	        </form>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post" action="">{% csrf_token %}
+                        <div class="row">
+                            {% for jedn in jednostki %}
+                                <form method="post" action="">{% csrf_token %}
+                                    <span class="obiekt-search-field">
+                                        <input type="checkbox" name="show" value="True" checked hidden>
+                                        <input type="text" value="{{ jedn.id }}" name="jednostka" hidden>
+                                        <p>
+                                            <input class="btn" type="submit" value="{{ jedn }}">
+                                        </p>
+                                    </span>
+                                </form>
+                            {% endfor %}
+
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if jednostki.has_previous %}
+                                        <a href="?page={{ jednostki.previous_page_number }}">previous</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
+                                    </span>
+
+                                    {% if jednostki.has_next %}
+                                        <a href="?page={{ jednostki.next_page_number }}">next</a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 	        <br>
     		{% if obj_list %}
+                <form id="obiekt-search" action="" class="styled" method="post">
+                    <fieldset>
+                        <input type="text" class="text-input" id="obiekt-filter" placeholder="Szukaj...">
+                    </fieldset>
+                </form>
     			{% for obj in obj_list %}
 					<form method="post" action="">{% csrf_token %}
-						<input type="checkbox" name="add" value="True" checked hidden>
-						<input type="text" value="{{ obj.id }}" name="obj" hidden>
-    					<p>
-    						{{ obj }}
-	    					<input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
-    					</p>
+                        <span class="obiekt-search-field">
+    						<input type="checkbox" name="add" value="True" checked hidden>
+    						<input type="text" value="{{ obj.id }}" name="obj" hidden>
+        					<p>
+        						{{ obj }}
+    	    					<input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
+        					</p>
+                        </span>
 					</form>
     			{% endfor %}
     		{% else%}
@@ -68,13 +118,27 @@
     	</div>
     </div>
 
-    <div class="row">
-    	<div class="col-md-6">
-    		<a class="btn btn-primary" href="">Powrót</a>
-    	</div>
-    	<div class="col-md-6">
-    		<a class="btn btn-primary" href="{% url 'step_three' %}">Przejdź dalej</a>
-    	</div>
+    <div class="row center">
+		<a class="btn btn-primary" href="{% url 'step_one' %}">Powrót</a>
+		<a class="btn btn-primary" href="{% url 'step_three' %}">Dalej</a>
     </div>
+
+
+<script type="text/javascript">
+    
+$(document).ready(function(){
+    $("#obiekt-filter").keyup(function(){
+        var filter = $(this).val();
+        $(".obiekt-search-field").each(function(){
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
+});
+
+</script>
 
 {% endblock %}

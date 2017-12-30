@@ -48,5 +48,13 @@ class WizardUprawnienia(forms.Form):
         ('6', 'Usuwanie, niszczenie'),
         ('7', 'Udostępnianie, powierzanie, przesyłanie'),
     )
+    typ_choices = (
+        ('1', 'Nadanie uprawnień'),
+        ('2', 'Odebranie uprawnień'),
+        ('3', 'Zmiana uprawnień'),
+    )
     uprawnienia = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=uprawnienia_choices)
+    typ_wniosku = forms.ChoiceField(
+        choices=typ_choices, required=True,
+        widget=forms.RadioSelect())
