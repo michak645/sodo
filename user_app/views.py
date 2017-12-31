@@ -267,6 +267,7 @@ def step_two(request):
     cart = Cart.objects.get(id=pracownik_id)
     obj_list = None
     jednostki = JednOrg.objects.all()
+    jednostka = None
 
     paginator = Paginator(jednostki, 5)
     page = request.GET.get('page')
@@ -295,6 +296,7 @@ def step_two(request):
         if show:
             jednostka = request.POST.get('jednostka')
             obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka).nazwa
         if add_prac:
             cart.pracownicy.add(Pracownik.objects.get(login=prac))
         delete_prac = request.POST.get('delete_prac')
@@ -303,6 +305,7 @@ def step_two(request):
     else:
         obj_list = None
     context = {
+        'wybrana_jednostka': jednostka,
         'jednostki': jedn,
         'obj_list': obj_list,
         'pracownik': pracownik,
@@ -315,10 +318,10 @@ def step_two(request):
 
 def step_three(request):
     # czy_chcesz_zostac_dodany_do_wnioski_checkbox = False
-    key = request.session['key']
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
+    key = cart.key
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
         login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
@@ -329,7 +332,7 @@ def step_three(request):
             cart.uprawnienia = form.cleaned_data['uprawnienia']
             cart.typ_wniosku = form.cleaned_data['typ_wniosku']
             cart.save()
-            return HttpResponseRedirect('step_four')
+            return HttpResponseRedirect('/wizard/step_four')
     else:
         form = WizardUprawnienia()
     context = {

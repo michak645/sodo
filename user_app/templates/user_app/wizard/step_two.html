@@ -14,21 +14,21 @@
     </div>
 
     <div class="row">
-
-    	<div class="col-md-6">
+        <h2 class="center">Obiekty</h2>
+        <hr>
+    	<div class="col-md-4">
             <div class="panel panel-default">
+                <div class="panel-heading">1. Wybierz jednostkę</div>
                 <div class="panel-body">
                     <form method="post" action="">{% csrf_token %}
                         <div class="row">
                             {% for jedn in jednostki %}
                                 <form method="post" action="">{% csrf_token %}
-                                    <span class="obiekt-search-field">
-                                        <input type="checkbox" name="show" value="True" checked hidden>
-                                        <input type="text" value="{{ jedn.id }}" name="jednostka" hidden>
-                                        <p>
-                                            <input class="btn" type="submit" value="{{ jedn }}">
-                                        </p>
-                                    </span>
+                                    <input type="checkbox" name="show" value="True" checked hidden>
+                                    <input type="text" value="{{ jedn.id }}" name="jednostka" hidden>
+                                    <p>
+                                        <input class="btn" type="submit" value="{{ jedn }}">
+                                    </p>
                                 </form>
                             {% endfor %}
 
@@ -51,70 +51,97 @@
                     </form>
                 </div>
             </div>
-	        <br>
-    		{% if obj_list %}
-                <form id="obiekt-search" action="" class="styled" method="post">
-                    <fieldset>
-                        <input type="text" class="text-input" id="obiekt-filter" placeholder="Szukaj...">
-                    </fieldset>
-                </form>
-    			{% for obj in obj_list %}
-					<form method="post" action="">{% csrf_token %}
-                        <span class="obiekt-search-field">
-    						<input type="checkbox" name="add" value="True" checked hidden>
-    						<input type="text" value="{{ obj.id }}" name="obj" hidden>
+    	</div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">2. Wybierz obiekt</div>
+                <div class="panel-body">
+                    {% if obj_list %}
+                        <form id="obiekt-search" action="" class="styled" method="post">
+                            <fieldset>
+                                <input type="text" class="text-input" id="obiekt-filter" placeholder="Szukaj...">
+                            </fieldset>
+                        </form>
+                        {% for obj in obj_list %}
+                            <form method="post" action="">{% csrf_token %}
+                                <span class="obiekt-search-field">
+                                    <input type="checkbox" name="add" value="True" checked hidden>
+                                    <input type="text" value="{{ obj.id }}" name="obj" hidden>
+                                    <p>
+                                        {{ obj }}
+                                        <input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
+                                    </p>
+                                </span>
+                            </form>
+                        {% endfor %}
+                    {% else%}
+                        <p>Nie ma żadnych obiektów</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    	
+    	<div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">3. Wybrane obiekty</div>
+                <div class="panel-body">
+            		{% for obj in objs_cart %}
+         				<form method="post" action="">{% csrf_token %}
+        					<input type="text" value="{{ obj.id }}" name="obj" hidden>
+        					<input type="checkbox" name="delete" value="True" checked hidden>
         					<p>
         						{{ obj }}
-    	    					<input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
+            					<input class="btn btn-warning" type="submit" value="Usuń">
         					</p>
-                        </span>
-					</form>
-    			{% endfor %}
-    		{% else%}
-    			<p>Nie ma żadnych obiektów</p>
-    		{% endif %}
-    	</div>
-    	
-    	<div class="col-md-6">
-    		{% for obj in objs_cart %}
- 				<form method="post" action="">{% csrf_token %}
-					<input type="text" value="{{ obj.id }}" name="obj" hidden>
-					<input type="checkbox" name="delete" value="True" checked hidden>
-					<p>
-						{{ obj }}
-    					<input class="btn btn-warning" type="submit" value="Usuń">
-					</p>
-				</form>
- 			{% endfor %}
+        				</form>
+                    {% empty %}
+         			    <p>Brak</p>
+                    {% endfor %}
+                </div>
+            </div>
     	</div>
     </div>
 
-    <hr>
+    <div class="clearfix"></div>
 
     <div class="row">
-    	<div class="col-md-6">
-    		{% for prac in pracownicy %}
-    			<form method="post" action="">{% csrf_token %}
-					<input type="checkbox" name="add_prac" value="True" checked hidden>
-					<input type="text" value="{{ prac.login }}" name="prac" hidden>
-					<p>
-						{{ prac }}
-    					<input class="btn btn-success" type="submit" value="Dodaj" {% if prac in prac_cart %}disabled{% endif %}>
-					</p>
-				</form>
-    		{% endfor %}
+        <h2 class="center">Pracownicy</h2>
+        <hr>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">1. Wybierz pracowników</div>
+                <div class="panel-body">
+            		{% for prac in pracownicy %}
+            			<form method="post" action="">{% csrf_token %}
+        					<input type="checkbox" name="add_prac" value="True" checked hidden>
+        					<input type="text" value="{{ prac.login }}" name="prac" hidden>
+        					<p>
+        						{{ prac }}
+            					<input class="btn btn-success" type="submit" value="Dodaj" {% if prac in prac_cart %}disabled{% endif %}>
+        					</p>
+        				</form>
+            		{% endfor %}
+                </div>
+            </div>
     	</div>
     	<div class="col-md-6">
-    		{% for prac in prac_cart %}
-    			<form method="post" action="">{% csrf_token %}
-					<input type="text" value="{{ prac.login }}" name="prac" hidden>
-					<input type="checkbox" name="delete_prac" value="True" checked hidden>
-					<p>
-						{{ prac }}
-    					<input class="btn btn-warning" type="submit" value="Usuń">
-					</p>
-				</form>
-    		{% endfor %}
+            <div class="panel panel-default">
+                <div class="panel-heading">2. Wybrani pracownicy</div>
+                <div class="panel-body">
+            		{% for prac in prac_cart %}
+            			<form method="post" action="">{% csrf_token %}
+        					<input type="text" value="{{ prac.login }}" name="prac" hidden>
+        					<input type="checkbox" name="delete_prac" value="True" checked hidden>
+        					<p>
+        						{{ prac }}
+            					<input class="btn btn-warning" type="submit" value="Usuń">
+        					</p>
+        				</form>
+                    {% empty %}
+                        <p>Brak</p>
+                    {% endfor %}
+                </div>
+            </div>
     	</div>
     </div>
 
