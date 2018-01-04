@@ -51,7 +51,6 @@ class WizardUprawnienia(forms.Form):
     typ_choices = (
         ('1', 'Nadanie uprawnień'),
         ('2', 'Odebranie uprawnień'),
-        ('3', 'Zmiana uprawnień'),
     )
     uprawnienia = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=uprawnienia_choices)

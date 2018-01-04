@@ -3,7 +3,7 @@ from user_app.views import (
     user_index, user_objects_available, user_add_app,
     user_app_accepted, user_app_rejected, user_profile, user_objects_list,
     user_app_detail, user_app_add_object, step_one, step_two, step_three,
-    step_four
+    step_four, step_two2,
 )
 
 urlpatterns = [
@@ -21,7 +21,8 @@ urlpatterns = [
         name='user_app_add_object'),
 
     url(r'^wizard/step_one', step_one, name='step_one'),
-    url(r'^wizard/step_two', step_two, name='step_two'),
+    url(r'^wizard/step_two$', step_two, name='step_two'),
+    url(r'^wizard/step_two2$', step_two2, name='step_two2'),
     url(r'^wizard/step_three', step_three, name='step_three'),
     url(r'^wizard/step_four', step_four, name='step_four'),
 ]

@@ -263,13 +263,12 @@ def step_one(request):
 def step_two(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
-    pracownicy = Pracownik.objects.all()
     cart = Cart.objects.get(id=pracownik_id)
     obj_list = None
-    jednostki = JednOrg.objects.all()
     jednostka = None
+    jednostki = JednOrg.objects.all()
 
-    paginator = Paginator(jednostki, 5)
+    paginator = Paginator(jednostki, 4)
     page = request.GET.get('page')
     try:
         jedn = paginator.page(page)
@@ -282,11 +281,8 @@ def step_two(request):
         clear = request.POST.get('clear')
         if clear:
             cart.obiekty.clear()
-            cart.pracownicy.clear()
         obj = request.POST.get('obj')
         add = request.POST.get('add')
-        prac = request.POST.get('prac')
-        add_prac = request.POST.get('add_prac')
         delete = request.POST.get('delete')
         if delete:
             cart.obiekty.remove(Obiekt.objects.get(id=obj))
@@ -297,23 +293,57 @@ def step_two(request):
             jednostka = request.POST.get('jednostka')
             obj_list = Obiekt.objects.filter(jedn_org=jednostka)
             jednostka = JednOrg.objects.get(id=jednostka).nazwa
-        if add_prac:
-            cart.pracownicy.add(Pracownik.objects.get(login=prac))
-        delete_prac = request.POST.get('delete_prac')
-        if delete_prac:
-            cart.pracownicy.remove(Pracownik.objects.get(login=prac))
-    else:
-        obj_list = None
     context = {
         'wybrana_jednostka': jednostka,
         'jednostki': jedn,
         'obj_list': obj_list,
         'pracownik': pracownik,
-        'pracownicy': pracownicy,
         'objs_cart': cart.obiekty.all(),
-        'prac_cart': cart.pracownicy.all(),
     }
     return render(request, 'user_app/wizard/step_two.html', context)
+
+
+def step_two2(request):
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(login=pracownik_id)
+    cart = Cart.objects.get(id=pracownik_id)
+    prac_list = None
+    jednostka = None
+    jednostki = JednOrg.objects.all()
+
+    paginator = Paginator(jednostki, 4)
+    page = request.GET.get('page')
+    try:
+        jedn = paginator.page(page)
+    except PageNotAnInteger:
+        jedn = paginator.page(1)
+    except EmptyPage:
+        jedn = paginator.page(paginator.num_pages)
+
+    if request.method == 'POST':
+        clear = request.POST.get('clear')
+        if clear:
+            cart.pracownicy.clear()
+        prac = request.POST.get('prac')
+        add_prac = request.POST.get('add_prac')
+        show = request.POST.get('show')
+        if show:
+            jednostka = request.POST.get('jednostka')
+            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka).nazwa
+        if add_prac:
+            cart.pracownicy.add(Pracownik.objects.get(login=prac))
+        delete_prac = request.POST.get('delete_prac')
+        if delete_prac:
+            cart.pracownicy.remove(Pracownik.objects.get(login=prac))
+    context = {
+        'wybrana_jednostka': jednostka,
+        'jednostki': jedn,
+        'pracownik': pracownik,
+        'prac_list': prac_list,
+        'prac_cart': cart.pracownicy.all(),
+    }
+    return render(request, 'user_app/wizard/step_two2.html', context)
 
 
 def step_three(request):

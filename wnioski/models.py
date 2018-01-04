@@ -50,7 +50,6 @@ class Wniosek(models.Model):
     typy = (
         ('1', 'Nadanie uprawnień'),
         ('2', 'Odebranie uprawnień'),
-        ('3', 'Zmiana uprawnień'),
     )
     data = models.DateTimeField('Data', auto_now=True, blank=False)
     typ = models.CharField('Typ', max_length=1, choices=typy, default='1')

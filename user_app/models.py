@@ -17,7 +17,6 @@ class Cart(models.Model):
     typ_choices = (
         ('1', 'Nadanie uprawnień'),
         ('2', 'Odebranie uprawnień'),
-        ('3', 'Zmiana uprawnień'),
     )
 
     id = models.CharField(max_length=255, primary_key=True)
