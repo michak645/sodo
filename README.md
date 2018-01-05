@@ -10,6 +10,7 @@ USER_APP:
 	- walidacja
 	- aktualne uprawnienia wybranych pracowników do wybranych obiektów
 	- podsumowanie wniosku - ostylować ładnie
+	- komentarz do wniosku
 - Dostępne obiekty - wyszukiwanie
 - Twój panel - poprawić 
 - autoryzacja

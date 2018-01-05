@@ -28,7 +28,7 @@ def user_index(request):
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = []
     for wniosek in wnioski:
-        if get_latest_history(wniosek.id).status == '3':
+        if get_latest_history(wniosek.id).status == '1':
             historia.append(get_latest_history(wniosek.id))
     context = {
         'pracownik': pracownik,
@@ -115,7 +115,7 @@ def user_add_app(request):
                 status zatwierdzony/przetwarzanie/odrzucony
                 dla przetwarzanego odrzucamy zawsze
                 '''
-                if historia.status == '3':
+                if historia.status == '5':
                     messages.warning(
                         request,
                         'Wniosek do obiektu {0} o uprawnieniu {1}'
@@ -194,7 +194,7 @@ def user_app_accepted(request):
     for wniosek in wnioski:
         historia = Historia.objects.filter(
             wniosek=wniosek.pk).order_by('-data')[0]
-        if historia.status == '1':
+        if historia.status == '2':
             historie.append(historia)
     context = {
         'pracownik': pracownik,
@@ -340,6 +340,20 @@ def step_three(request):
         login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
     )
+
+    obiekty = {}
+    for obiekt in cart.obiekty.all():
+        pracownicy = {}
+        for pracownik in cart.pracownicy.all():
+            pou = PracownicyObiektyUprawnienia.objects.filter(
+                login=pracownik,
+                id_obiektu=obiekt,
+            )
+            if pou:
+                pracownicy[pracownik] = pou
+        print(pracownicy)
+        obiekty[obiekt] = pracownicy
+
     if request.method == 'POST':
         form = WizardUprawnienia(request.POST)
         if form.is_valid():
@@ -353,7 +367,8 @@ def step_three(request):
         'pracownik': pracownik,
         'cart': cart,
         'aktualne_uprawnienia': aktualne_uprawnienia,
-        'form': form
+        'form': form,
+        'obiekty': obiekty,
     }
     return render(request, 'user_app/wizard/step_three.html', context)
 

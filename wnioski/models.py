@@ -134,21 +134,33 @@ class Wniosek(models.Model):
         super().save(*args, **kwargs)
         Historia.objects.get_or_create(
             wniosek=self,
+            pracownik=self.pracownik,
         )
 
 
 class Historia(models.Model):
     CHOICES_LIST = (
-        ('1', 'Zatwierdzony'),
-        ('2', 'Odrzucony'),
-        ('3', 'Przetwarzanie'),
+        ('1', 'Złożony'),
+        ('2', 'LABI'),
+        ('3', 'ABI'),
+        ('4', 'AS'),
+        ('5', 'Odrzucony'),
     )
     wniosek = models.ForeignKey(Wniosek, on_delete=models.CASCADE,
                                 related_name='historia')
-    status = models.CharField('Status', max_length=1,
-                              choices=CHOICES_LIST, default=3)
+    status = models.CharField(
+        'Status',
+        max_length=1,
+        choices=CHOICES_LIST,
+        default=1,
+    )
     data = models.DateTimeField('Data', auto_now=True, blank=False)
-    # pracownik
+    pracownik = models.ForeignKey(
+        Pracownik,
+        related_name='+',
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return '{0}'.format(self.wniosek)
@@ -176,6 +188,9 @@ class PracownicyObiektyUprawnienia(models.Model):
             self.id_obiektu,
             self.get_uprawnienia_display()
         )
+
+    def get_uprawnienia(self):
+        return '{0}'.format(self.get_uprawnienia_display())
 
     @classmethod
     def create(cls, login, id_obiektu, uprawnienia):

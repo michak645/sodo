@@ -50,7 +50,7 @@ def index(request):
         login = request.POST['login']
         try:
             admin = Labi.objects.get(login=login)
-            request.session['admin'] = admin.id
+            request.session['pracownik'] = admin.id
         except Labi.DoesNotExist:
             admin = None
         if admin is None:

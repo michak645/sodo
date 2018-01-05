@@ -25,7 +25,7 @@ from auth_ex.models import JednOrg, Pracownik, Labi
 # WNIOSKI
 def wnioski(request):
     wnioski = Wniosek.objects.all()
-    admin_id = request.session['admin']
+    admin_id = request.session['pracownik']
     admin = Labi.objects.get(id=admin_id)
     to_approve = []
 
@@ -36,7 +36,7 @@ def wnioski(request):
             historia = Historia.objects.filter(
                 wniosek=wniosek.id,
             ).order_by('-data')[0]
-            if historia.get_status() == 'Przetwarzanie':
+            if historia.get_status() == 'Złożony':
                 to_approve.append(historia)
 
     context = {
@@ -199,8 +199,12 @@ def wniosek_view(request, wniosek_id):
     # date = datetime.now()
     if request.method == 'POST':
         if request.POST.get('change', '') == u"Zatwierdź":
-            historia = Historia(wniosek_id=wniosek_id, status='1')
-            historia.save()
+            # historia = Historia(wniosek_id=wniosek_id, status='1')
+            Historia.objects.create(
+                wniosek_id=wniosek_id,
+                status='2',
+            )
+            # historia.save()
             try:
                 historia = Historia.objects. \
                     filter(wniosek=wniosek_id). \
@@ -211,20 +215,22 @@ def wniosek_view(request, wniosek_id):
             if w.typ == '1':
                 for obiekt in w.obiekty.all():
                     for uprawnienia in w.uprawnienia:
-                        PracownicyObiektyUprawnienia.objects.get_or_create(
-                            login=w.pracownik,
-                            id_obiektu=obiekt,
-                            uprawnienia=uprawnienia
-                        )
+                        for pracownik in w.pracownicy.all():
+                            PracownicyObiektyUprawnienia.objects.get_or_create(
+                                login=pracownik,
+                                id_obiektu=obiekt,
+                                uprawnienia=uprawnienia
+                            )
             elif w.typ == '2':
                 try:
                     for obiekt in w.obiekty.all():
                         for uprawnienia in w.uprawnienia:
-                            PracownicyObiektyUprawnienia.objects.get(
-                                login=w.pracownik,
-                                id_obiektu=obiekt,
-                                uprawnienia=uprawnienia
-                            ).delete()
+                            for pracownik in w.pracownicy.all():
+                                PracownicyObiektyUprawnienia.objects.get(
+                                    login=pracownik,
+                                    id_obiektu=obiekt,
+                                    uprawnienia=uprawnienia
+                                ).delete()
                 except PracownicyObiektyUprawnienia.DoesNotExist:
                     pass
             # context = {
