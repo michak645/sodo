@@ -27,37 +27,44 @@ def get_emp_for_POU(login):
     return "NIEAKTYWNY_" + Pracownik.objects.get(login=login)[0]
 '''
 
-# Gdy usuwamy jednostkę organizacyjną to jednostka poniżej musi mieć rodzica jako rodzica jednostki, która została usunięta
+
 @receiver(pre_delete, sender=JednOrg)
 def set_parent(sender, instance, **kwargs):
     parent_id = instance.parent
     JednOrg.objects.filter(parent=instance.id).update(parent=parent_id)
 
-'''    
+
+'''
 # Gdy usuwamy pracownika to chcemy mieć to zaznaczone we wniosku
 @receiver(pre_delete, sender=Pracownik)
 def get_emp(sender, instance, **kwargs):
-    Wniosek.objects.filter(pracownik=instance.login).update(pracownik=None)  
+    Wniosek.objects.filter(pracownik=instance.login).update(pracownik=None)
 
-# Tworzymy nowy wniosek i nadajemy mu pierwszą historię    
+# Tworzymy nowy wniosek i nadajemy mu pierwszą historię
 @receiver(post_save, sender=Wniosek)
 def create_first_history(sender, instance, created, **kwargs):
     if created:
         Historia.create(wniosek=instance)
 
-# Jeżeli wniosek o nadanie/odebranie uprawnień zostanie rozpatrzony pozytywnie to uaktualniamy tabelę POU (PracownicyObiektyUprawnienia) [aktualnie nie działa dla "Zmiana uprawnień"]
+# Jeżeli wniosek o nadanie/odebranie uprawnień zostanie
+# rozpatrzony pozytywnie to uaktualniamy tabelę POU
+# (PracownicyObiektyUprawnienia) [aktualnie nie działa dla "Zmiana uprawnień"]
 @receiver(post_save, sender=Historia)
 def update_POU(sender, instance, **kwargs):
     if instance.status == '1' and typ == '1':
         wnioski = Wniosek.objects.get(id=instance.wniosek)
         for wniosek in wnioski:
-            PracownicyObiektyUprawnienia.create(login=wniosek.pracownik, id_obiektu=wniosek.obiekt, uprawnienia=wniosek.uprawnienia)
+            PracownicyObiektyUprawnienia.create(
+                login=wniosek.pracownik,
+                id_obiektu=wniosek.obiekt,
+                uprawnienia=wniosek.uprawnienia
+            )
     elif instance.status == '1' and typ == '2':
         wnioski = Wniosek.objects.get(id=instance.wniosek)
         for wniosek in wnioski:
             wniosek.objects.filter(id=wniosek.id).delete()
 '''
-        
+
 
 class TypObiektu(models.Model):
     id = models.AutoField(primary_key=True)
@@ -73,7 +80,6 @@ class Obiekt(models.Model):
     typ = models.ForeignKey(TypObiektu, on_delete=models.CASCADE)
     # jedn_org = models.ForeignKey(JednOrg, on_delete=models.SET(set_parent))
     jedn_org = models.ForeignKey(JednOrg, on_delete=models.CASCADE)
-    administrator_obiektu = models.ForeignKey(Pracownik, null=True, on_delete=models.SET_NULL)
     opis = models.TextField()
 
     def __str__(self):
@@ -89,12 +95,27 @@ class Wniosek(models.Model):
     typ = models.CharField('Typ', max_length=1, choices=typy, default='1')
     # pracownik = models.ForeignKey(Pracownik, related_name='pracownik',
     # on_delete=models.SET(get_emp))
-    # pracownik = models.ManyToManyField('Pracownik', through='Pracownik', related_name='pracownik')
-    pracownik = models.ForeignKey(Pracownik, related_name='pracownik')
-    # obiekt = models.ManyToManyField('Obiekt', through='Obiekt', on_delete=models.SET_NULL, null=True)
-    obiekt = models.ForeignKey(Obiekt, on_delete=models.SET_NULL, null=True)
-    uprawnienia = MultiSelectField('Uprawnienia', max_length=1,
-                                   choices=uprawnienia, default='1')
+    pracownicy = models.ManyToManyField(
+        Pracownik,
+        related_name='pracownicy',
+        help_text='Pracownicy których dotyczy wniosek',
+    )
+    pracownik = models.ForeignKey(
+        Pracownik,
+        related_name='pracownik',
+        help_text='Pracownik składający wniosek',
+    )
+    obiekty = models.ManyToManyField(
+        Obiekt,
+        related_name='obiekty',
+    )
+    uprawnienia = MultiSelectField(
+        'Uprawnienia',
+        max_length=1,
+        choices=uprawnienia,
+        default='1'
+    )
+    # Po co to jest?s
     czy_zmienione = models.BooleanField(default=False)
     komentarz = models.TextField(null=True)
 
@@ -135,7 +156,7 @@ class Historia(models.Model):
     def create(cls, wniosek):
         historia = cls(wniosek=wniosek)
         return historia
-        
+
 
 class PracownicyObiektyUprawnienia(models.Model):
     # login = models.ForeignKey(Pracownik,
@@ -151,9 +172,26 @@ class PracownicyObiektyUprawnienia(models.Model):
             self.id_obiektu,
             self.get_uprawnienia_display()
         )
-        
+
     @classmethod
     def create(cls, login, id_obiektu, uprawnienia):
         pou = cls(login=login, id_obiektu=id_obiektu, uprawnienia=uprawnienia)
-        return pou    
-    
+        return pou
+
+
+class AdministratorObiektu(models.Model):
+    pracownik = models.ForeignKey(
+        Pracownik,
+        related_name='+'
+    )
+    obiekt = models.ForeignKey(
+        Obiekt,
+        related_name='+',
+    )
+    aktywny = models.BooleanField(
+        'Aktywny',
+        default=True,
+    )
+
+    def __str__(self):
+        return '{}'.format(self.pracownik)

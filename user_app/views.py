@@ -5,11 +5,13 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from .models import Cart
-from auth_ex.models import Pracownik, JednOrg
+from auth_ex.models import (
+    Pracownik,
+    JednOrg,
+    Labi,
+)
 from user_app.forms import (
     AddApplicationForm,
-    WizardStepOne,
-    WizardObiekt,
     WizardUprawnienia
 )
 from wnioski.models import (
@@ -245,24 +247,6 @@ def user_app_detail(request, pk):
 def step_one(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart, created = Cart.objects.get_or_create(id=pracownik_id)
-    if request.method == 'POST':
-        form = WizardStepOne(request.POST)
-        if form.is_valid():
-            cart.key = form.cleaned_data['typ']
-            return HttpResponseRedirect('/wizard/step_two')
-    else:
-        form = WizardStepOne()
-    context = {
-        'form': form,
-        'pracownik': pracownik,
-    }
-    return render(request, 'user_app/wizard/step_one.html', context)
-
-
-def step_two(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
     obj_list = None
     jednostka = None
@@ -300,10 +284,10 @@ def step_two(request):
         'pracownik': pracownik,
         'objs_cart': cart.obiekty.all(),
     }
-    return render(request, 'user_app/wizard/step_two.html', context)
+    return render(request, 'user_app/wizard/step_one.html', context)
 
 
-def step_two2(request):
+def step_two(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
@@ -343,7 +327,7 @@ def step_two2(request):
         'prac_list': prac_list,
         'prac_cart': cart.pracownicy.all(),
     }
-    return render(request, 'user_app/wizard/step_two2.html', context)
+    return render(request, 'user_app/wizard/step_two.html', context)
 
 
 def step_three(request):
@@ -351,7 +335,6 @@ def step_three(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
-    key = cart.key
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
         login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
@@ -366,7 +349,6 @@ def step_three(request):
     else:
         form = WizardUprawnienia()
     context = {
-        'key': key,
         'pracownik': pracownik,
         'cart': cart,
         'aktualne_uprawnienia': aktualne_uprawnienia,
@@ -375,12 +357,44 @@ def step_three(request):
     return render(request, 'user_app/wizard/step_three.html', context)
 
 
+def get_labi(jedn):
+    try:
+        jednostka = JednOrg.objects.get(id=jedn)
+    except JednOrg.DoesNotExist as e:
+        return e
+    if jednostka.czy_labi:
+        return Labi.objects.get(jednostka=jednostka.id)
+    else:
+        return get_labi(jednostka.parent.id)
+
+
 def step_four(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
     cart = Cart.objects.get(id=pracownik_id)
 
+    cart_objs = cart.obiekty.all()
+    labi_list = []
+    for obj in cart_objs:
+        if get_labi(obj.jedn_org.id) not in labi_list:
+            labi_list.append(get_labi(obj.jedn_org.id))
+
+    wnioski = []
+    for labi in labi_list:
+        wniosek = {}
+        wniosek['labi'] = labi
+        wniosek_obiekty = []
+        for obj in cart_objs:
+            if get_labi(obj.jedn_org.id) == labi:
+                wniosek_obiekty.append(obj)
+        wniosek['obiekty'] = wniosek_obiekty
+        wniosek['pracownicy'] = cart.pracownicy.all()
+        wniosek['uprawnienia'] = cart.uprawnienia
+        wniosek['typ_wniosku'] = cart.typ_wniosku
+        wnioski.append(wniosek)
+
     context = {
+        'wnioski': wnioski,
         'pracownik': pracownik,
         'cart': cart,
     }

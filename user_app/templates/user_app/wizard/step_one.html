@@ -2,27 +2,165 @@
 
 {% block content %}
 
-	<div class="progress">
-		<div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Krok 1</div>
-	</div>
-    <div class="row">
-
-        <form method="post" action="">{% csrf_token %}
-        	<div class="row">
-	            {% for key, value in form.fields.typ.choices %}
-	                <div>
-	                    <input id="typ-{{ forloop.counter }}" name="{{ form.typ.html_name }}" type="radio" value="{{ key }}"{% if key in checked_typ %}checked="checked"{% endif %} required>
-	                    <label for="typ-{{ forloop.counter }}">{{ value }}</label>
-	                </div>
-	            {% endfor %}
-        	</div>
-	        <div class="row center">
-				<a class="btn btn-primary" href="{% url 'user_index' %}">Anuluj</a>
-	        	<input class="btn btn-primary" type="submit" value="Dalej">
-	        </div>
-
-        </form>  
-
+    <div class="row progress">
+        <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
+
+    <div class="row">
+        <h3>Obiekty</h3>
+        <hr>
+    	<div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">1. Wybierz jednostkę</div>
+                <div class="panel-body">
+                    <form method="post" action="">{% csrf_token %}
+                        <div class="row">
+                            {% for jedn in jednostki %}
+                                <form method="post" action="">{% csrf_token %}
+                                    <input type="checkbox" name="show" value="True" checked hidden>
+                                    <input type="text" value="{{ jedn.id }}" name="jednostka" hidden>
+                                    <p>
+                                        <input class="btn" type="submit" value="{{ jedn }}">
+                                    </p>
+                                </form>
+                            {% endfor %}
+
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if jednostki.has_previous %}
+                                        <a href="?page={{ jednostki.previous_page_number }}">previous</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
+                                    </span>
+
+                                    {% if jednostki.has_next %}
+                                        <a href="?page={{ jednostki.next_page_number }}">next</a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    	</div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">2. Wybierz obiekt</div>
+                <div class="panel-body">
+                    {% if obj_list %}
+                        <form id="obiekt-search" action="" class="styled" method="post">
+                            <fieldset>
+                                <input type="text" class="text-input" id="obiekt-filter" placeholder="Szukaj...">
+                            </fieldset>
+                        </form>
+                        {% for obj in obj_list %}
+                            <form method="post" action="">{% csrf_token %}
+                                <span class="obiekt-search-field">
+                                    <input type="checkbox" name="add" value="True" checked hidden>
+                                    <input type="text" value="{{ obj.id }}" name="obj" hidden>
+                                    <p>
+                                        {{ obj }}
+                                        <input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
+                                    </p>
+                                </span>
+                            </form>
+                        {% endfor %}
+                    {% else%}
+                        <p>Nie ma żadnych obiektów</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    	
+    	<div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                	3. Wybrane obiekty
+                	<form method="post" action="" class="right">{% csrf_token %}
+			            <input type="checkbox" name="clear" value="True" checked hidden>
+			            <input type="submit" class="btn btn-primary" value="Wyczyść">
+			        </form>
+            	</div>
+                <div class="panel-body require">
+            		{% for obj in objs_cart %}
+         				<form method="post" action="">{% csrf_token %}
+        					<input type="text" value="{{ obj.id }}" name="obj" hidden>
+        					<input type="checkbox" name="delete" value="True" checked hidden>
+        					<p>
+        						{{ obj }}
+            					<input class="btn btn-warning" type="submit" value="Usuń">
+        					</p>
+        				</form>
+                    {% empty %}
+         			    <p>Brak</p>
+                    {% endfor %}
+                </div>
+            </div>
+    	</div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row center">
+		<a class="btn btn-primary" href="{% url 'user_index' %}">Anuluj</a>
+		<a id="dalej" class="btn btn-primary" >Dalej</a>
+    </div>
+
+
+<script type="text/javascript">
+    
+$(document).ready(function(){
+    $("#obiekt-filter").keyup(function(){
+        var filter = $(this).val();
+        $(".obiekt-search-field").each(function(){
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
+
+    $("#pracownik-filter").keyup(function(){
+        var filter = $(this).val();
+        $(".pracownik-search-field").each(function(){
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
+
+    $("#jednostka-filter").keyup(function(){
+        var filter = $(this).val();
+        $(".jednostka-search-field").each(function(){
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
+
+    var prac_ok = false;
+    $( "#dalej" ).on( "click", function() {
+        if($( "#prac-require" ).text().indexOf("Brak") >= 0){
+            $('.info').show()
+        } else {
+            prac_ok = true;
+        }
+
+        if(prac_ok){
+            window.location.href = "{% url 'step_two' %}";
+        }
+    });
+
+
+});
+
+</script>
 
 {% endblock %}

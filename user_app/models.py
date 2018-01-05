@@ -24,7 +24,6 @@ class Cart(models.Model):
     obiekty = models.ManyToManyField(Obiekt, blank=True)
     uprawnienia = MultiSelectField('Uprawnienia', max_length=25,
                                    choices=uprawnienia_choices)
-    key = models.CharField('Klucz', max_length=10, blank=True)
     typ_wniosku = models.CharField('Typ', max_length=10, choices=typ_choices)
 
     def __str__(self):

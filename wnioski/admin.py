@@ -4,7 +4,8 @@ from .models import (
     Obiekt,
     Wniosek,
     Historia,
-    PracownicyObiektyUprawnienia
+    PracownicyObiektyUprawnienia,
+    AdministratorObiektu,
 )
 
 
@@ -13,3 +14,4 @@ admin.site.register(Obiekt)
 admin.site.register(Wniosek)
 admin.site.register(Historia)
 admin.site.register(PracownicyObiektyUprawnienia)
+admin.site.register(AdministratorObiektu)

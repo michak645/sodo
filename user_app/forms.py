@@ -14,20 +14,6 @@ class AddApplicationForm(forms.ModelForm):
         }
 
 
-class WizardStepOne(forms.Form):
-    typy = (
-        ('1', 'Jeden obiekt, jeden użytkownik'),
-        ('2', 'Jeden obiekt, wiele użytkowników'),
-        ('3', 'Wiele obiektów, jeden użytkownik'),
-        ('4', 'Wiele obiektów, wiele użytkowników'),
-    )
-    typ = forms.ChoiceField(
-        label='Typ wniosku',
-        choices=typy, required=True,
-        widget=forms.RadioSelect()
-    )
-
-
 class WizardObiekt(forms.Form):
     jednostka = forms.ModelChoiceField(
         queryset=JednOrg.objects.all(), empty_label=None)

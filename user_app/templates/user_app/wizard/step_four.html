@@ -7,23 +7,44 @@
 	</div>
 
 	<div class="row">
-		{% for prac in cart.pracownicy.all %}
-			<p>{{ prac }}</p>
+		<h3>Podsumowanie wniosku</h3>
+	</div>
+
+	<div class="row">
+		{% if wnioski|length > 1 %} 
+		Wniosek został rozbity na {{ wnioski|length }} częsci. Ze względu na LABI.
+		{% endif %}
+	</div>
+
+	<div class="row">
+		{% for wniosek in wnioski %}
+			<div class="col-md-6">
+				<p>{{ wniosek.labi }}</p>
+				<p>
+					{% for obiekt in wniosek.obiekty %}
+						{{ obiekt }};
+					{% endfor %}
+				</p>
+				<p>
+					{% for pracownik in wniosek.pracownicy %}
+						{{ pracownik }};
+					{% endfor %}
+				</p>
+				<p>
+					{% for uprawnienia in wniosek.uprawnienia %}
+						{{ uprawnienia }}
+					{% endfor %}
+				</p>
+				<p>{{ wniosek.typ_wniosku }}</p>
+
+				<textarea class="form-control" rows="3" id="{{ wniosek.labi.id }}" placeholder="Wpisz komentarz"></textarea>
+			</div>
 		{% endfor %}
 	</div>
-	<div class="row">
-		{% for prac in cart.obiekty.all %}
-			<p>{{ prac }}</p>
-		{% endfor %}
-	</div>
-	<div class="row">
-		{% for prac in cart.uprawnienia %}
-			<p>{{ prac }}</p>
-		{% endfor %}
-	</div>
-	<div class="row">
-		{{ cart.typ_wniosku }}
-	</div>
-    
+
+
+	<div class="row center">
+        <a class="btn btn-primary" href="{% url 'step_three' %}">Powrót</a>
+    </div>
 
 {% endblock %}
