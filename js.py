@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
-#from importlib import reload
-#reload(sys)
-#sys.setdefaultencoding("UTF8")
 import json, requests
 import sqlite3
-#import mysql.connector
-#import MySQLdb
-#import os.path
 
 #   TERMINY ODNOŚNIE PRACY
 #   - obrony od 9 do 12 stycznia (wstępnie piątek, 9 stycznia pokazać ostateczną wersję)
@@ -22,112 +16,84 @@ import sqlite3
 #   - optymalizacja
 #   
 
-#BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-#db_path = os.path.join(BASE_DIR, "db.sqlite3")
-
 host = "http://150.254.76.229/EodService/AXDWService.asmx/"
 wnioski_model = "wnioski_"
 auth_ex_model = "auth_ex_"
 domain = "@amu.edu.pl"
-database = "db — kopia.sqlite3"
+database = "db (do skryptu js.py).sqlite3"
 organization_descs = []
 
 
 # Parametry: EmpId
-#urlEmpByEmpId = host + "GetEmpByEmpId?EmpId=string" + emp_id
+# urlEmpByEmpId = host + "GetEmpByEmpId?EmpId=string" + emp_id
 EmpByEmpId = host + "GetEmpByEmpId"
 
 # Parametry: Nazwisko
-#urlEmpListByLastName = host + "GetEmpListByLastName?Nazwisko=" + name
+# urlEmpListByLastName = host + "GetEmpListByLastName?Nazwisko=" + name
 EmpListByLastName = host + "GetEmpListByLastName"
 
 # Parametry: OrganizationDesc
-#urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=" + org_desc
+# urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=" + org_desc
 EmpListByOrgDesc = host + "GetEmpListByOrgDesc"
 
 # Parametry: Uid, status
-#urlEmpListByUid = host + "GetEmpListByUid?Uid=" + uid + "&status=" + status
+# urlEmpListByUid = host + "GetEmpListByUid?Uid=" + uid + "&status=" + status
 EmpListByUid = host + "GetEmpListByUid"
 
 # Parametry: OrgId
-#urlOrgById = host + "GetOrgById?OrgId=" + org_id
+# urlOrgById = host + "GetOrgById?OrgId=" + org_id
 OrgById = host + "GetOrgById"
 
 # Parametry: OrgDesc
-#urlOrgListByDesc = host + "GetOrgListByDesc?OrgDesc=" + org_desc
+# urlOrgListByDesc = host + "GetOrgListByDesc?OrgDesc=" + org_desc
 OrgListByDesc = host + "GetOrgListByDesc"
-
-#print ("Wybierz opcję")
-#print ()
 
 
 def EmpByEmpId(emp_id):
-    #parameters = dict(EmpId = emp_id)
     urlEmpByEmpId = host + "GetEmpByEmpId?EmpId=%" + emp_id
     
-    #response = requests.get(url = EmpByEmpId, params = parameters)
     response = requests.get(url = urlEmpByEmpId)
     data = json.loads(response.text)
-    #print (data)
+    # print (data)
     
 def EmpListByLastName(name):
-    #parameters = dict(Nazwisko = name)
     urlEmpListByLastName = host + "GetEmpListByLastName?Nazwisko=%" + name
     
-    #response = requests.get(url = EmpListByLastName, params = parameters)
     response = requests.get(url = urlEmpListByLastName)
     data = json.loads(response.text)
-    #print (data)
+    # print (data)
     return data
 
 def EmpListByOrgDesc(org_desc):
-    #parameters = dict(OrganizationDesc = org_desc)
     urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=%" + org_desc
     
-    #response = requests.get(url = EmpListByOrgDesc, params = parameters)
     response = requests.get(url = urlEmpListByOrgDesc)
     data = json.loads(response.text)
-    #print (data)
+    # print (data)
     return data
     
 def EmpListByUid(uid, status):
-    #parameters = dict(Uid = uid, status = status)
     urlEmpListByUid = host + "GetEmpListByUid?Uid=%" + uid + "&status=" + status
     
-    #response = requests.get(url = EmpListByUid, params = parameters)
     response = requests.get(url = urlEmpListByUid)
     data = json.loads(response.text)
-    #print (data)
+    # print (data)
     
 def OrgById(org_id):
-    #parameters = dict(OrgId = org_id)
     urlOrgById = host + "GetOrgById?OrgId=%" + org_id
     
-    #response = requests.get(url = OrgById, params = parameters)
     response = requests.get(url = urlOrgById)
     data = json.loads(response.text)
-    #print (data)
+    # print (data)
     
 def OrgListByDesc(org_desc):
-    #parameters = dict(OrgDesc = org_desc)
     urlOrgListByDesc = host + "GetOrgListByDesc?OrgDesc=%" + org_desc
-    #print (urlOrgListByDesc)
     
-    #response = requests.get(url = OrgListByDesc, params = parameters)
     response = requests.get(url = urlOrgListByDesc)
-    #print (response)
     data = json.loads(response.text)
-    #print (data)
+    # print (data)
     return data
 
-'''    
-def AllEmp():
-    parameters = dict()
-    
-    response = requests.get(url = OrgListByDesc, params = parameters)
-    data = json.loads(response.text)
-    print data
-'''
 
 def start_org():
     organization_keys = []
@@ -141,9 +107,9 @@ def start_org():
         for key, value in org[i].items():
             if key == "OrganizationKey":
                 organization_keys.append(value)
-            # Przyjmuję, że czy_labi oznacza tylko LABI
+            # Przyjmuję, że czy_labi oznacza LABI lub ABI
             if key == "OrganizationLevel":
-                if value == "1":
+                if value == '1' or value == '0':
                     organization_labi.append(1)
                 else:
                     organization_labi.append(0)
@@ -152,98 +118,65 @@ def start_org():
                 organization_descs.append(value)
             if key == "OrganizationParentKey":
                 organization_parent_keys.append(value)
-            
-            #organization_key = org_list.get("OrganizationKey", None)
-            #organization_key = org.get("OrganizationKey", None)
-            #organization_desc = org_list.get("OrganizationDesc", None)
-            #organization_desc = org.get("OrganizationDesc", None)
-        
-            #if organization_key:
-            #    organization_keys.append(organization_key)
-            #if organization_desc:
-            #    organization_descs.append(organization_desc)
-    #for j in range(len(organization_keys)):
-    
-    connection = sqlite3.connect(database)
-    
-    #database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
-    #print ("Database: ")
-    #print (database)
-    #query = """INSERT into " + model + "jednorg VALUES(%d, %s, %s)"""
-    cursor = connection.cursor()
-    #print ("Cursor: ")
-    #print (cursor)
-    #print (query)
-    #print ((organization_keys[0], organization_descs[0]))
-    j = 0
-    #values = []
-    
-    #select_query = "SELECT COUNT(id) from auth_ex_jednorg"
-    #cursor.execute(select_query)
-    #row = cursor.fetchone()
-    #count = row[0]
 
-    #print ("Amount: " + str(amount))
+    connection = sqlite3.connect(database)
+
+    cursor = connection.cursor()
+    j = 0
+
+    # print ("Amount: " + str(amount))
     for j in range(amount):
-        #print ("Id jednostki: " + organization_keys[j] + "    nazwa jednostki: " + organization_descs[j])
-        #with connection:
-        
-        #values = (organization_keys[j], organization_descs[j])
-        #print ("Values: " + str(values))
-        #cursor.execute(query, values)
-        #print (organization_keys[j])
-        #print (organization_descs[j])
-        
-        #values.append((organization_keys[j], organization_descs[j]))
-        #query = "INSERT into auth_ex_jednorg(id, czy_labi, nazwa, parent_id) values('{}', '{}', '{}', '{}') on duplicate key UPDATE id=id, czy_labi=czy_labi, nazwa=nazwa, parent_id=parent_id".format(organization_keys[j], organization_labi[j], organization_descs[j], organization_parent_keys[j])
         query = "INSERT or REPLACE into auth_ex_jednorg(id, czy_labi, nazwa, parent_id) values('{}', '{}', '{}', '{}')".format(organization_keys[j], organization_labi[j], organization_descs[j], organization_parent_keys[j])
-        #print ("Query: ")
-        #print (query)
         cursor.execute(query)
-        #print (values)
-        #print (cursor)
-        #print ("Cursor: " + str(cursor))
-    #print (values)
-    
-    #cursor.execute("INSERT into wnioski_jednorg(id_jedn, nazwa) values('{0}', '{1}')", [values])
+        
     connection.commit()
-    #database.rollback()
     connection.close()
 
 def start_typ():
-    #sys.exit()
+    # sys.exit()
     employee_types = []
     
     connection = sqlite3.connect(database)
     select_cursor = connection.cursor()
     insert_cursor = connection.cursor()
+    select2_cursor = connection.cursor()
     
     select_cursor.execute("SELECT nazwa from auth_ex_jednorg")
-    #for row in select_cursor:
+    # for row in select_cursor:
     if (True):
-        #print ("Row: ")
-        #print (row)
-        #typ = EmpListByOrgDesc(row[0])
+        # print ("Row: ")
+        # print (row)
+        # typ = EmpListByOrgDesc(row[0])
         typ = EmpListByOrgDesc("Matematyki")
         amount = len(typ)
         
         for i in range(amount):
             for key, value in typ[i].items():
                 if key == "grupa_pracownika":
-                    #employee_types.update(value)
+                    # employee_types.update(value)
                     employee_types.append(value)
     employee_types = set(employee_types)
     employee_types = list(employee_types)
     counts = len(employee_types)
-    #database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
-    #connection = sqlite3.connect(database)
-    #cursor = connection.cursor()
     j = 0
-    #values = []
     
+    # rodzaje = []
+    # select2_cursor.execute("SELECT rodzaj from auth_ex_rodzajpracownika")
+    # for row in select2_cursor:
+        # rodzaj = select2_cursor.fetchone()
+        # rodzaje.append(row[0])
+        
+    # print ("Rodzaje: ")
+    # print (rodzaje)
+    # print ("ET: ")
+    # print (employee_types)
+    # for employee_type in employee_types:
+        # if employee_type in rodzaje:
+            # employee_types.remove(employee_type)
+    # print ("Po usunięciu: ")
+    # print (employee_types)
     for j in range(counts):
-        #query = "INSERT into auth_ex_rodzajpracownika(nazwa) values('{}') on duplicate key UPDATE nazwa=nazwa".format(employee_types[j])
-        query = "INSERT into auth_ex_rodzajpracownika(rodzaj) values('{}')".format(employee_types[j])
+        query = "INSERT or REPLACE into auth_ex_rodzajpracownika(rodzaj) values('{}')".format(employee_types[j])
         insert_cursor.execute(query)
     connection.commit()
     connection.close()
@@ -260,19 +193,19 @@ def start_emp():
     cursor = connection.cursor()
     
     cursor.execute("SELECT nazwa from auth_ex_jednorg")
-    #amount_jedn = cursor.rowcount
-    #row = cursor.fetchone()
-    #amount_jedn = row[0]
+    # amount_jedn = cursor.rowcount
+    # row = cursor.fetchone()
+    # amount_jedn = row[0]
     
-    #for row in cursor:
+    # for row in cursor:
     if (True):
-        #emp = EmpListByOrgDesc(row[0])
+        # emp = EmpListByOrgDesc(row[0])
         emp = EmpListByOrgDesc("Matematyki")
         amount = len(emp)
         
         for i in range(amount):
             for key, value in emp[i].items():
-                if key == "status" and value == "0":
+                if key == "status" and value == '0':
                     break
                 elif key == "uid":
                     employee_uids.append(value)
@@ -286,12 +219,7 @@ def start_emp():
                     employee_groups.append(value)
                 elif key == "OrganizationKey":
                     employee_organization_keys.append(value)
-        
-        
-        #database = MySQLdb.connect(host="localhost", user="root", passwd="password", db="sodo", charset="utf8")
-        #connection = sqlite3.connect(database)
-        #cursor = connection.cursor()
-        
+
         '''
         organizations_query = "SELECT * from wnioski_jednorg"
         cursor.execute(organizations_query)
@@ -321,176 +249,19 @@ def start_emp():
         print (str(row[0]) + ' ' + row[1])
         row = cursor.fetchone()
     '''
-    #sys.exit()
+    
+    # sys.exit()
     j = 0
-    #values = []
     all = len(employee_uids)
     
-    #print ("Amount: " + str(amount))
+    # print ("Amount: " + str(amount))
     for j in range(all):
-        #query = u"INSERT into auth_ex_pracownik(imie, email, numer_ax, jedn_org_id, rodzaj_id, login, nazwisko) values('{}', '{}', '{}', '{}', '{}', '{}', '{}') on duplicate key UPDATE imie=imie, email=email, numer_ax=numer_ax, jedn_org_id=jedn_org_id, rodzaj_id=rodzaj_id, login=login, nazwisko=nazwisko".format(employee_names[j], employee_uids[j] + "@amu.edu.pl", employee_ax[j], employee_organization_keys[j], employee_groups[j], employee_uids[j], employee_surnames[j])
-        query = u"INSERT or REPLACE into auth_ex_pracownik(imie, email, numer_ax, jedn_org_id, rodzaj_id, login, nazwisko) values('{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(employee_names[j], employee_uids[j] + "@amu.edu.pl", employee_ax[j], employee_organization_keys[j], employee_groups[j], employee_uids[j], employee_surnames[j])
-        #print ("Query: ")
-        #print (query)
+        query = u"INSERT or REPLACE into auth_ex_pracownik(login, imie, nazwisko, email, numer_ax, czy_aktywny, jedn_org_id, rodzaj_id) values('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(employee_uids[j],  employee_names[j], employee_surnames[j], employee_uids[j] + "@amu.edu.pl", employee_ax[j], '1', employee_organization_keys[j], employee_groups[j])
         cursor.execute(query)
-        #print (values)
-        #print (cursor)
-        #print ("Cursor: " + str(cursor))
-    #print (values)
     
-    #cursor.execute("INSERT into wnioski_jednorg(id_jedn, nazwa) values('{0}', '{1}')", [values])
     connection.commit()
-    #database.rollback()
     connection.close()
     
-'''    
-def start_emp():
-    return None
-
-    organization_keys = []
-    organization_descs = []
-
-    org = OrgListByDesc("")
-    amount = len(org)
-    #up_org = org.replace("'", '"')
-    # org_list to dictionary
-    #org_list = json.loads(org)
-    
-    print (org[0])
-    #sys.exit()
-    
-    for i in range(amount):
-        for key, value in org[i].items():
-            #print (key)
-            #print (value)
-            #sys.exit()
-            if key == "OrganizationKey":
-                organization_keys.append(value)
-            if key == "OrganizationDesc":
-                organization_descs.append(value)
-            
-            #organization_key = org_list.get("OrganizationKey", None)
-            #organization_key = org.get("OrganizationKey", None)
-            #organization_desc = org_list.get("OrganizationDesc", None)
-            #organization_desc = org.get("OrganizationDesc", None)
-        
-            #if organization_key:
-            #    organization_keys.append(organization_key)
-            #if organization_desc:
-            #    organization_descs.append(organization_desc)
-    #for j in range(len(organization_keys)):
-    database = "db.sqlite3"
-    connection = sqlite3.connect("db.sqlite3")
-    
-    for j in range(20):
-        print ("Id jednostki: " + organization_keys[j] + "    nazwa jednostki: " + organization_descs[j])
-        with connection:
-            sql = "INSERT into " + model + "jednorg(id_jedn, nazwa) VALUES(?, ?)"
-            cursor = connection.cursor()
-            values = (organization_keys[j], organization_descs[j])
-            cursor.execute(sql, values)
-'''
-'''        
-def start_typ():
-    employee_types = []
-
-    #emp = EmpListByOrgDesc("Matematyki i Informatyki")
-    emp = EmpListByLastName("kow")
-    amount = len(emp)
-    
-    for i in range(amount):
-        for key, value in emp[i].items():
-            if key == "grupa_pracownika":
-                employee_types.append(value)
-
-    database = "db.sqlite3"
-    connection = sqlite3.connect(database)
-    
-    for j in range(20):
-        print ("Rodzaj pracownika: " + employee_types[j])
-        if employee_types[j] not in employee_types:
-            with connection:
-                sql = "INSERT into " + model + "rodzajpracownika(nazwa) VALUES(?)"
-                cursor = connection.cursor()
-                values = (employee_types[j])
-                cursor.execute(sql, values)
-'''
-# Zmiany: id [numer_AX], nazwisko [nazwisko], imie [imie], rodzaj_id (-) [grupa_pracownika], jedn_org_id (jednorg.id_jedn), email [uid]
-def update_employees(): 
-    json_uids = []
-    json_ax = []
-    json_surnames = []
-    json_names = []
-    json_groups = []
-    json_organization_keys = []
-    json_statuses = []
-    
-    uids = []
-    ax = []
-    surnames = []
-    names = []
-    groups = []
-    organization_keys = []
-    statuses = []
-
-    json_emp = EmpListByOrgDesc("%Matematyki")
-    json_amount = len(json_emp)
-    
-    for i in range(json_amount):
-        for key, value in json_emp[i].items():
-            if key == "uid":
-                json_uids.append(value + "@amu.edu.pl")
-            elif key == "numer_AX":
-                json_ax.append(value)
-            elif key == "nazwisko":
-                json_surnames.append(value)
-            elif key == "imie":
-                json_names.append(value)
-            elif key == "grupa_pracownika":
-                json_groups.append(value)
-            elif key == "OrganizationKey":
-                json_organization_keys.append(value)
-            elif key == "status":
-                json_statuses.append(value)
-
-    database = MySQLdb.connect("localhost", "root", "password", "sodo")
-    cursor = database.cursor()
-    #j = 0
-    #values = []
-    '''
-    count_query = "SELECT * from wnioski_pracownik"
-    counts = cursor.execute(count_query)
-    for k in range(counts):
-        select_query = u"SELECT * from wnioski_pracownik"
-        cursor.execute(select_query)
-        data_from_database = cursor.fetchall()
-        for row in data_from_database:
-    '''        
-    
-    print ("Amount: " + str(json_amount))
-    for j in range(json_amount):
-        update_query = u"UPDATE wnioski_pracownik(imie, nazwisko, email, jedn_org_id, rodzaj_id, numer_ax, czy_pracuje) values('{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(employee_names[j], employee_surnames[j], employee_uids[j], 4610, 8, employee_ax[j], employee_statuses[j])
-        print ("Query: ")
-        print (query)
-        cursor.execute(query)
-        #print (values)
-        #print (cursor)
-        #print ("Cursor: " + str(cursor))
-    #print (values)
-    
-    #cursor.execute("INSERT into wnioski_jednorg(id_jedn, nazwa) values('{0}', '{1}')", [values])
-    database.commit()
-    #database.rollback()
-    database.close()
-    #sql = "UPDATE " + model + "pracownik SET "
-    return None
-
-def update_types():
-    return None
-    
-# Zmiany: id_jedn [OrganizationKey], nazwa [OrganizationDesc]
-def update_organizations():
-    return None
 
 # Automatyczne uzupełnianie danych na początku oraz ich prototypowa aktualizacja
 start_org()
@@ -527,14 +298,4 @@ elif (opcja == 'f'):
 elif (opcja == 'g'):
     o_d = input("Podaj nazwę jednostki organizacyjnej: ")
     OrgListByDesc(o_d)    
-'''    
-'''
-elif (opcja = 'b'):
-    id = input("Podaj id pracownika")
-    y = input("Podaj rok urlopu pracownika")   
-    EmpHolidayHoursEmpId(id, y, uid, password)
-'''    
-    
-    
-    
-    
+'''   
