@@ -1,4 +1,6 @@
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import pre_delete
 
 '''
 def get_parent_from_org(parent):
@@ -6,13 +8,13 @@ def get_parent_from_org(parent):
 
 def get_parent_from_emp(jedn_org):
     return JednOrg.objects.get(id=jedn_org)[0]
-'''
+''' 
 
-
+    
 class JednOrg(models.Model):
     id = models.CharField('ID', primary_key=True, max_length=11)
     # parent = models.ForeignKey('self', null=True, blank=True,
-    #                            on_delete=models.SET(get_parent_from_org))
+    #                            on_delete=models.SET(set_parent))
     parent = models.ForeignKey(
         'self', null=True, blank=True, on_delete=models.CASCADE)
     czy_labi = models.BooleanField(default=False)
@@ -21,6 +23,12 @@ class JednOrg(models.Model):
     def __str__(self):
         return '{0}. {1}'.format(self.id, self.nazwa)
 
+# Gdy usuwamy jednostkę organizacyjną to jednostka poniżej musi mieć rodzica jako rodzica jednostki, która została usunięta
+@receiver(pre_delete, sender=JednOrg)
+def set_parent(sender, instance, **kwargs):
+    parent_id = instance.parent
+    JednOrg.objects.filter(parent=instance.id).update(parent=parent_id)  
+    
 
 class RodzajPracownika(models.Model):
     rodzaj = models.CharField(max_length=255, unique=True, default="Zwykły")
@@ -42,10 +50,11 @@ class Pracownik(models.Model):
         on_delete=models.CASCADE
     )
     # jedn_org = models.ForeignKey(JednOrg,
-    # related_name='+', null=True, on_delete=models.SET(get_parent_from_emp))
+    # related_name='+', null=True, on_delete=models.SET(set_parent))
     jedn_org = models.ForeignKey(
         JednOrg, related_name='+', null=True, on_delete=models.CASCADE)
     numer_ax = models.CharField(max_length=6, unique=True, null=True)
+    czy_aktywny = models.BooleanField(default=True)
 
     def __str__(self):
         return u'{0} {1}'.format(self.imie, self.nazwisko)
