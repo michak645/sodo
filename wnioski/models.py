@@ -113,16 +113,19 @@ class Wniosek(models.Model):
         'Uprawnienia',
         max_length=1,
         choices=uprawnienia,
-        default='1'
     )
     # Po co to jest?s
     czy_zmienione = models.BooleanField(default=False)
-    komentarz = models.TextField(null=True)
+    komentarz = models.TextField(
+        'Komentarz',
+        max_length=255,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
-        return '{0} - {1}, {2} do \'{3}\''.format(
+        return '{} {} {}'.format(
             self.pracownik,
-            self.obiekt,
             self.get_typ_display(),
             self.get_uprawnienia_display(),
         )
@@ -145,6 +148,7 @@ class Historia(models.Model):
     status = models.CharField('Status', max_length=1,
                               choices=CHOICES_LIST, default=3)
     data = models.DateTimeField('Data', auto_now=True, blank=False)
+    # pracownik
 
     def __str__(self):
         return '{0}'.format(self.wniosek)

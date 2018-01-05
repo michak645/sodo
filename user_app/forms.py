@@ -7,7 +7,7 @@ from auth_ex.models import JednOrg, Pracownik
 class AddApplicationForm(forms.ModelForm):
     class Meta:
         model = Wniosek
-        fields = ['pracownik', 'typ', 'uprawnienia', 'obiekt']
+        fields = ['pracownik', 'typ', 'uprawnienia', 'obiekty']
         widgets = {
             'pracownik': forms.HiddenInput(),
             'uprawnienia': forms.CheckboxSelectMultiple(),

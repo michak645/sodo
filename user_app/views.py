@@ -77,7 +77,7 @@ def user_objects_list(request):
             return render(request, 'user_app/user_objects_list.html', context)
 
     for wniosek in historia:
-        dostepne_obiekty.append(wniosek.wniosek.obiekt)
+        dostepne_obiekty.append(wniosek.wniosek.obiekty)
     context = {
         'pracownik': pracownik,
         'obiekty': obiekty,
@@ -247,7 +247,7 @@ def user_app_detail(request, pk):
 def step_one(request):
     pracownik_id = request.session['pracownik']
     pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    cart, created = Cart.objects.get_or_create(id=pracownik_id)
     obj_list = None
     jednostka = None
     jednostki = JednOrg.objects.all()
@@ -277,6 +277,7 @@ def step_one(request):
             jednostka = request.POST.get('jednostka')
             obj_list = Obiekt.objects.filter(jedn_org=jednostka)
             jednostka = JednOrg.objects.get(id=jednostka).nazwa
+
     context = {
         'wybrana_jednostka': jednostka,
         'jednostki': jedn,
@@ -393,6 +394,20 @@ def step_four(request):
         wniosek['typ_wniosku'] = cart.typ_wniosku
         wnioski.append(wniosek)
 
+    if request.method == 'POST':
+        for wniosek in wnioski:
+            w = Wniosek.objects.create(
+                typ=cart.typ_wniosku,
+                pracownik=pracownik,
+                uprawnienia=cart.uprawnienia,
+            )
+            for pracownik in cart.pracownicy.all():
+                w.pracownicy.add(pracownik)
+            for obiekt in wniosek['obiekty']:
+                w.obiekty.add(obiekt)
+            w.save()
+        cart.delete()
+        return HttpResponseRedirect('/user_index')
     context = {
         'wnioski': wnioski,
         'pracownik': pracownik,

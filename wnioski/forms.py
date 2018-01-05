@@ -6,10 +6,7 @@ from django import forms
 class WniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'uprawnienia', 'pracownik', 'obiekt')
-        widgets = {
-            'uprawnienia': forms.Select(),
-        }
+        fields = ('typ',)
 
     # def clean_user(self):
     #     user = self.cleaned_data['user']
@@ -45,7 +42,7 @@ class EditObiektForm(ModelForm):
 class EditWniosekForm(ModelForm):
     class Meta:
         model = Wniosek
-        fields = ('typ', 'pracownik', 'obiekt')
+        fields = ('typ', 'pracownik', 'obiekty')
 
 
 class EditTypObiektuForm(ModelForm):

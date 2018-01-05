@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -8,7 +6,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
-from datetime import datetime
 
 from auth_ex.forms import JednostkaForm
 from auth_ex.views import find_labi
@@ -31,8 +28,10 @@ def wnioski(request):
     admin_id = request.session['admin']
     admin = Labi.objects.get(id=admin_id)
     to_approve = []
+
     for wniosek in wnioski:
-        wniosek_labi = find_labi(wniosek.obiekt.jedn_org.id)
+        obiekt = wniosek.obiekty.all()[0]
+        wniosek_labi = find_labi(obiekt.jedn_org.id)
         if wniosek_labi == admin:
             historia = Historia.objects.filter(
                 wniosek=wniosek.id,
@@ -210,18 +209,22 @@ def wniosek_view(request, wniosek_id):
                 historia = None
 
             if w.typ == '1':
-                PracownicyObiektyUprawnienia.objects.get_or_create(
-                    login=w.pracownik,
-                    id_obiektu=w.obiekt,
-                    uprawnienia=w.uprawnienia
-                )
+                for obiekt in w.obiekty.all():
+                    for uprawnienia in w.uprawnienia:
+                        PracownicyObiektyUprawnienia.objects.get_or_create(
+                            login=w.pracownik,
+                            id_obiektu=obiekt,
+                            uprawnienia=uprawnienia
+                        )
             elif w.typ == '2':
                 try:
-                    PracownicyObiektyUprawnienia.objects.get(
-                        login=w.pracownik,
-                        id_obiektu=w.obiekt,
-                        uprawnienia=w.uprawnienia
-                    ).delete()
+                    for obiekt in w.obiekty.all():
+                        for uprawnienia in w.uprawnienia:
+                            PracownicyObiektyUprawnienia.objects.get(
+                                login=w.pracownik,
+                                id_obiektu=obiekt,
+                                uprawnienia=uprawnienia
+                            ).delete()
                 except PracownicyObiektyUprawnienia.DoesNotExist:
                     pass
             # context = {

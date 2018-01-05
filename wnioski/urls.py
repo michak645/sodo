@@ -4,7 +4,7 @@ from . import views
 from .views import (
     PracownikListView,
     PracownikDetailView,
-    WniosekCreateView)
+)
 
 urlpatterns = [
     # views
