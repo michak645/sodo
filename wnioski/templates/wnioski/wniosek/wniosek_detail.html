@@ -8,9 +8,6 @@
 
         <div class="row">
             <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
-            <a class="btn btn-primary" href="/app_edit/{{ wniosek.id }}">
-                Edytuj <span class="glyphicon glyphicon-pencil"></span>
-            </a>
             <a target="_blank" class="btn btn-primary" href="/wniosekpdf/{{ wniosek.id }}">
                 Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
             </a>
@@ -35,7 +32,7 @@
                     <label>Typ wniosku: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    <p>{{ wniosek.typ }}</p>
+                    <p>{{ wniosek.get_typ_display }}</p>
                 </div>
             </div>
 
@@ -50,7 +47,7 @@
 
             <div class="row">
                 <div class="col-md-4 col-sm-4">
-                    <label>Pracownik: </label>
+                    <label>Pracownik składający: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
                     <p>{{ wniosek.pracownik }}</p>
@@ -59,15 +56,39 @@
 
             <div class="row">
                 <div class="col-md-4 col-sm-4">
+                    <label>Pracownicy których dotyczy: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" id="pracownicy">Pokaż pracowników</a>
+                    </p>
+                    <div class="collapse" id="collapseExample">
+                        <div class="panel panel-default">
+                            {% for pracownik in wniosek.pracownicy.all %}
+                                <p>{{ pracownik }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
                     <label>Obiekty: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    {% for obiekt in wniosek.obiekty.all %}
-                        <p>{{ obiekt }}</p>
-                    {% endfor %}
+                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseobiekty" role="button" aria-expanded="false" aria-controls="collapseobiekty">Pokaż obiekty</a>
+                    </p>
+                    <div class="collapse" id="collapseobiekty">
+                        {% for obiekt in wniosek.obiekty.all %}
+                            <p>{{ obiekt }}</p>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
+
+        <p>
+
 
         <div class="row">
             <form action="{% url 'wniosek_detail' wniosek.pk %}" method="post">
@@ -106,5 +127,20 @@
         {% endif %}
 
     </div>
+
+    {% comment %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#pracownicy').on('click', function(){
+                $('#pracownicy').hide();
+                $('#collapseExample').show()
+            });
+            $('#collapseExample').on('click', function(){
+                $('#pracownicy').show();
+                $('#collapseExample').hide()
+            });
+        });
+    </script>
+    {% endcomment %}
 
 {% endblock %}

@@ -4,34 +4,76 @@
 
 {% block content %}
 
-    {% if to_approve %}
-        <div class="row">
-            <h3>Najnowsze do zatwierdzenia</h3>
-        </div>
-        <div class="row">
-            <div class="row table-responsive">
-                <table class="table table-hover table-striped table-bordered">
-                    <tr>
-                        <th>Wniosek</th>
-                        <th>Status</th>
-                        <th>Data</th>
-                    </tr>
-                    {% for historia in to_approve %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'wniosek_detail' historia.wniosek.id %}">{{ forloop.counter }}. {{ historia.wniosek }}</a>
-                            </td>
-                            <td>{{ historia.get_status }}</td>
-                            <td>{{ historia.data }}</td>
-                        </tr>
-                    {%endfor%}
-                </table>
+    <div class="row">
+        <h3>Lista wniosków</h3>
+    </div>
+
+    <div class="row">
+        <form method="post" action="">{% csrf_token %}
+            <div class="col-md-2">
+                <input type="text" name="search" placeholder="Wyszukaj pracownika" class="form-control">
             </div>
+            <div class="col-md-2">
+                <input type="submit" value="Szukaj" class="btn">
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Lp.</th>
+                <th scope="col">Pracownik składający</th>
+                <th scope="col">Typ</th>
+                <th scope="col">Uprawnienia</th>
+                <th scope="col">Obiekty</th>
+                <th scope="col">Data</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for wniosek in wnioski %}
+                <tr class="clickable-row" data-href="{% url 'wniosek_detail' wniosek.id %}">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ wniosek.pracownik }}</td>
+                    <td>{{ wniosek.get_typ_display }}</td>
+                    <td>{{ wniosek.get_uprawnienia_display }}</td>
+                    <td>
+                        {% for obiekt in wniosek.obiekty.all %}
+                            {{ obiekt }}<br>
+                        {% endfor %}
+                    </td>
+                    <td>{{ wniosek.data }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="pagination">
+            <span class="step-links">
+                {% if wnioski.has_previous %}
+                    <a href="?page={{ wnioski.previous_page_number }}">Poprzednia</a>
+                {% endif %}
+
+                <span class="current">
+                    Strona {{ wnioski.number }} z {{ wnioski.paginator.num_pages }}.
+                </span>
+
+                {% if wnioski.has_next %}
+                    <a href="?page={{ wnioski.next_page_number }}">Dalej</a>
+                {% endif %}
+            </span>
         </div>
-    {% else %}
-        <div class="row">
-            <h3>Brak wniosków do zatwierdzenia</h3>
-        </div>
-    {% endif %}
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+
 
 {% endblock %}

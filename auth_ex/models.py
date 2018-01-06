@@ -64,6 +64,9 @@ class Pracownik(models.Model):
     def __str__(self):
         return u'{0} {1}'.format(self.imie, self.nazwisko)
 
+    def name(self):
+        return '{} {}'.format(self.imie, self.nazwisko)
+
 
 class Labi(models.Model):
     # login = models.ForeignKey(Pracownik, 'login', on_delete=models.CASCADE)

@@ -74,3 +74,17 @@ hr {
     margin-top: 20px;
 
 }
+
+.center {
+   text-align: center;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    cursor: pointer;
+    background: #337ab7 !important;
+    color: black !important;
+}

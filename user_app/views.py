@@ -252,7 +252,7 @@ def step_one(request):
     jednostka = None
     jednostki = JednOrg.objects.all()
 
-    paginator = Paginator(jednostki, 4)
+    paginator = Paginator(jednostki, 10)
     page = request.GET.get('page')
     try:
         jedn = paginator.page(page)
@@ -296,7 +296,7 @@ def step_two(request):
     jednostka = None
     jednostki = JednOrg.objects.all()
 
-    paginator = Paginator(jednostki, 4)
+    paginator = Paginator(jednostki, 10)
     page = request.GET.get('page')
     try:
         jedn = paginator.page(page)

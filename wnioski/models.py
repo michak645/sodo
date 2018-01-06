@@ -141,9 +141,9 @@ class Wniosek(models.Model):
 class Historia(models.Model):
     CHOICES_LIST = (
         ('1', 'Złożony'),
-        ('2', 'LABI'),
-        ('3', 'ABI'),
-        ('4', 'AS'),
+        ('2', 'Zatwierdzone przez LABI'),
+        ('3', 'Zatwierdzone przez ABI'),
+        ('4', 'Zatwierdzone przez AS'),
         ('5', 'Odrzucony'),
     )
     wniosek = models.ForeignKey(Wniosek, on_delete=models.CASCADE,

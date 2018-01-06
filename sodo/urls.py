@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^', include('auth_ex.urls')),
     url(r'^', include('pdf_generator.urls')),
     url(r'^', include('user_app.urls')),
+    url(r'^', include('abi_app.urls')),
 ]

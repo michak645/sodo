@@ -8,21 +8,23 @@ from .views import (
 
 urlpatterns = [
     # views
+    url(r'^admin_index$', views.admin_index, name='admin_index'),
+
+    url(r'^wnioski/', views.wnioski, name='wnioski'),
+    url(r'^wniosek/(?P<pk>\d+)/', views.wniosek_detail,
+        name='wniosek_detail'),
+
     url(r'^obiekty/', views.obiekty, name='obiekty'),
     url(r'^pracownicy/', PracownikListView.as_view(), name='pracownicy'),
-    url(r'^wnioski/', views.wnioski, name='wnioski'),
     url(r'^typy_obiektow/', views.typy_obiektow, name='typy_obiektow'),
     url(r'^jednostki/', views.jednostki, name='jednostki'),
     url(r'^user_view/(?P<pk>\d+)/', PracownikDetailView.as_view(),
         name='user_view'),
     url(r'^obj_view/(?P<obj_id>\d+)/', views.obj_view, name='obj_view'),
-    url(r'^wniosek_view/(?P<wniosek_id>\d+)/', views.wniosek_view,
-        name='wniosek_detail'),
     url(r'^typ_obiektu_view/(?P<typ_obiektu_id>\d+)/', views.typ_obiektu_view, name='typ_obiektu_view'),
     url(r'^jednostka_view/(?P<pk>\d+)/', views.jednostka_view, name='jednostka_view'),
 
     # edit
-    url(r'^user_edit/(?P<user_id>\d+)/', views.user_edit, name='user_edit'),
     url(r'^obj_edit/(?P<obj_id>\d+)/', views.obj_edit, name='obj_edit'),
     url(r'^app_edit/(?P<app_id>\d+)/', views.app_edit, name='app_edit'),
     url(r'^typ_obiektu_edit/(?P<typ_obiektu_id>\d+)/', views.typ_obiektu_edit, name='typ_obiektu_edit'),

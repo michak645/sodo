@@ -1,0 +1,22 @@
+.padding-60 {
+    padding-top: 60px;
+}
+
+.btn-link {
+    color: black !important;
+    text-decoration: underline;
+}
+
+.non-under {
+    text-decoration: none;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    cursor: pointer;
+    background: #A9A9A9 !important;
+    color: black !important;
+}

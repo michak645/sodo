@@ -1,1 +1,44 @@
-{% extends 'wnioski/base/base.html' %}
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <h2 class="center">Witaj, {{ admin }} </h2>
+        <p class="center">
+            Witaj w centrum zarządzania swoim kontem w systemie SODO Wnioski oczekujące na decyzję: 
+        </p>
+    </div>
+
+    {% if to_approve %}
+        <div class="row">
+            <h3>Najnowsze do zatwierdzenia</h3>
+        </div>
+        <div class="row">
+            <div class="row table-responsive">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>Wniosek</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                    </tr>
+                    {% for historia in to_approve %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'wniosek_detail' historia.wniosek.id %}">{{ forloop.counter }}. {{ historia.wniosek }}</a>
+                            </td>
+                            <td>{{ historia.get_status }}</td>
+                            <td>{{ historia.data }}</td>
+                        </tr>
+                    {%endfor%}
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <h3 class="center">Brak wniosków do zatwierdzenia</h3>
+        </div>
+    {% endif %}
+
+{% endblock %}

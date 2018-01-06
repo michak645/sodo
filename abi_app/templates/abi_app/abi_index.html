@@ -1,0 +1,75 @@
+{% extends 'abi_app/base_site/base_site.html' %}
+{% block title %}ABI - panel{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <h2 class="center">Witaj, {{ pracownik }} </h2>
+        <p class="center">
+            Witaj w centrum zarządzania swoim kontem w systemie SODO Wnioski oczekujące na decyzję: 
+        </p>
+    </div>
+
+    {% if wnioski %}
+        <div class="row">
+            <form action="" method="post">{% csrf_token %}
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Lp.</th>
+                        <th scope="col">Wniosek</th>
+                        <th scope="col">Typ</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Data
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <input type="submit" name="data-nowe" value="Od najnowszych" class="btn btn-link non-under">
+                                    <input type="submit" name="data-stare" value="Od najstarszych" class="btn btn-link non-under">
+                                </div>
+                            </div>
+                            
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for wniosek in wnioski %}
+                        <tr class="clickable-row" data-href="{% url 'wniosek_detail' wniosek.wniosek.id %}">
+                            <th>
+                                <input type="checkbox" name="decyzja" value="{{ wniosek.wniosek.id }}">
+                            </th>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ wniosek|truncatechars:"70" }}</td>
+                            <td>{{ wniosek.wniosek.get_typ_display }}</td>
+                            <td>{{ wniosek.get_status_display }}</td>
+                            <td>{{ wniosek.data }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <input type="submit" name="odrzuc" value="Odrzuć">
+                <input type="submit" name="zatwierdz" value="Zatwiedź">
+                <input type="submit" name="data" id="data-sumit" hidden>
+            </form>
+        </div>
+    {% endif %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#data').on('click', function(){
+                console.log('lol');
+                $('#data-input').prop('checked', 'true');
+                $('#data-submit').click();
+            });
+        });
+
+        $(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+
+{% endblock %}

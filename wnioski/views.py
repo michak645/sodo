@@ -2,6 +2,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -22,11 +23,9 @@ from .models import (
 from auth_ex.models import JednOrg, Pracownik, Labi
 
 
-# WNIOSKI
-def wnioski(request):
+def admin_index(request):
     wnioski = Wniosek.objects.all()
-    admin_id = request.session['pracownik']
-    admin = Labi.objects.get(id=admin_id)
+    admin = Labi.objects.get(id=request.session['pracownik'])
     to_approve = []
 
     for wniosek in wnioski:
@@ -44,7 +43,72 @@ def wnioski(request):
         'wnioski': wnioski,
         'to_approve': to_approve,
     }
+    return render(request, 'wnioski/homepage/homepage.html', context)
+
+
+def wnioski(request):
+    pracownik = Labi.objects.get(id=request.session['pracownik'])
+
+    if request.method == 'POST':
+        search = request.POST.get('search')
+        if search:
+            wnioski_list = Wniosek.objects.filter(
+                pracownik__nazwisko__icontains=search,
+            ).order_by('-data')
+        else:
+            wnioski_list = Wniosek.objects.all().order_by('-data')
+    else:
+        wnioski_list = Wniosek.objects.all().order_by('-data')
+
+    paginator = Paginator(wnioski_list, 20)
+
+    page = request.GET.get('page')
+    try:
+        wnioski = paginator.page(page)
+    except PageNotAnInteger:
+        wnioski = paginator.page(1)
+    except EmptyPage:
+        wnioski = paginator.page(paginator.num_pages)
+
+    context = {
+        'pracownik': pracownik,
+        'wnioski': wnioski,
+    }
     return render(request, 'wnioski/wniosek/wniosek_list.html', context)
+
+
+def wniosek_detail(request, pk):
+    template = 'wnioski/wniosek/wniosek_detail.html'
+    w = Wniosek.objects.get(id=pk)
+    # date = datetime.now()
+    if request.method == 'POST':
+        if request.POST.get('change') == "Zatwierdź":
+            Historia.objects.create(
+                wniosek_id=pk,
+                status='2',
+            )
+            historia = Historia.objects. \
+                filter(wniosek=pk). \
+                order_by('-data')
+
+            return HttpResponseRedirect('/admin_index')
+        elif request.POST.get('change') == "Odrzuć":
+            Historia.objects.create(
+                wniosek_id=pk,
+                status='5',
+            )
+            historia = Historia.objects.filter(wniosek=pk)
+            return HttpResponseRedirect('/admin_index')
+    else:
+        historia = Historia.objects. \
+            filter(wniosek=pk). \
+            order_by('-data')
+        status = historia[0].get_status_display()
+        return render(request, template, {
+            'wniosek': w,
+            'historia': historia,
+            'status': status
+        })
 
 
 # LIST VIEWS
@@ -191,81 +255,6 @@ def obj_view(request, obj_id):
     obiekt = Obiekt.objects.get(id=obj_id)
     return render(request, 'wnioski/views/obj_view.html', {
         'obiekt': obiekt})
-
-
-def wniosek_view(request, wniosek_id):
-    template = 'wnioski/wniosek/wniosek_detail.html'
-    w = Wniosek.objects.get(id=wniosek_id)
-    # date = datetime.now()
-    if request.method == 'POST':
-        if request.POST.get('change', '') == u"Zatwierdź":
-            # historia = Historia(wniosek_id=wniosek_id, status='1')
-            Historia.objects.create(
-                wniosek_id=wniosek_id,
-                status='2',
-            )
-            # historia.save()
-            try:
-                historia = Historia.objects. \
-                    filter(wniosek=wniosek_id). \
-                    order_by('-data')
-            except Historia.DoesNotExist:
-                historia = None
-
-            if w.typ == '1':
-                for obiekt in w.obiekty.all():
-                    for uprawnienia in w.uprawnienia:
-                        for pracownik in w.pracownicy.all():
-                            PracownicyObiektyUprawnienia.objects.get_or_create(
-                                login=pracownik,
-                                id_obiektu=obiekt,
-                                uprawnienia=uprawnienia
-                            )
-            elif w.typ == '2':
-                try:
-                    for obiekt in w.obiekty.all():
-                        for uprawnienia in w.uprawnienia:
-                            for pracownik in w.pracownicy.all():
-                                PracownicyObiektyUprawnienia.objects.get(
-                                    login=pracownik,
-                                    id_obiektu=obiekt,
-                                    uprawnienia=uprawnienia
-                                ).delete()
-                except PracownicyObiektyUprawnienia.DoesNotExist:
-                    pass
-            # context = {
-            #     'wniosek': w,
-            #     'historia': historia,
-            #     'date': date,
-            # }
-            return HttpResponseRedirect('/wnioski')
-        elif request.POST.get('change', '') == u"Odrzuć":
-            historia = Historia(wniosek_id=wniosek_id, status='2')
-            historia.save()
-            try:
-                historia = Historia.objects.filter(wniosek=wniosek_id)
-            except Historia.DoesNotExist:
-                historia = None
-            # context = {
-            #     'wniosek': w,
-            #     'historia': historia,
-            #     'date': date
-            # }
-            return HttpResponseRedirect('/wnioski')
-
-    else:
-        try:
-            historia = Historia.objects. \
-                filter(wniosek=wniosek_id). \
-                order_by('-data')
-            status = historia[0].get_status()
-        except Historia.DoesNotExist:
-            historia = None
-        return render(request, template, {
-            'wniosek': w,
-            'historia': historia,
-            'status': status
-        })
 
 
 def typ_obiektu_view(request, typ_obiektu_id):
