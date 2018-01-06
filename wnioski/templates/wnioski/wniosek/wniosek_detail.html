@@ -7,11 +7,11 @@
 
         <div class="row">
             <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
-            <a target="_blank" class="btn btn-primary" href="/wniosekpdf/{{ wniosek.id }}">
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_app_pdf' wniosek.pk %}">
                 Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
             </a>
-            <a target="_blank" class="btn btn-primary" href="/wniosekraport/{{ wniosek.id }}">
-                Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_app_raport_pdf' wniosek.pk %}">
+                Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-list-alt"></span>
             </a>
         </div>
         <hr>
