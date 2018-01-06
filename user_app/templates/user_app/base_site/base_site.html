@@ -34,6 +34,9 @@
                         <li><a href="{% url 'step_one' %}">Złóż wniosek</a></li>
                         <li><a href="{% url 'user_objects_available' %}">Dostępne obiekty</a></li>
                         <li><a href="{% url 'user_objects_list' %}">Wszystkie obiekty</a></li>
+                        {% for pracownik in pracownik.admin.all %}
+                            <li><a href="{% url 'admin_panel' %}">Panel administratora</a></li>
+                        {% endfor %}
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">

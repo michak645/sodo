@@ -1,0 +1,51 @@
+{% extends 'user_app/base_site/base_site.html' %}
+{% block title %}Panel administratora{% endblock %}
+
+{% block content %}
+    
+    <div class="row">
+        <h3>Panel administratora</h3>
+    </div>
+
+    <div class="row">
+    	{% if wnioski %}
+	        <form action="" method="post">{% csrf_token %}
+	            <table class="table table-hover">
+	                <thead>
+		                <tr>
+		                    <th scope="col">Lp.</th>
+		                    <th scope="col">Wniosek</th>
+		                    <th scope="col">Uprawnienia</th>
+		                    <th scope="col">Obiekt</th>
+		                    <th scope="col">Zatwierdź</th>
+		                </tr>
+	                </thead>
+	                <tbody>
+		                {% for wniosek in wnioski %}
+		                    <tr class="clickable-row" data-href="">
+		                        
+		                        <th scope="row">{{ forloop.counter }}</th>
+		                        <td>
+		                        	<a href="{% url 'user_app_detail' wniosek.wniosek.id %}">
+		                        		{{ wniosek|truncatechars:"70" }}
+		                        	</a>
+		                        </td>
+		                        <td>{{ wniosek.wniosek.get_uprawnienia_display }}</td>
+		                        <td>{{ wniosek.obiekt }}</td>
+		                        <th>
+		                            <input type="checkbox" name="zatwierdzone" value="{{ wniosek.id }}">
+		                        </th>
+		                    </tr>
+		                {% endfor %}
+	                </tbody>
+	            </table>
+	            <div class="center">
+		            <input type="submit" name="zatwierdz" value="Zatwiedź" class="btn btn-success">
+		        </div>
+	        </form>
+	    {% else %}
+	    	<p class="center">Brak obiektów do zatwierdzenia</p>
+	    {% endif %}
+    </div>
+
+{% endblock %}

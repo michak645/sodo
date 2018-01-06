@@ -15,7 +15,9 @@ from user_app.forms import (
     WizardUprawnienia
 )
 from wnioski.models import (
-    Historia, Wniosek, Obiekt, PracownicyObiektyUprawnienia
+    Historia, Wniosek, Obiekt, PracownicyObiektyUprawnienia,
+    ZatwierdzonePrzezAS,
+    AdministratorObiektu,
 )
 
 
@@ -39,9 +41,13 @@ def user_index(request):
 
 def user_objects_available(request):
     pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    obiekty = PracownicyObiektyUprawnienia.objects.filter(
-        login=pracownik
+    wniosek = Wniosek.objects.filter(
+        pracownicy
     )
+    historie = Historia.objects.filter(
+
+    )
+
     context = {
         'pracownik': pracownik,
         'dostepne_obiekty': obiekty,
@@ -429,3 +435,37 @@ def step_four(request):
         'cart': cart,
     }
     return render(request, 'user_app/wizard/step_four.html', context)
+
+
+def admin_panel(request):
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(login=pracownik_id)
+    obiekty_admina = AdministratorObiektu.objects.filter(pracownik=pracownik)
+
+    if request.method == 'POST':
+        lista = request.POST.getlist('zatwierdzone')
+        for elem in lista:
+            obj = ZatwierdzonePrzezAS.objects.get(id=elem)
+            obj.zatwierdzone = True
+            obj.save()
+            Historia.objects.create(
+                wniosek=obj.wniosek,
+                status='4',
+                pracownik=pracownik,
+            )
+
+    to_approve = []
+    for obiekt in obiekty_admina:
+        lista_elem = ZatwierdzonePrzezAS.objects.filter(
+            obiekt=obiekt.obiekt,
+            zatwierdzone=False,
+        )
+        if lista_elem:
+            for elem in lista_elem:
+                to_approve.append(elem)
+
+    context = {
+        'pracownik': pracownik,
+        'wnioski': to_approve,
+    }
+    return render(request, 'user_app/admin_panel.html', context)

@@ -1,5 +1,6 @@
-{% extends 'wnioski/base/base.html' %}
-{% block title %}ABI - panel{% endblock %}
+{% extends 'abi_app/base_site/base_site.html' %}
+
+{% block title %}Lista{% endblock %}
 
 {% block content %}
 
@@ -84,18 +85,28 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Uprawnienia: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    {{ wniosek.get_uprawnienia_display }}
+                </div>
+            </div>
+
         </div>
 
         <p>
 
-
-        <div class="row">
-            <form action="{% url 'wniosek_detail' wniosek.pk %}" method="post">
-                {% csrf_token %}
-                <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
-                <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
-            </form>
-        </div>
+        {% if status_id == "2" %}
+            <div class="row">
+                <form action="" method="post">{% csrf_token %}
+                    <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
+                    <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
+                </form>
+            </div>
+        {% endif %}
 
         <hr>
         {% if historia %}

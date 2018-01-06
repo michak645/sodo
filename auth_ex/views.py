@@ -32,12 +32,10 @@ def index(request):
         if admin:
             if admin.jednostka.id == '1':
                 return redirect('abi_index')
-            messages.success(request, 'success')
             return redirect('admin_index')
         elif pracownik:
-            messages.success(request, 'success')
             return redirect('user_index')
         else:
-            messages.error(request, 'error')
+            messages.error(request, 'Błąd logowania')
             return redirect('index')
     return render(request, 'auth_ex/index.html')

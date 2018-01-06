@@ -6,6 +6,7 @@ from .models import (
     Historia,
     PracownicyObiektyUprawnienia,
     AdministratorObiektu,
+    ZatwierdzonePrzezAS,
 )
 
 
@@ -15,3 +16,4 @@ admin.site.register(Wniosek)
 admin.site.register(Historia)
 admin.site.register(PracownicyObiektyUprawnienia)
 admin.site.register(AdministratorObiektu)
+admin.site.register(ZatwierdzonePrzezAS)

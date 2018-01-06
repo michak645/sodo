@@ -124,7 +124,7 @@ class Wniosek(models.Model):
     )
 
     def __str__(self):
-        return '{} {} {}'.format(
+        return 'Pracownik: {}, typ: {}, uprawnienia: {}'.format(
             self.pracownik,
             self.get_typ_display(),
             self.get_uprawnienia_display(),
@@ -201,7 +201,7 @@ class PracownicyObiektyUprawnienia(models.Model):
 class AdministratorObiektu(models.Model):
     pracownik = models.ForeignKey(
         Pracownik,
-        related_name='+'
+        related_name='admin'
     )
     obiekt = models.ForeignKey(
         Obiekt,
@@ -214,3 +214,24 @@ class AdministratorObiektu(models.Model):
 
     def __str__(self):
         return '{}'.format(self.pracownik)
+
+
+class ZatwierdzonePrzezAS(models.Model):
+    wniosek = models.ForeignKey(
+        Wniosek,
+        related_name='+',
+    )
+    obiekt = models.ForeignKey(
+        Obiekt,
+        related_name='+',
+    )
+    zatwierdzone = models.BooleanField(
+        'Zatwierdzone przez administratora systemu',
+        default=False,
+    )
+
+    def __str__(self):
+        return 'Wniosek id: {}, obiekt: {}'.format(
+            self.wniosek.id,
+            self.obiekt,
+        )

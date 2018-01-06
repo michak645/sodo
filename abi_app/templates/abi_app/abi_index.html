@@ -36,7 +36,7 @@
                     </thead>
                     <tbody>
                     {% for wniosek in wnioski %}
-                        <tr class="clickable-row" data-href="{% url 'wniosek_detail' wniosek.wniosek.id %}">
+                        <tr class="clickable-row" data-href="{% url 'abi_wniosek_detail' wniosek.wniosek.id %}">
                             <th>
                                 <input type="checkbox" name="decyzja" value="{{ wniosek.wniosek.id }}">
                             </th>
@@ -45,6 +45,7 @@
                             <td>{{ wniosek.wniosek.get_typ_display }}</td>
                             <td>{{ wniosek.get_status_display }}</td>
                             <td>{{ wniosek.data }}</td>
+                        </tr>
                         </tr>
                     {% endfor %}
                     </tbody>
