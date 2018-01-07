@@ -102,7 +102,7 @@
     </div>
 
     <div class="row center">
-        <a class="btn btn-primary" href="{% url 'step_one' %}">Powrót</a>
+        <a class="btn btn-primary" href="{% url 'abi_step_one' %}">Powrót</a>
         <a id="dalej" class="btn btn-primary" >Dalej</a>
     </div>
 
@@ -152,7 +152,7 @@ $(document).ready(function(){
         }
 
         if(prac_ok){
-            window.location.href = "{% url 'step_three' %}";
+            window.location.href = "{% url 'abi_step_three' %}";
         }
     });
 
