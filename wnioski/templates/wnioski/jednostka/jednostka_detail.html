@@ -12,51 +12,62 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <strong>{{ obiekt }} - dane szczegółowe</strong>
+                    <strong>{{ jednostka }} - dane szczegółowe</strong>
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <label>Nazwa: </label>
+                            <label>Nazwa:</label>
                         </div>
                         <div class="col-md-6">
-                            <p>{{ obiekt.nazwa }}</p>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label>Typ: </label>
-                        </div>
-                        <div class="col-md-6">
-                            <p>{{ obiekt.typ }}</p>
+                            <p>{{ jednostka.nazwa }}</p>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
-                            <label>Jednostka organizacyjna: </label>
+                            <label>ID: </label>
                         </div>
                         <div class="col-md-6">
-                            <p>{{ obiekt.jedn_org }}</p>
+                            <p>{{ jednostka.id }}</p>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
-                            <label>Opis: </label>
+                            <label>Jednostka nadrzędna:</label>
                         </div>
                         <div class="col-md-6">
-                            <p>{{ obiekt.opis }}</p>
+                            <p>
+                                {% if jednostka.parent %}
+                                    <a href="{% url 'labi_jednostka_detail' jednostka.parent.id %}">
+                                        {{ jednostka.parent.nazwa }}
+                                    </a>
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>LABI:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                {% if jednostka.czy_labi %}
+                                    <a href="{% url 'labi_pracownik_detail' labi.login.pk %}">{{ labi.login }}</a>
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    
-
 
     <script type="text/javascript">
         $(document).ready(function(){
@@ -68,5 +79,5 @@
             });
         });
     </script>
-    
+
 {% endblock %}

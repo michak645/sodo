@@ -1,4 +1,4 @@
-{% extends "wnioski/base/base.html" %}
+{% extends "wnioski/base_site/base_site.html" %}
 
 {% block title %}Lista{% endblock %}
 
@@ -33,7 +33,7 @@
             </thead>
             <tbody>
                 {% for wniosek in wnioski %}
-                    <tr class="clickable-row" data-href="{% url 'wniosek_detail' wniosek.id %}">
+                    <tr class="clickable-row" data-href="{% url 'ldap_wniosek_detail' wniosek.id %}">
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ wniosek.pracownik }}</td>
                         <td>{{ wniosek.get_typ_display }}</td>

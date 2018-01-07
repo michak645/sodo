@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView
 
-from auth_ex.forms import JednostkaForm
 from auth_ex.views import find_labi
-from .forms import (
-    WniosekForm,
-    ObiektForm,
-    TypeForm,
-    EditObiektForm,
-    EditWniosekForm)
-from .forms import EditTypObiektuForm
 from .models import (
     Wniosek,
     Obiekt,
     Historia,
     TypObiektu,
     ZatwierdzonePrzezAS,
+    PracownicyObiektyUprawnienia,
 )
-from auth_ex.models import JednOrg, Pracownik, Labi
+from auth_ex.models import (
+    JednOrg,
+    Pracownik,
+    Labi,
+    RodzajPracownika,
+)
+from user_app.models import Cart
+from user_app.forms import WizardUprawnienia
 
 
 def admin_index(request):
@@ -193,6 +194,29 @@ class PracownikDetailView(DetailView):
         return context
 
 
+class PracownikCreate(CreateView):
+    model = Pracownik
+    fields = ['login', 'imie', 'nazwisko', 'email',
+              'rodzaj', 'jedn_org', 'numer_ax']
+    template_name = 'wnioski/pracownik/pracownik_create.html'
+    success_url = reverse_lazy('labi_pracownik_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano pracownika.')
+        return super().form_valid(form)
+
+
+class RodzajPracownikaCreate(CreateView):
+    model = RodzajPracownika
+    fields = ['rodzaj', ]
+    template_name = 'wnioski/pracownik/rodzaj_pracownika_create.html'
+    success_url = reverse_lazy('labi_pracownik_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano rodzaj pracownika.')
+        return super().form_valid(form)
+
+
 class ObiektListView(ListView):
     model = Obiekt
     template_name = 'wnioski/obiekt/obiekt_list.html'
@@ -218,6 +242,14 @@ class ObiektListView(ListView):
                 filter(nazwa__icontains=search)
         else:
             obiekty = self.get_queryset()
+        paginator = Paginator(obiekty, 10)
+        page = self.request.GET.get('page')
+        try:
+            obiekty = paginator.page(page)
+        except PageNotAnInteger:
+            obiekty = paginator.page(1)
+        except EmptyPage:
+            obiekty = paginator.page(paginator.num_pages)
         context = {
             'obiekty': obiekty,
             'search': search,
@@ -231,220 +263,277 @@ class ObiektDetailView(DetailView):
     context_object_name = 'obiekt'
 
 
-def create_app(request):
-    if request.method == 'POST':
-        form = WniosekForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('wnioski/create/create_app.html')
-    else:
-        form = WniosekForm()
+class ObiektCreate(CreateView):
+    model = Obiekt
+    fields = ['nazwa', 'typ', 'jedn_org', 'opis']
+    template_name = 'wnioski/obiekt/obiekt_create.html'
+    success_url = reverse_lazy('labi_obiekt_list')
 
-    template = "wnioski/create/create_app.html"
-    context = {'form': form}
-    return render(request, template, context)
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano obiekt.')
+        return super().form_valid(form)
 
 
-def typy_obiektow(request):
-    typy_obiektow = TypObiektu.objects.all()
-    template = "wnioski/views/typy_obiektow.html"
-    context = {'typy_obiektow': typy_obiektow}
-    return render(request, template, context)
+class ObiektTypCreate(CreateView):
+    model = TypObiektu
+    fields = ['nazwa', ]
+    template_name = 'wnioski/obiekt/obiekt_typ_create.html'
+    success_url = reverse_lazy('labi_obiekt_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano typ obiektu.')
+        return super().form_valid(form)
 
 
-def jednostki(request):
-    jednostki = JednOrg.objects.order_by('id')
-    template = "wnioski/views/jednostki.html"
-    context = {'jednostki': jednostki}
-    return render(request, template, context)
+class JednostkaListView(ListView):
+    model = JednOrg
+    template_name = 'wnioski/jednostka/jednostka_list.html'
+    context_object_name = 'jednostki'
 
-
-def user_account(request):
-    if request.user.is_authenticated():
-        session_user = request.session['session_user']
-        user = User.objects.get(id=session_user)
-        return render(request, 'wnioski/user/user_account.html', {
-            'user': user})
-
-
-def typ_obiektu_view(request, typ_obiektu_id):
-    typ_obiektu = TypObiektu.objects.get(id=typ_obiektu_id)
-    return render(request, 'wnioski/views/typ_obiektu_view.html', {
-        'typ_obiektu': typ_obiektu})
-
-
-def jednostka_view(request, pk):
-    jednostka = JednOrg.objects.get(pk=pk)
-    if jednostka.czy_labi:
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
         try:
-            labi = Labi.objects.get(jednostka=pk)
-        except Labi.DoesNotExist:
-            labi = find_labi(pk)
-    else: 
-        labi = find_labi(pk)
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
+        context['jednostki'] = jednostki
+        return context
 
-    return render(request, 'wnioski/views/jednostka_view.html', {
-        'jednostka': jednostka,
-        'labi': labi,
-    })
-
-
-def create_user(request):
-    message = ''
-    if request.method == 'POST':
-        form = PracownikForm(request.POST)
-        if form.is_valid():
-            form.save()
-            message = 'Dodano użytkownika'
-            form = PracownikForm()
-            return render(
-                request, 'wnioski/create/create_user.html',
-                {'message': message, 'form': form}
-            )
-    else:
-        form = PracownikForm()
-
-    template = "wnioski/create/create_user.html"
-    args = {}
-    args['form'] = PracownikForm()
-    return render(request, template, args)
-
-
-def create_obj(request):
-    message = ''
-    if request.method == 'POST':
-        form = ObiektForm(request.POST)
-        if form.is_valid():
-            form.save()
-            message = 'Dodano obiekt'
-            form = ObiektForm()
-            return render(
-                request, 'wnioski/create/create_user.html',
-                {'message': message, 'form': form}
-            )
-    else:
-        form = ObiektForm()
-
-    template = "wnioski/create/create_obj.html"
-    args = {}
-    args['form'] = ObiektForm()
-    return render(request, template, args)
-
-
-def create_type(request):
-    message = ''
-    if request.method == 'POST':
-        form = TypeForm(request.POST)
-        if form.is_valid():
-            form.save()
-            message = 'Dodano typ obiektu'
-            form = TypeForm()
-            return render(
-                request, 'wnioski/create/create_type.html',
-                {'message': message, 'form': form}
-            )
-    else:
-        form = TypeForm()
-
-    template = "wnioski/create/create_type.html"
-    args = {}
-    args['form'] = TypeForm()
-    return render(request, template, args)
-
-
-def create_unit(request):
-    template = 'wnioski/create/create_unit.html'
-    if request.method == 'POST':
-        form = JednostkaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Dodano pomyślnie')
-            return HttpResponseRedirect('/jednostki')
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            jednostki = self.get_queryset(). \
+                filter(nazwa__icontains=search)
         else:
-            messages.error(request, 'Błąd w formularzu')
-    else:
-        form = JednostkaForm()
+            jednostki = self.get_queryset()
+
+        paginator = Paginator(jednostki, 10)
+        page = self.request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
+        context = {
+            'jednostki': jednostki,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
+
+class JednostkaDetailView(DetailView):
+    model = JednOrg
+    template_name = 'wnioski/jednostka/jednostka_detail.html'
+    context_object_name = 'jednostka'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.czy_labi:
+            labi = Labi.objects.get(jednostka=self.object.id)
+        else:
+            labi = None
+        context['labi'] = labi
+        return context
+
+
+class JednostkaCreate(CreateView):
+    model = JednOrg
+    fields = ['nazwa', 'parent', 'czy_labi']
+    template_name = 'wnioski/jednostka/jednostka_create.html'
+    success_url = reverse_lazy('labi_jednostka_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano jednostkę.')
+        return super().form_valid(form)
+
+
+def step_one(request):
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(login=pracownik_id)
+    cart, created = Cart.objects.get_or_create(id=pracownik_id)
+    obj_list = None
+    jednostka = None
+    jednostki = JednOrg.objects.all()
+
+    paginator = Paginator(jednostki, 10)
+    page = request.GET.get('page')
+    try:
+        jedn = paginator.page(page)
+    except PageNotAnInteger:
+        jedn = paginator.page(1)
+    except EmptyPage:
+        jedn = paginator.page(paginator.num_pages)
+
+    if request.method == 'POST':
+        clear = request.POST.get('clear')
+        if clear:
+            cart.obiekty.clear()
+        obj = request.POST.get('obj')
+        add = request.POST.get('add')
+        delete = request.POST.get('delete')
+        if delete:
+            cart.obiekty.remove(Obiekt.objects.get(id=obj))
+        if add:
+            cart.obiekty.add(Obiekt.objects.get(id=obj))
+        show = request.POST.get('show')
+        if show:
+            jednostka = request.POST.get('jednostka')
+            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka).nazwa
+
     context = {
-        'form': form,
+        'wybrana_jednostka': jednostka,
+        'jednostki': jedn,
+        'obj_list': obj_list,
+        'pracownik': pracownik,
+        'objs_cart': cart.obiekty.all(),
     }
-    return render(request, template, context)
+    return render(request, 'wnioski/wizard/step_one.html', context)
 
 
-def user_edit(request, user_id):
-    user = Pracownik.objects.get(id=user_id)
-    form = EditPracownikForm(request.POST or None, instance=user)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(
-            '/user_view/{0}'.format(user_id)
-        )
+def step_two(request):
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(login=pracownik_id)
+    cart = Cart.objects.get(id=pracownik_id)
+    prac_list = None
+    jednostka = None
+    jednostki = JednOrg.objects.all()
+
+    paginator = Paginator(jednostki, 10)
+    page = request.GET.get('page')
+    try:
+        jedn = paginator.page(page)
+    except PageNotAnInteger:
+        jedn = paginator.page(1)
+    except EmptyPage:
+        jedn = paginator.page(paginator.num_pages)
+
+    if request.method == 'POST':
+        clear = request.POST.get('clear')
+        if clear:
+            cart.pracownicy.clear()
+        prac = request.POST.get('prac')
+        add_prac = request.POST.get('add_prac')
+        show = request.POST.get('show')
+        if show:
+            jednostka = request.POST.get('jednostka')
+            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka).nazwa
+        if add_prac:
+            cart.pracownicy.add(Pracownik.objects.get(login=prac))
+        delete_prac = request.POST.get('delete_prac')
+        if delete_prac:
+            cart.pracownicy.remove(Pracownik.objects.get(login=prac))
+    context = {
+        'wybrana_jednostka': jednostka,
+        'jednostki': jedn,
+        'pracownik': pracownik,
+        'prac_list': prac_list,
+        'prac_cart': cart.pracownicy.all(),
+    }
+    return render(request, 'wnioski/wizard/step_two.html', context)
+
+
+def step_three(request):
+    # czy_chcesz_zostac_dodany_do_wnioski_checkbox = False
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(login=pracownik_id)
+    cart = Cart.objects.get(id=pracownik_id)
+    aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
+        login__in=cart.pracownicy.all(),
+        id_obiektu__in=cart.obiekty.all()
+    )
+
+    obiekty = {}
+    for obiekt in cart.obiekty.all():
+        pracownicy = {}
+        for pracownik in cart.pracownicy.all():
+            pou = PracownicyObiektyUprawnienia.objects.filter(
+                login=pracownik,
+                id_obiektu=obiekt,
+            )
+            if pou:
+                pracownicy[pracownik] = pou
+        print(pracownicy)
+        obiekty[obiekt] = pracownicy
+
+    if request.method == 'POST':
+        form = WizardUprawnienia(request.POST)
+        if form.is_valid():
+            cart.uprawnienia = form.cleaned_data['uprawnienia']
+            cart.typ_wniosku = form.cleaned_data['typ_wniosku']
+            cart.save()
+            return HttpResponseRedirect('/wizard/step_four')
     else:
-        form = EditPracownikForm(instance=user)
-    return render(request, 'wnioski/edit/user_edit.html', {
-        'user': user,
-        'form': form
-    })
+        form = WizardUprawnienia()
+    context = {
+        'pracownik': pracownik,
+        'cart': cart,
+        'aktualne_uprawnienia': aktualne_uprawnienia,
+        'form': form,
+        'obiekty': obiekty,
+    }
+    return render(request, 'wnioski/wizard/step_three.html', context)
 
 
-def app_edit(request, app_id):
-    wniosek = Wniosek.objects.get(id=app_id)
-    form = EditWniosekForm(request.POST or None, instance=wniosek)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(
-            '/wniosek_view/{0}'.format(app_id)
-        )
+def get_labi(jedn):
+    try:
+        jednostka = JednOrg.objects.get(id=jedn)
+    except JednOrg.DoesNotExist as e:
+        return e
+    if jednostka.czy_labi:
+        return Labi.objects.get(jednostka=jednostka.id)
     else:
-        form = EditWniosekForm(instance=wniosek)
-    return render(request, 'wnioski/edit/app_edit.html', {
-        'wniosek': wniosek,
-        'form': form
-    })
+        return get_labi(jednostka.parent.id)
 
 
-def obj_edit(request, obj_id):
-    obiekt = Obiekt.objects.get(id=obj_id)
-    form = EditObiektForm(request.POST or None, instance=obiekt)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(
-            '/obj_view/{0}'.format(obj_id)
-        )
-    else:
-        form = EditObiektForm(instance=obiekt)
-    return render(request, 'wnioski/edit/obj_edit.html', {
-        'obiekt': obiekt,
-        'form': form
-    })
+def step_four(request):
+    pracownik_id = request.session['pracownik']
+    pracownik = Pracownik.objects.get(login=pracownik_id)
+    cart = Cart.objects.get(id=pracownik_id)
 
+    cart_objs = cart.obiekty.all()
+    labi_list = []
+    for obj in cart_objs:
+        if get_labi(obj.jedn_org.id) not in labi_list:
+            labi_list.append(get_labi(obj.jedn_org.id))
 
-def typ_obiektu_edit(request, typ_obiektu_id):
-    typ_obiektu = TypObiektu.objects.get(id=typ_obiektu_id)
-    form = EditTypObiektuForm(request.POST or None, instance=typ_obiektu)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(
-            '/typ_obiektu_view/{0}'.format(typ_obiektu_id)
-        )
-    else:
-        form = EditTypObiektuForm(instance=typ_obiektu)
-    return render(request, 'wnioski/edit/typ_obiektu_edit.html', {
-        'typ_obiektu': typ_obiektu,
-        'form': form
-    })
+    wnioski = []
+    for labi in labi_list:
+        wniosek = {}
+        wniosek['labi'] = labi
+        wniosek_obiekty = []
+        for obj in cart_objs:
+            if get_labi(obj.jedn_org.id) == labi:
+                wniosek_obiekty.append(obj)
+        wniosek['obiekty'] = wniosek_obiekty
+        wniosek['pracownicy'] = cart.pracownicy.all()
+        wniosek['uprawnienia'] = cart.uprawnienia
+        wniosek['typ_wniosku'] = cart.typ_wniosku
+        wnioski.append(wniosek)
 
-
-def jednostka_edit(request, jednostka_id):
-    jednostka = JednOrg.objects.get(id=jednostka_id)
-    form = EditJednostkaForm(request.POST or None, instance=jednostka)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(
-            '/jednostka_view/{0}'.format(jednostka_id)
-        )
-    else:
-        form = EditJednostkaForm(instance=jednostka)
-    return render(request, 'wnioski/edit/jednostka_edit.html', {
-        'jednostka': jednostka,
-        'form': form
-    })
+    if request.method == 'POST':
+        for wniosek in wnioski:
+            w = Wniosek.objects.create(
+                typ=cart.typ_wniosku,
+                pracownik=pracownik,
+                uprawnienia=cart.uprawnienia,
+            )
+            for pracownik in cart.pracownicy.all():
+                w.pracownicy.add(pracownik)
+            for obiekt in wniosek['obiekty']:
+                w.obiekty.add(obiekt)
+            w.save()
+        cart.delete()
+        return redirect('admin_index')
+    context = {
+        'wnioski': wnioski,
+        'pracownik': pracownik,
+        'cart': cart,
+    }
+    return render(request, 'wnioski/wizard/step_four.html', context)

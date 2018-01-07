@@ -31,19 +31,21 @@
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
                         <li><a href="{% url 'admin_index' %}">Start</a></li>
-                        <li><a href="{% url 'wnioski' %}">Wnioski</a></li>
+                        <li><a href="{% url 'ldap_wniosek_list' %}">Wnioski</a></li>
                         <li><a href="{% url 'labi_pracownik_list' %}">Pracownicy</a></li>
                         <li><a href="{% url 'labi_obiekt_list' %}">Obiekty</a></li>
-                        <li><a href="/jednostki">Jednostki organizacyjne</a></li>
+                        <li><a href="{% url 'labi_jednostka_list' %}">Jednostki organizacyjne</a></li>
+                        <li><a href="">Złóż wniosek</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dodaj <span class="caret"></span>
                                 <ul class="dropdown-menu">
-                                    <li><a href="/create_app">Dodaj wniosek</a></li>
-                                    <li><a href="/create_user">Dodaj użytkownika</a></li>
-                                    <li><a href="/create_obj">Dodaj obiekt</a></li>
-                                    <li><a href="/create_type">Dodaj typ obiektu</a></li>
-                                    <li><a href="/create_unit">Dodaj jednostkę organizacyjną</a></li>
+                                    <li><a href="{% url 'labi_pracownik_create' %}">Pracownika</a></li>
+                                    <li><a href="{% url 'labi_rodzaj_pracownik_create' %}">Rodzaj pracownika</a></li>
+                                    <li><a href="{% url 'labi_jednostka_create' %}">Jednostkę organizacyjną</a></li>
+                                    <li><a href="{% url 'labi_obiekt_create' %}">Obiekt</a></li>
+                                    <li><a href="{% url 'labi_obiekt_typ_create' %}">Typ obiekt</a></li>
                                 </ul>
+                            </a>
                         </li>
                     </ul>
 

@@ -21,9 +21,4 @@ urlpatterns = [
     url(r'^jednostki/$', views.JednostkaListView.as_view(), name='labi_jednostka_list'),
     url(r'^jednostka/(?P<pk>\d+)/$', views.JednostkaDetailView.as_view(), name='labi_jednostka_detail'),
     url(r'^jednostka/create/$', views.JednostkaCreate.as_view(), name='labi_jednostka_create'),
-
-    url(r'^labi/wizard/step_one', views.step_one, name='labi_step_one'),
-    url(r'^labi/wizard/step_two', views.step_two, name='labi_step_two'),
-    url(r'^labi/wizard/step_three', views.step_three, name='labi_step_three'),
-    url(r'^labi/wizard/step_four', views.step_four, name='labi_step_four'),
 ]

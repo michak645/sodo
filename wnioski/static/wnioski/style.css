@@ -97,3 +97,15 @@ hr {
 .left {
     float: left;
 }
+
+.right {
+    float: right;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.form-error {
+    color: red;
+}

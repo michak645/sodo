@@ -1,14 +1,13 @@
 {% extends "wnioski/base_site/base_site.html" %}
 
-{% block title %}Obiekty{% endblock %}
+{% block title %}Lista{% endblock %}
 
 {% block content %}
 
     <div class="row">
-        <h3 class="left">Obiekty</h3>
+        <h3 class="left">Jednostki organizacyjne</h3>
         <span class="right">
-            <a href="{% url 'labi_obiekt_create' %}" class="btn btn-default">Dodaj obiekt</a>
-            <a href="{% url 'labi_obiekt_typ_create' %}" class="btn btn-default">Dodaj typ obiektu</a>
+            <a href="{% url 'labi_jednostka_create' %}" class="btn btn-default">Dodaj jednostkę</a>
         </span>
     </div>
     <div class="row">
@@ -30,35 +29,39 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Lp.</th>
-                    <th>Obiekt</th>
-                    <th>Typ</th>
-                    <th>Jednostka organizacyjna</th>
-                    <th>Opis</th>
+                    <th>ID</th>
+                    <th>Nazwa</th>
+                    <th>Jednostka nadrzędna</th>
+                    <th>Czy posiada LABI</th>
                 </tr>
             </thead>
             <tbody>
-                {% for obiekt in obiekty %}
-                    <tr class="clickable-row" data-href="{% url 'labi_obiekt_detail' obiekt.id %}">
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ obiekt }}</td>
-                        <td>{{ obiekt.typ }}</td>
-                        <td>{{ obiekt.jedn_org }}</td>
-                        <td>{{ obiekt.opis|truncatechars:"50" }}</td>
+                {% for jednostka in jednostki %}
+                    <tr class="clickable-row" data-href="{% url 'labi_jednostka_detail' jednostka.id %}">
+                        <td>{{ jednostka.id }}</td>
+                        <td>{{ jednostka.nazwa }}</td>
+                        <td>
+                            {% if jednostka.parent %}
+                                {{ jednostka.parent.nazwa }}
+                            {% else %}
+                                Brak
+                            {% endif %}
+                        </td>
+                        <td>{% if jednostka.czy_labi %}Tak{% else %}Nie{% endif %}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <div class="pagination">
             <span class="step-links">
-                {% if obiekty.has_previous %}
-                    <a href="?page={{ obiekty.previous_page_number }}">previous</a>
+                {% if jednostki.has_previous %}
+                    <a href="?page={{ jednostki.previous_page_number }}">previous</a>
                 {% endif %}
                 <span class="current">
-                    Page {{ obiekty.number }} of {{ obiekty.paginator.num_pages }}.
+                    Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
                 </span>
-                {% if obiekty.has_next %}
-                    <a href="?page={{ obiekty.next_page_number }}">next</a>
+                {% if jednostki.has_next %}
+                    <a href="?page={{ jednostki.next_page_number }}">next</a>
                 {% endif %}
             </span>
         </div>

@@ -1,4 +1,4 @@
-{% extends "wnioski/base/base.html" %}
+{% extends "wnioski/base_site/base_site.html" %}
 
 {% block title %}User - {{ pracownik }}{% endblock %}
 
@@ -105,7 +105,7 @@
                     </thead>
                     <tbody>
                     {% for historia in historie %}
-                        <tr class="clickable-row" data-href="{% url 'wniosek_detail' historia.wniosek.id %}">
+                        <tr class="clickable-row" data-href="{% url 'ldap_wniosek_detail' historia.wniosek.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>{{ historia.wniosek|truncatechars:"60" }}</td>
                             <td>{{ historia.get_status_display }}</td>

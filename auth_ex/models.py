@@ -62,7 +62,7 @@ class Pracownik(models.Model):
     czy_aktywny = models.BooleanField(default=True)
 
     def __str__(self):
-        return u'{0} {1}'.format(self.imie, self.nazwisko)
+        return '{} {}'.format(self.imie, self.nazwisko)
 
     def name(self):
         return '{} {}'.format(self.imie, self.nazwisko)
@@ -76,21 +76,3 @@ class Labi(models.Model):
 
     def __str__(self):
         return '{0}'.format(self.login.login)
-
-
-# class AdministratorObiektu(models.Model):
-#     pracownik = models.ForeignKey(
-#         Pracownik,
-#         related_name='+'
-#     )
-#     obiekt = models.ForeignKey(
-#         Obiekt,
-#         related_name='+',
-#     )
-#     aktywny = models.BooleanField(
-#         'Aktywny',
-#         default=True,
-#     )
-
-#     def __str__(self):
-#         return '{}'.format(self.pracownik)

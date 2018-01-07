@@ -1,4 +1,4 @@
-{% extends 'wnioski/base/base.html' %}
+{% extends 'wnioski/base_site/base_site.html' %}
 {% block title %}ABI - panel{% endblock %}
 
 {% block content %}
@@ -94,7 +94,7 @@
 
 
         <div class="row">
-            <form action="{% url 'wniosek_detail' wniosek.pk %}" method="post">
+            <form action="{% url 'ldap_wniosek_detail' wniosek.pk %}" method="post">
                 {% csrf_token %}
                 <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
                 <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">

@@ -1,0 +1,53 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block content %}
+
+	<div class="progress">
+  		<div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+	</div>
+
+	<div class="row">
+		<h3>Podsumowanie wniosku</h3>
+	</div>
+
+	<div class="row">
+		{% if wnioski|length > 1 %} 
+		Wniosek został rozbity na {{ wnioski|length }} częsci. Ze względu na LABI.
+		{% endif %}
+	</div>
+
+	<div class="row">
+		{% for wniosek in wnioski %}
+			<div class="col-md-6">
+				<p>{{ wniosek.labi }}</p>
+				<p>
+					{% for obiekt in wniosek.obiekty %}
+						{{ obiekt }};
+					{% endfor %}
+				</p>
+				<p>
+					{% for pracownik in wniosek.pracownicy %}
+						{{ pracownik }};
+					{% endfor %}
+				</p>
+				<p>
+					{% for uprawnienia in wniosek.uprawnienia %}
+						{{ uprawnienia }}
+					{% endfor %}
+				</p>
+				<p>{{ wniosek.typ_wniosku }}</p>
+
+				<textarea class="form-control" rows="3" id="{{ wniosek.labi.id }}" placeholder="Wpisz komentarz"></textarea>
+			</div>
+		{% endfor %}
+	</div>
+
+
+	<div class="row center">
+        <form method="post" action="">{% csrf_token %}
+        	<a class="btn btn-primary" href="{% url 'step_three' %}">Powrót</a>
+        	<input type="submit" value="Dodaj" class="btn btn-success">
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "wnioski/base_site/base_site.html" %}
+
+{% block title %}SODO{% endblock %}
+
+{% block content %}
+
+	<div class="row center">
+		<h3>Dodaj jednostkę</h3>
+	</div>
+
+	<div class="row">
+	    <form action="" method="post">{% csrf_token %}
+			{% for field in form %}
+				<div class="col-md-5 text-right">
+					<p>{{ field.label }}</p>
+				</div>
+				<div class="col-md-7 left">
+					<p>{{ field }}</p>
+					<p class="form-error">{{ field.error }}</p>
+				</div>
+			{% endfor %}
+			<div class="center">
+				<a class="btn btn-default" href="{% url 'labi_jednostka_list' %}">Anuluj</a>
+		        <input type="submit" value="Dodaj" class="btn btn-primary">
+		    </div>
+	    </form>
+	</div>
+        
+{% endblock %}

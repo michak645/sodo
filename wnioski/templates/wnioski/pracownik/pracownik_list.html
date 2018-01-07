@@ -1,11 +1,15 @@
-{% extends "wnioski/base/base.html" %}
+{% extends "wnioski/base_site/base_site.html" %}
 
 {% block title %}Pracownicy{% endblock %}
 
 {% block content %}
 
     <div class="row">
-        <h3>Pracownicy</h3>
+        <h3 class="left">Pracownicy</h3>
+        <span class="right">
+            <a href="{% url 'labi_pracownik_create' %}" class="btn btn-default">Dodaj pracownika</a>
+            <a href="{% url 'labi_rodzaj_pracownik_create' %}" class="btn btn-default">Dodaj rodzaj pracownika</a>
+        </span>
     </div>
     <div class="row">
         <form method="post" action="">{% csrf_token %}
