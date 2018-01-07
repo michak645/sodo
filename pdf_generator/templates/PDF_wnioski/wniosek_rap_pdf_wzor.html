@@ -1,0 +1,109 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>PDF</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style type="text/css" media="all">
+        hr {
+            border-color: black;
+            color: black;
+            background-color: black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 class="text-center">Raport dla wniosku nr {{ wniosek.pk }} </h2>
+    <hr/>
+     <div class="container">
+
+        <table class="table">
+            <tbody>
+                 <tr>
+                    <th>Data złożenia:</th>
+                        <td>
+                            {{ wniosek.data.date }}
+                        </td>
+                </tr>
+                <tr>
+                    <th>Składający:</th>
+                        <td>
+                            <p>
+                                {{ wniosek.pracownik }}<br>
+                                {{ wniosek.pracownik.jedn_org.nazwa }}
+                            </p>
+                            Adres e-mail: {{ wniosek.pracownik.email }}
+                        </td>
+                </tr>
+                <tr>
+                    <th>Pracownicy:</th>
+                        <td>
+                            {% for pracownik in wniosek.pracownicy.all %}
+						        {{ pracownik }}<br>
+					        {% endfor %}
+                        </td>
+                </tr>
+                <tr>
+                    <th>Obiekty:</th>
+                        <td>
+                            {% for o in wniosek.obiekty.all %}
+						        {{ o }} - {{ o.jedn_org.nazwa }}<br>
+					        {% endfor %}
+                        </td>
+                </tr>
+                <tr>
+                    <th>Uprawnienia:</th>
+                        <td>
+                             {{ wniosek.get_uprawnienia_display }}
+                        </td>
+                </tr>
+                <tr>
+                    <th>Typ:</th>
+                        <td>
+                            {{ wniosek.get_typ_display }}
+                        </td>
+                </tr>
+                <tr>
+                    <th>Komentarz:</th>
+                            <td>
+                                {% if wniosek.komentarz %}
+                                    {{ wniosek.komentarz }}
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <hr/>
+
+    <div class="container">
+        <h3>Historia wniosku</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Data:</th>
+                    <th>Zmieniono status na:</th>
+                    <th>Zmiany dokonał:</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in historia %}
+                    <tr>
+                        <td>{{ h.data }}</td>
+                        <td>{{ h.get_status }}</td>
+                        <td>{{ h.pracownik }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
