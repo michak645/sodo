@@ -79,7 +79,7 @@
                     <label>Obiekty: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseobiekty" role="button" aria-expanded="false" aria-controls="collapseobiekty">Pokaż obiekty</a>
+                    <a class="przycisk-maly" data-toggle="collapse" href="#collapseobiekty" aria-expanded="false" aria-controls="collapseobiekty">Pokaż obiekty</a>
                     </p>
                     <div class="collapse" id="collapseobiekty">
                         {% for obiekt in wniosek.obiekty.all %}
@@ -90,16 +90,15 @@
             </div>
         </div>
 
-        <p>
-
-
-        <div class="row">
-            <form action="{% url 'ldap_wniosek_detail' wniosek.pk %}" method="post">
-                {% csrf_token %}
-                <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
-                <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
-            </form>
-        </div>
+        {% if status_int == '3' %}        
+            <div class="row">
+                <form action="{% url 'ldap_wniosek_detail' wniosek.pk %}" method="post">
+                    {% csrf_token %}
+                    <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
+                    <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
+                </form>
+            </div>
+        {% endif %}
 
         <hr>
         {% if historia %}

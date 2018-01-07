@@ -109,10 +109,12 @@ def wniosek_detail(request, pk):
             filter(wniosek=pk). \
             order_by('-data')
         status = historia[0].get_status_display()
+        status_int = historia[0].status
         return render(request, template, {
             'wniosek': w,
             'historia': historia,
-            'status': status
+            'status': status,
+            'status_int': status_int,
         })
 
 

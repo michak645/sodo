@@ -94,6 +94,17 @@ hr {
     color: ivory;
 }
 
+.przycisk-maly, .przycisk-maly:link {
+    display: inline-block;
+    background: #337ab7;
+    border: none;
+    color: ivory;
+    text-align: center;
+    text-decoration: none;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
 .left {
     float: left;
 }
