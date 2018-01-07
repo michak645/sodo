@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.contrib import messages
 
 from auth_ex.models import Labi, Pracownik, JednOrg
 from user_app.forms import WizardUprawnienia
@@ -152,7 +153,30 @@ def wniosek_detail(request, pk):
 
 
 def obiekt_list(request):
-    return render(request, 'abi_app/obiekt_list.html')
+    obiekty = Obiekt.objects.all()
+    if request.method == 'POST':
+        search = request.POST['search']
+        try:
+            obiekty = Obiekt.objects.filter(nazwa__contains=search)
+        except Obiekt.DoesNotExist:
+            messages.error(request, 'Nie znaleziono obiektu')
+        if obiekty:
+            context = {
+                'obiekty': obiekty,
+                'search_phrase': search
+            }
+            return render(request, 'abi_app/data/obiekt_list.html', context)
+        else:
+            context = {
+                'obiekty': obiekty,
+                'search_phrase': search
+            }
+            return render(request, 'abi_app/data/obiekt_list.html', context)
+
+    context = {
+        'obiekty': obiekty,
+    }
+    return render(request, 'abi_app/data/obiekt_list.html', context)
 
 
 def obiekt_detail(request):

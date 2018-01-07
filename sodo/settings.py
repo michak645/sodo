@@ -141,3 +141,9 @@ LOGIN_URL = '/acc/login'
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: "/user_detail/%s/" % u.pk,
 }
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sodo.uam.test@gmail.com'
+EMAIL_HOST_PASSWORD = 'UAMsodo123'

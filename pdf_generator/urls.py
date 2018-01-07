@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^gen_appobj_raport_csv/$', views.gen_appobj_raport_csv, name='gen_appobj_raport_csv'),
     url(r'^gen_appprac_raport_csv/$', views.gen_appprac_raport_csv, name='gen_appprac_raport_csv'),
     url(r'^gen_hist_raport_csv/$', views.gen_hist_raport_csv, name='gen_hist_raport_csv'),
+    url(r'^mail_app_pdf/(?P<pk>\d+)/$', views.mail_app_pdf, name='mail_app_pdf'),
 
 ]
