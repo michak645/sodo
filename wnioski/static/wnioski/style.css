@@ -79,9 +79,9 @@ hr {
     cursor: pointer;
 }
 
-.clickable-row:hsla(0,0%,0%,1)over {
+.clickable-row:hover {
     cursor: pointer;
-    background: #337ab7 !important;
+    background: #C0C0C0 !important;
     color: black !important;
 }
 

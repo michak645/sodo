@@ -24,22 +24,26 @@
     </div>
     <div class="row">
         <table class="table table-hover">
-            <tr>
-                <th>Lp.</th>
-                <th>Obiekt</th>
-                <th>Typ</th>
-                <th>Jednostka organizacyjna</th>
-                <th>Opis</th>
-            </tr>
-            {% for obiekt in obiekty %}
-                <tr class="clickable-row" data-href="{% url 'labi_obiekt_detail' obiekt.id %}">
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ obiekt }}</td>
-                    <td>{{ obiekt.typ }}</td>
-                    <td>{{ obiekt.jedn_org }}</td>
-                    <td>{{ obiekt.opis|truncatechars:"50" }}</td>
+            <thead>
+                <tr>
+                    <th>Lp.</th>
+                    <th>Obiekt</th>
+                    <th>Typ</th>
+                    <th>Jednostka organizacyjna</th>
+                    <th>Opis</th>
                 </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+                {% for obiekt in obiekty %}
+                    <tr class="clickable-row" data-href="{% url 'labi_obiekt_detail' obiekt.id %}">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ obiekt }}</td>
+                        <td>{{ obiekt.typ }}</td>
+                        <td>{{ obiekt.jedn_org }}</td>
+                        <td>{{ obiekt.opis|truncatechars:"50" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
         <div class="pagination">
             <span class="step-links">

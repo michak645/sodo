@@ -88,50 +88,87 @@
     </div>
     <hr>
     <div class="row">
-        <button id="pokazWnioski" class="przycisk">Pokaż wnioski</button>
-        <button id="ukryjWnioski" class="przycisk" hidden>Ukryj wnioski</button>
+        {% if historie %}
+            <button id="pokazWnioski" class="przycisk">Pokaż wnioski</button>
+            <button id="ukryjWnioski" class="przycisk" hidden>Ukryj wnioski</button>
 
+            <div id="wnioski" hidden>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">Lp.</th>
+                        <th scope="col">Wniosek</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Ostatnia edycja</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for historia in historie %}
+                        <tr class="clickable-row" data-href="{% url 'wniosek_detail' historia.wniosek.id %}">
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ historia.wniosek|truncatechars:"60" }}</td>
+                            <td>{{ historia.get_status_display }}</td>
+                            <td>{{ historia.data }}</td>
+                            <td>{{ historia.pracownik }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if historie.has_previous %}
+                            <a href="?page={{ historie.previous_page_number }}">previous</a>
+                        {% endif %}
 
-        <table class="table table-hover" id="wnioski" hidden>
-            <thead>
-            <tr>
-                <th scope="col">Lp.</th>
-                <th scope="col">Wniosek</th>
-                <th scope="col">Status</th>
-                <th scope="col">Data</th>
-                <th scope="col">Ostatnia edycja</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for historia in historie %}
-                <tr class="clickable-row" data-href="{% url 'wniosek_detail' historia.wniosek.id %}">
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ historia.wniosek|truncatechars:"60" }}</td>
-                    <td>{{ historia.get_status_display }}</td>
-                    <td>{{ historia.data }}</td>
-                    <td>{{ historia.pracownik }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                        <span class="current">
+                            Page {{ historie.number }} of {{ historie.paginator.num_pages }}.
+                        </span>
+
+                        {% if historie.has_next %}
+                            <a href="?page={{ historie.next_page_number }}">next</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        {% else %}
+            <h3>Brak złożonych wniosków</h3>
+        {% endif %}
     </div>
     <br>
     <div class="row">
         {% if obiekty %}
-            <button id="pokazObiekty" class="przycisk">Pokaż obiekty</button>
+            <button id="pokazObiekty" class="przycisk">Pokaż dostępne obiekty</button>
             <button id="ukryjObiekty" class="przycisk" hidden>Ukryj obiekty</button>
             <div id="obiekty" hidden>
                 <h2>Obiekty dostępne</h2>
-                <ol>
-                    {% for obiekt in obiekty %}
-                        <a href="">
-                            <li>{{ obiekt }}</li>
-                        </a>
-                    {% endfor %}
-                </ol>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Lp.</th>
+                            <th>Obiekt</th>
+                            <th>Typ</th>
+                            <th>Jednostka organizacyjna</th>
+                            <th>Opis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obiekt in obiekty %}
+                            {% with obiekt.obiekt as obiekt %}
+                                <tr class="clickable-row" data-href="{% url 'labi_obiekt_detail' obiekt.id %}">
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{ obiekt }}</td>
+                                    <td>{{ obiekt.typ }}</td>
+                                    <td>{{ obiekt.jedn_org }}</td>
+                                    <td>{{ obiekt.opis|truncatechars:"50" }}</td>
+                                </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         {% else %}
-            <h2>Brak dostępnych obiektów</h2>
+            <h3>Brak dostępnych obiektów</h3>
         {% endif %}
     </div>
 

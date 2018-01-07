@@ -119,6 +119,7 @@ class PracownikListView(ListView):
     model = Pracownik
     template_name = 'wnioski/pracownik/pracownik_list.html'
     context_object_name = 'pracownicy'
+    queryset = Pracownik.objects.all().order_by('nazwisko')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -168,12 +169,20 @@ class PracownikDetailView(DetailView):
                 historie.append(hist)
             except IndexError:
                 hist = None
-        wnioski = Wniosek.objects.all()
         wnioski_pracownika = []
         for wniosek in wnioski:
             for prac_wniosek in wniosek.pracownicy.all():
                 if prac_wniosek.pk == self.object.pk:
                     wnioski_pracownika.append(wniosek)
+
+        paginator = Paginator(historie, 5)
+        page = self.request.GET.get('page')
+        try:
+            historie = paginator.page(page)
+        except PageNotAnInteger:
+            historie = paginator.page(1)
+        except EmptyPage:
+            historie = paginator.page(paginator.num_pages)
 
         obiekty = ZatwierdzonePrzezAS.objects.filter(
             wniosek__in=wnioski_pracownika,

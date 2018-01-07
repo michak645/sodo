@@ -22,30 +22,30 @@
     <div class="row">
         <table class="table table-hover">
             <thead>
-            <tr>
-                <th scope="col">Lp.</th>
-                <th scope="col">Pracownik składający</th>
-                <th scope="col">Typ</th>
-                <th scope="col">Uprawnienia</th>
-                <th scope="col">Obiekty</th>
-                <th scope="col">Data</th>
-            </tr>
+                <tr>
+                    <th scope="col">Lp.</th>
+                    <th scope="col">Pracownik składający</th>
+                    <th scope="col">Typ</th>
+                    <th scope="col">Uprawnienia</th>
+                    <th scope="col">Obiekty</th>
+                    <th scope="col">Data</th>
+                </tr>
             </thead>
             <tbody>
-            {% for wniosek in wnioski %}
-                <tr class="clickable-row" data-href="{% url 'wniosek_detail' wniosek.id %}">
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ wniosek.pracownik }}</td>
-                    <td>{{ wniosek.get_typ_display }}</td>
-                    <td>{{ wniosek.get_uprawnienia_display }}</td>
-                    <td>
-                        {% for obiekt in wniosek.obiekty.all %}
-                            {{ obiekt }}<br>
-                        {% endfor %}
-                    </td>
-                    <td>{{ wniosek.data }}</td>
-                </tr>
-            {% endfor %}
+                {% for wniosek in wnioski %}
+                    <tr class="clickable-row" data-href="{% url 'wniosek_detail' wniosek.id %}">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ wniosek.pracownik }}</td>
+                        <td>{{ wniosek.get_typ_display }}</td>
+                        <td>{{ wniosek.get_uprawnienia_display }}</td>
+                        <td>
+                            {% for obiekt in wniosek.obiekty.all %}
+                                {{ obiekt }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>{{ wniosek.data }}</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
