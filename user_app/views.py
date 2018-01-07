@@ -41,16 +41,21 @@ def user_index(request):
 
 def user_objects_available(request):
     pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    wniosek = Wniosek.objects.filter(
-        pracownicy
-    )
-    historie = Historia.objects.filter(
 
+    wnioski = Wniosek.objects.all()
+    wnioski_pracownika = []
+    for wniosek in wnioski:
+        for prac_wniosek in wniosek.pracownicy.all():
+            if prac_wniosek.pk == pracownik.pk:
+                wnioski_pracownika.append(wniosek)
+
+    obiekty_zatwierdzone = ZatwierdzonePrzezAS.objects.filter(
+        wniosek__in=wnioski_pracownika,
     )
 
     context = {
         'pracownik': pracownik,
-        'dostepne_obiekty': obiekty,
+        'obiekty': obiekty_zatwierdzone,
     }
     return render(request, 'user_app/user_objects_available.html', context)
 

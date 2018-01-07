@@ -2,14 +2,13 @@
 
 {% block content %}
 
-    {% if dostepne_obiekty %}
-        <div class="row">
-            <h2 class="center">Dostępne obiekty:</h2>
-        </div>
+    <div class="row">
+        <h2 class="center">Dostępne obiekty:</h2>
+    </div>
 
-        <div class="row">
-            <table class="table table-hover">
-                <thead>
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
                 <tr>
                     <th scope="col">Lp.</th>
                     <th scope="col">Nazwa</th>
@@ -17,28 +16,26 @@
                     <th scope="col">Jednostka organizacyjna</th>
                     <th scope="col">Opis</th>
                     <th scope="col">Uprawnienia</th>
+                    <th scope="col">Wprowadzone do systemu</th>
                 </tr>
-                </thead>
-                <tbody>
-                {% for obiekt in dostepne_obiekty %}
+            </thead>
+            <tbody>
+                {% for obiekt in obiekty %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        {% with obiekt.id_obiektu as obiekt %}
-                            <td>{{ obiekt.nazwa }}</td>
-                            <td>{{ obiekt.typ }}</td>
-                            <td>{{ obiekt.jedn_org }}</td>
-                            <td>{{ obiekt.opis }}</td>
-                        {% endwith %}
-                        <td>{{ obiekt.get_uprawnienia_display }}</td>
+                            {% with obiekt.obiekt as obiekt %}
+                                <td>{{ obiekt.nazwa }}</td>
+                                <td>{{ obiekt.typ }}</td>
+                                <td>{{ obiekt.jedn_org }}</td>
+                                <td>{{ obiekt.opis }}</td>
+                            {% endwith %}
+                        <td>{{ obiekt.wniosek.get_uprawnienia_display }}</td>
+                        <td>
+                            {% if obiekt.zatwierdzone %}Tak{% else %}Nie{% endif %}</td>
                     </tr>
                 {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <div class="row">
-            <h2 class="center">Brak dostępnych obiektów</h2>
-        </div>
-    {% endif %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock %}

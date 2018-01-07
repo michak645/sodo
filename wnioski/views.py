@@ -19,7 +19,11 @@ from .forms import (
     EditWniosekForm)
 from .forms import EditTypObiektuForm
 from .models import (
-    Wniosek, Obiekt, Historia, TypObiektu, PracownicyObiektyUprawnienia)
+    Wniosek,
+    Obiekt,
+    Historia,
+    TypObiektu,
+)
 from auth_ex.models import JednOrg, Pracownik, Labi
 
 
@@ -164,21 +168,17 @@ class ObiektListView(ListView):
     context_object_name = 'obiekty'
 
 
-# CREATING VIEWS
 def create_app(request):
-    thanks = ''
-    # thanks = 'dzieki {0}'.format(form.cleaned_data['imie'])
     if request.method == 'POST':
         form = WniosekForm(request.POST)
         if form.is_valid():
             form.save()
-            thanks = 'Wniosek dodany.'
             return HttpResponseRedirect('wnioski/create/create_app.html')
     else:
         form = WniosekForm()
 
     template = "wnioski/create/create_app.html"
-    context = {'form': form, 'thanks': thanks}
+    context = {'form': form}
     return render(request, template, context)
 
 
@@ -196,59 +196,12 @@ def jednostki(request):
     return render(request, template, context)
 
 
-def search(request):
-
-    if request.method == 'GET':
-        username = SearchForm(request.GET)
-        if username.is_valid():
-            user = username.cleaned_data['username']
-            message = u'dla: "{0}"'.format(
-                user
-            )
-            pracownicy = Pracownik.objects.filter(nazwisko__icontains=user)
-            return render(request, 'wnioski/search/search_results.html', {
-                'pracownicy': pracownicy, 'message': message}
-            )
-
-    else:
-        username = SearchForm()
-        message = "cos nie tak.. {0}".format(username)
-        return render(request, 'wnioski/search/search_results.html', {
-            'message': message, 'username': username}
-        )
-
-    return render(request, 'wnioski/search/search.html')
-
-
 def user_account(request):
     if request.user.is_authenticated():
         session_user = request.session['session_user']
         user = User.objects.get(id=session_user)
         return render(request, 'wnioski/user/user_account.html', {
             'user': user})
-
-    '''
-    if request.user.is_authenticated():
-        session_user = request.session['session_user']
-        user = User.objects.get(id=session_user)
-        pracownik = Pracownik.objects.get(login=user)
-        wnioski = Wniosek.objects.filter(prac_dot=pracownik.id)
-        obiekty = []
-
-        for w in wnioski:
-            try:
-                max_id = Historia.objects.filter(wniosek=w.id).a
-                ggregate(id=Max('id'))['id']
-                historia = Historia.objects.get(wniosek=w.id, id=max_id)
-            except Historia.DoesNotExist:
-                historie = None
-            if historia is not None and w.typ_id == 4 
-            and historia.status_id == 5:
-                obiekt = Obiekt.objects.get(id=w.obiekt_id)
-                obiekty.append(obiekt)
-        return render(request, 'wnioski/user/user_account.html', {
-            'user': user, 'obiekty': obiekty})
-    '''
 
 
 def obj_view(request, obj_id):

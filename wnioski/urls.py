@@ -30,9 +30,6 @@ urlpatterns = [
     url(r'^typ_obiektu_edit/(?P<typ_obiektu_id>\d+)/', views.typ_obiektu_edit, name='typ_obiektu_edit'),
     url(r'^jednostka_edit/(?P<jednostka_id>\d+)/', views.jednostka_edit, name='jednostka_edit'),
 
-    # search
-    url(r'^search/', views.search, name='search'),
-
     # user
     url(r'^user_account/', views.user_account, name='user_account'),
 

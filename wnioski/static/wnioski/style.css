@@ -3,11 +3,7 @@ body {
 }
 
 .main-page {
-	margin-top: 100px;
-}
-
-.row {
-    margin: 15px;
+	margin-top: 80px;
 }
 
 .p {
@@ -72,7 +68,6 @@ hr {
     left: 0px;
     text-align: center;
     margin-top: 20px;
-
 }
 
 .center {
