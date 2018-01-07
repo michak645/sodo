@@ -12,7 +12,6 @@ from auth_ex.forms import JednostkaForm
 from auth_ex.views import find_labi
 from .forms import (
     WniosekForm,
-    SearchForm,
     ObiektForm,
     TypeForm,
     EditObiektForm,
@@ -23,6 +22,7 @@ from .models import (
     Obiekt,
     Historia,
     TypObiektu,
+    ZatwierdzonePrzezAS,
 )
 from auth_ex.models import JednOrg, Pracownik, Labi
 
@@ -115,57 +115,111 @@ def wniosek_detail(request, pk):
         })
 
 
-# LIST VIEWS
 class PracownikListView(ListView):
     model = Pracownik
-    template_name = 'wnioski/views/pracownicy.html'
+    template_name = 'wnioski/pracownik/pracownik_list.html'
     context_object_name = 'pracownicy'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
+        try:
+            pracownicy = paginator.page(page)
+        except PageNotAnInteger:
+            pracownicy = paginator.page(1)
+        except EmptyPage:
+            pracownicy = paginator.page(paginator.num_pages)
+        context['pracownicy'] = pracownicy
+        return context
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(PracownikListView, self).dispatch(*args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            pracownicy = self.get_queryset(). \
+                filter(nazwisko__icontains=search)
+        else:
+            pracownicy = self.get_queryset()
+        context = {
+            'pracownicy': pracownicy,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
 
 class PracownikDetailView(DetailView):
     model = Pracownik
-    template_name = 'wnioski/views/user_view.html'
+    template_name = 'wnioski/pracownik/pracownik_detail.html'
+    context_object_name = 'pracownik'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        wnioski = Wniosek.objects.filter(pracownik=self.object.id)
-        przyjete = []
-        odrzucone = []
-        przetwarzane = []
+        wnioski = Wniosek.objects.filter(
+            pracownik=self.object.pk).order_by('-data')
+        historie = []
         for wniosek in wnioski:
             try:
                 hist = Historia.objects.filter(
                     wniosek=wniosek).order_by('-data')[0]
-                if hist.status == '1':
-                    przyjete.append(hist)
-                elif hist.status == '2':
-                    odrzucone.append(hist)
-                elif hist.status == '3':
-                    przetwarzane.append(hist)
+                historie.append(hist)
             except IndexError:
                 hist = None
-        context['wnioski'] = wnioski
-        context['przyjete'] = przyjete
-        context['odrzucone'] = odrzucone
-        context['przetwarzane'] = przetwarzane
+        wnioski = Wniosek.objects.all()
+        wnioski_pracownika = []
+        for wniosek in wnioski:
+            for prac_wniosek in wniosek.pracownicy.all():
+                if prac_wniosek.pk == self.object.pk:
+                    wnioski_pracownika.append(wniosek)
+
+        obiekty = ZatwierdzonePrzezAS.objects.filter(
+            wniosek__in=wnioski_pracownika,
+        )
+
+        context['historie'] = historie
+        context['obiekty'] = obiekty
         return context
-
-
-def obiekty(request):
-    obiekty = Obiekt.objects.all()
-    template = "wnioski/views/obiekty.html"
-    context = {'obiekty': obiekty}
-    return render(request, template, context)
 
 
 class ObiektListView(ListView):
     model = Obiekt
-    template = 'wnioski/views/obiekty.html'
+    template_name = 'wnioski/obiekt/obiekt_list.html'
     context_object_name = 'obiekty'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
+        try:
+            obiekty = paginator.page(page)
+        except PageNotAnInteger:
+            obiekty = paginator.page(1)
+        except EmptyPage:
+            obiekty = paginator.page(paginator.num_pages)
+        context['obiekty'] = obiekty
+        return context
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            obiekty = self.get_queryset(). \
+                filter(nazwa__icontains=search)
+        else:
+            obiekty = self.get_queryset()
+        context = {
+            'obiekty': obiekty,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
+
+class ObiektDetailView(DetailView):
+    model = Obiekt
+    template_name = 'wnioski/obiekt/obiekt_detail.html'
+    context_object_name = 'obiekt'
 
 
 def create_app(request):
@@ -202,12 +256,6 @@ def user_account(request):
         user = User.objects.get(id=session_user)
         return render(request, 'wnioski/user/user_account.html', {
             'user': user})
-
-
-def obj_view(request, obj_id):
-    obiekt = Obiekt.objects.get(id=obj_id)
-    return render(request, 'wnioski/views/obj_view.html', {
-        'obiekt': obiekt})
 
 
 def typ_obiektu_view(request, typ_obiektu_id):
@@ -391,91 +439,3 @@ def jednostka_edit(request, jednostka_id):
         'jednostka': jednostka,
         'form': form
     })
-
-
-def obj_list(request):
-    ldap_user = request.session['ldap_user']
-    try:
-        Pracownik.objects.get(login=ldap_user)
-    except Pracownik.DoesNotExist:
-        return HttpResponseRedirect('/ldap/login')
-    obiekty = Obiekt.objects.all()
-    template = 'wnioski/ldap/obj_list.html'
-    return render(request, template, {
-        'obiekty': obiekty
-    })
-
-
-def wniosek_view_ldap(request, wniosek_id):
-    ldap_user = request.session['ldap_user']
-    try:
-        Pracownik.objects.get(login=ldap_user)
-    except Pracownik.DoesNotExist:
-        return HttpResponseRedirect('/ldap/login')
-    wniosek = Wniosek.objects.get(id=wniosek_id)
-    return render(request, 'wnioski/ldap/wniosek_view_ldap.html', {
-        'wniosek': wniosek})
-
-
-def ldap_main(request):
-    user = request.user
-    wnioski = Wniosek.objects.filter(user=user)
-    historia = Historia.objects.filter(wniosek__in=wnioski)
-    template = "wnioski/ldap/main.html"
-    return render(request, template, {
-        'user': user,
-        'historia': historia,
-    })
-
-    # przyjete = []
-    # odrzucone = []
-    # przetwarzane = []
-    # for wniosek in wnioski:
-    #     try:
-    #         hist = Historia.objects.filter(
-    #             wniosek=wniosek).order_by('-data')[0]
-    #         if hist.status == '1':
-    #             przyjete.append(hist)
-    #         elif hist.status == '2':
-    #             odrzucone.append(hist)
-    #         elif hist.status == '3':
-    #             przetwarzane.append(hist)
-    #     except IndexError:
-    #         hist = None
-
-    # if request.method == 'POST':
-    #     form = WniosekForm(request.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #         form = WniosekForm()
-    #         message = 'wniosek dodany'
-    #         template = "wnioski/ldap/main.html"
-    #         return render(request, template, {
-    #             'form': form,
-    #             'message': message,
-    #             'user': user,
-    #             'wnioski': wnioski,
-    #             'przyjete': przyjete,
-    #             'odrzucone': odrzucone,
-    #             'przetwarzane': przetwarzane,
-    #         })
-    # else:
-
-
-def WniosekCreateView(request):
-    if request.method == 'POST':
-        post = request.POST.copy()
-        post['user'] = request.user.id
-        form = WniosekForm(post)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Successfully add application')
-            return HttpResponseRedirect('/ldap/main')
-        else:
-            messages.error(request, 'There was some errors')
-            return HttpResponseRedirect('/ldap/app_add')
-    else:
-        form = WniosekForm()
-        return render(request, 'wnioski/ldap/app_add.html', {
-            'form': form,
-        })

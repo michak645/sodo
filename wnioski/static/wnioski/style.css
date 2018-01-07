@@ -3,7 +3,7 @@ body {
 }
 
 .main-page {
-	margin-top: 80px;
+    margin-top: 80px;
 }
 
 .p {
@@ -18,7 +18,8 @@ body {
 }
 
 .content {
-	margin-top: 100px;
+    margin-top: 100px;
+	margin-bottom: 100px;
 }
 
 .separator {
@@ -78,8 +79,21 @@ hr {
     cursor: pointer;
 }
 
-.clickable-row:hover {
+.clickable-row:hsla(0,0%,0%,1)over {
     cursor: pointer;
     background: #337ab7 !important;
     color: black !important;
+}
+
+.przycisk {
+    display: block;
+    width: 150px;
+    height: 50px;
+    background: #337ab7;
+    border: none;
+    color: ivory;
+}
+
+.left {
+    float: left;
 }

@@ -6,6 +6,10 @@
     <div class="container">
 
         <div class="row">
+            <button class="btn btn-primary" id="return">Cofnij</button>
+        </div>
+
+        <div class="row">
             <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
             <a target="_blank" class="btn btn-primary" href="/wniosekpdf/{{ wniosek.id }}">
                 Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
@@ -141,5 +145,13 @@
         });
     </script>
     {% endcomment %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#return").click(function(){
+                history.back(1);
+            });
+        });
+    </script>
 
 {% endblock %}

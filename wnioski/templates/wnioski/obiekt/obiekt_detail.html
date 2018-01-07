@@ -1,0 +1,72 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <button class="btn btn-primary" id="return">Cofnij</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>{{ obiekt }} - dane szczegółowe</strong>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Nazwa: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ obiekt.nazwa }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Typ: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ obiekt.typ }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Jednostka organizacyjna: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ obiekt.jedn_org }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Opis: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ obiekt.opis }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+            $("#return").click(function(){
+                history.back(1);
+            });
+        });
+    </script>
+    
+{% endblock %}

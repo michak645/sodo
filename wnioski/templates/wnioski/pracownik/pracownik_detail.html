@@ -1,0 +1,171 @@
+{% extends "wnioski/base/base.html" %}
+
+{% block title %}User - {{ pracownik }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="row">
+        <button class="btn btn-primary" id="return">Cofnij</button>
+    </div>
+
+    <div class="row">
+        <h3><strong>{{ pracownik }}</strong> - dane szczegółowe</h3>
+    </div>
+    <hr>
+    <div class="row">
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Imię: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <p>{{ pracownik.imie }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Nazwisko: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <p>{{ pracownik.nazwisko }}</p>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Email: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <p>{{ pracownik.email }}</p>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Login: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <p>{{ pracownik.login }}</p>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Jednostka organizacyjna: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <p>{{ pracownik.jedn_org }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Szkolenie: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                {% if pracownik.szkolenie %}
+                    <p>Przeszedł</p>
+                {% else %}
+                    <p>Nie przeszedł</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Rodzaj użytkownika: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <p>{{ pracownik.rodzaj }}</p>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <button id="pokazWnioski" class="przycisk">Pokaż wnioski</button>
+        <button id="ukryjWnioski" class="przycisk" hidden>Ukryj wnioski</button>
+
+
+        <table class="table table-hover" id="wnioski" hidden>
+            <thead>
+            <tr>
+                <th scope="col">Lp.</th>
+                <th scope="col">Wniosek</th>
+                <th scope="col">Status</th>
+                <th scope="col">Data</th>
+                <th scope="col">Ostatnia edycja</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for historia in historie %}
+                <tr class="clickable-row" data-href="{% url 'wniosek_detail' historia.wniosek.id %}">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ historia.wniosek|truncatechars:"60" }}</td>
+                    <td>{{ historia.get_status_display }}</td>
+                    <td>{{ historia.data }}</td>
+                    <td>{{ historia.pracownik }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div class="row">
+        {% if obiekty %}
+            <button id="pokazObiekty" class="przycisk">Pokaż obiekty</button>
+            <button id="ukryjObiekty" class="przycisk" hidden>Ukryj obiekty</button>
+            <div id="obiekty" hidden>
+                <h2>Obiekty dostępne</h2>
+                <ol>
+                    {% for obiekt in obiekty %}
+                        <a href="">
+                            <li>{{ obiekt }}</li>
+                        </a>
+                    {% endfor %}
+                </ol>
+            </div>
+        {% else %}
+            <h2>Brak dostępnych obiektów</h2>
+        {% endif %}
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#pokazWnioski').on('click', function(){
+            $('#wnioski').fadeToggle();
+            $('#pokazWnioski').toggle();
+            $('#ukryjWnioski').toggle();
+        });
+        $('#ukryjWnioski').on('click', function(){
+            $('#wnioski').fadeToggle();
+            $('#pokazWnioski').toggle();
+            $('#ukryjWnioski').toggle();
+        });
+        $('#pokazObiekty').on('click', function(){
+            $('#obiekty').fadeToggle();
+            $('#pokazObiekty').toggle();
+            $('#ukryjObiekty').toggle();
+        });
+        $('#ukryjObiekty').on('click', function(){
+            $('#obiekty').fadeToggle();
+            $('#pokazObiekty').toggle();
+            $('#ukryjObiekty').toggle();
+        });
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+        $("#return").click(function(){
+            history.back(1);
+        });
+    });
+</script>
+    
+{% endblock %}

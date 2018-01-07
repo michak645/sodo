@@ -22,7 +22,7 @@ class JednOrg(models.Model):
     nazwa = models.CharField('Nazwa', max_length=255, null=False, blank=False)
 
     def __str__(self):
-        return '{0}. {1}'.format(self.id, self.nazwa)
+        return '{}'.format(self.nazwa)
 
 
 # Gdy usuwamy jednostkę organizacyjną to jednostka
