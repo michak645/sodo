@@ -64,8 +64,9 @@ def wnioski(request):
             wnioski_list = Wniosek.objects.all().order_by('-data')
     else:
         wnioski_list = Wniosek.objects.all().order_by('-data')
+        search = None
 
-    paginator = Paginator(wnioski_list, 20)
+    paginator = Paginator(wnioski_list, 10)
 
     page = request.GET.get('page')
     try:
@@ -76,6 +77,7 @@ def wnioski(request):
         wnioski = paginator.page(paginator.num_pages)
 
     context = {
+        'search': search,
         'pracownik': pracownik,
         'wnioski': wnioski,
     }
@@ -151,6 +153,14 @@ class PracownikListView(ListView):
                 filter(nazwisko__icontains=search)
         else:
             pracownicy = self.get_queryset()
+        paginator = Paginator(pracownicy, 10)
+        page = self.request.GET.get('page')
+        try:
+            pracownicy = paginator.page(page)
+        except PageNotAnInteger:
+            pracownicy = paginator.page(1)
+        except EmptyPage:
+            pracownicy = paginator.page(paginator.num_pages)
         context = {
             'pracownicy': pracownicy,
             'search': search,

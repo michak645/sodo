@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'pdf_generator',
     'user_app',
     'multiselectfield',
+    'bootstrap_pagination',
 ]
 
 MIDDLEWARE = [
