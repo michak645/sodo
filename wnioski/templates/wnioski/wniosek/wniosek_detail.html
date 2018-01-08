@@ -100,7 +100,7 @@
 
         {% if status_int == '3' %}        
             <div class="row">
-                <form action="{% url 'ldap_wniosek_detail' wniosek.pk %}" method="post">
+                <form action="{% url 'labi_wniosek_detail' wniosek.pk %}" method="post">
                     {% csrf_token %}
                     <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
                     <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">

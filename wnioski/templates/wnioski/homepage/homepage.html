@@ -26,7 +26,7 @@
                     {% for historia in to_approve %}
                         <tr>
                             <td>
-                                <a href="{% url 'wniosek_detail' historia.wniosek.id %}">{{ forloop.counter }}. {{ historia.wniosek }}</a>
+                                <a href="{% url 'labi_wniosek_detail' historia.wniosek.id %}">{{ forloop.counter }}. {{ historia.wniosek }}</a>
                             </td>
                             <td>{{ historia.get_status }}</td>
                             <td>{{ historia.data }}</td>

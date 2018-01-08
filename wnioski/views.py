@@ -142,10 +142,6 @@ class PracownikListView(ListView):
         context['pracownicy'] = pracownicy
         return context
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(PracownikListView, self).dispatch(*args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         search = request.POST.get('search')
         if search:
