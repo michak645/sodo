@@ -42,6 +42,7 @@ LABI - 'admin_wmi', 'admin_fizyka'
 Potrzebne do działania:
 - weasyprint - generowanie pdfów z wzorca w html, https://weasyprint.readthedocs.io/en/stable/install.html
 - multiselectfield - instalowanie: pip3 install django-multiselectfield
+- bootstrap-pagination - instalowanie: pip3 install django-bootstrap-pagination
 
 
 <b>Ustalenia:</b>
