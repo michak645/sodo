@@ -11,25 +11,15 @@ USER_APP:
 	- aktualne uprawnienia wybranych pracowników do wybranych obiektów
 	- podsumowanie wniosku - ostylować ładnie
 	- komentarz do wniosku
-- Dostępne obiekty - wyszukiwanie
 - Twój panel - poprawić 
 - autoryzacja
-- pdfy poprawić 
-- podgląd wniosku poprawić
+- podgląd wniosku poprawić (zobaczyc czy uprawnienia sa)
 - messeges poprawić
 
-- dodać menu administratora systemu - wyświetlać się tam będą wnioski do ostatecznego zatwierdzenia
 
-
-ADMIN_APP:
+LBI_APP:
 - strona początkowa zatwierdzanie szybkie wniosków
 - zakładka wnioski, lista wniosków złożonych dla labiego (paginacja, wyszukiwanie)
-- Pracownicy - paginacja, wyszukiwanie, więcej informacji na stronie + podgląd
-- obiekty - paginacja, wyszukiwanie, więcej informacji na stronie + podgląd
-- typy obiektów - paginacja, wyszukiwanie, więcej informacji na stronie + podgląd
-- jednostki org - paginacja, wyszukiwanie, więcej informacji na stronie + podgląd
-- wyszukiwanie usunąć
-- dodawanie obiektów, typów, jednostek, rodzaj pracownika i pracownika
 - dodać wizard wniosku
 
 Rozbudować historie:
