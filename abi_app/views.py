@@ -2,17 +2,16 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
-from auth_ex.models import Labi, Pracownik, JednOrg
+from auth_ex.models import Labi, Pracownik, JednOrg, RodzajPracownika
 from user_app.forms import WizardUprawnienia
 from user_app.models import Cart
-from wnioski.models import (
-    Wniosek,
-    Historia,
-    PracownicyObiektyUprawnienia,
-    Obiekt,
-    ZatwierdzonePrzezAS,
-)
+from wnioski.models import *
 
 
 def abi_index(request):
@@ -152,35 +151,248 @@ def wniosek_detail(request, pk):
     return render(request, 'abi_app/wniosek_detail.html', context)
 
 
-def obiekt_list(request):
-    obiekty = Obiekt.objects.all()
-    if request.method == 'POST':
-        search = request.POST['search']
+class PracownikListView(ListView):
+    model = Pracownik
+    template_name = 'abi_app/data/pracownik_list.html'
+    context_object_name = 'pracownicy'
+    queryset = Pracownik.objects.all().order_by('nazwisko')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
         try:
-            obiekty = Obiekt.objects.filter(nazwa__contains=search)
-        except Obiekt.DoesNotExist:
-            messages.error(request, 'Nie znaleziono obiektu')
-        if obiekty:
-            context = {
-                'obiekty': obiekty,
-                'search_phrase': search
-            }
-            return render(request, 'abi_app/data/obiekt_list.html', context)
+            pracownicy = paginator.page(page)
+        except PageNotAnInteger:
+            pracownicy = paginator.page(1)
+        except EmptyPage:
+            pracownicy = paginator.page(paginator.num_pages)
+        context['pracownicy'] = pracownicy
+        return context
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PracownikListView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            pracownicy = self.get_queryset(). \
+                filter(nazwisko__icontains=search)
         else:
-            context = {
-                'obiekty': obiekty,
-                'search_phrase': search
-            }
-            return render(request, 'abi_app/data/obiekt_list.html', context)
+            pracownicy = self.get_queryset()
+        paginator = Paginator(pracownicy, 10)
+        page = self.request.GET.get('page')
+        try:
+            pracownicy = paginator.page(page)
+        except PageNotAnInteger:
+            pracownicy = paginator.page(1)
+        except EmptyPage:
+            pracownicy = paginator.page(paginator.num_pages)
+        context = {
+            'pracownicy': pracownicy,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
 
-    context = {
-        'obiekty': obiekty,
-    }
-    return render(request, 'abi_app/data/obiekt_list.html', context)
+
+class PracownikDetailView(DetailView):
+    model = Pracownik
+    template_name = 'abi_app/data/pracownik_detail.html'
+    context_object_name = 'pracownik'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        wnioski = Wniosek.objects.filter(
+            pracownik=self.object.pk).order_by('-data')
+        historie = []
+        for wniosek in wnioski:
+            try:
+                hist = Historia.objects.filter(
+                    wniosek=wniosek).order_by('-data')[0]
+                historie.append(hist)
+            except IndexError:
+                hist = None
+        wnioski_pracownika = []
+        for wniosek in wnioski:
+            for prac_wniosek in wniosek.pracownicy.all():
+                if prac_wniosek.pk == self.object.pk:
+                    wnioski_pracownika.append(wniosek)
+
+        paginator = Paginator(historie, 5)
+        page = self.request.GET.get('page')
+        try:
+            historie = paginator.page(page)
+        except PageNotAnInteger:
+            historie = paginator.page(1)
+        except EmptyPage:
+            historie = paginator.page(paginator.num_pages)
+
+        obiekty = ZatwierdzonePrzezAS.objects.filter(
+            wniosek__in=wnioski_pracownika,
+        )
+
+        context['historie'] = historie
+        context['obiekty'] = obiekty
+        return context
 
 
-def obiekt_detail(request):
-    return render(request, 'abi_app/obiekt_list.html')
+class PracownikCreate(CreateView):
+    model = Pracownik
+    fields = ['login', 'imie', 'nazwisko', 'email',
+              'rodzaj', 'jedn_org', 'numer_ax']
+    template_name = 'abi_app/data/pracownik_create.html'
+    success_url = reverse_lazy('labi_pracownik_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano pracownika.')
+        return super().form_valid(form)
+
+
+class RodzajPracownikaCreate(CreateView):
+    model = RodzajPracownika
+    fields = ['rodzaj', ]
+    template_name = 'abi_app/data/rodzaj_pracownika_create.html'
+    success_url = reverse_lazy('abi_pracownik_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano rodzaj pracownika.')
+        return super().form_valid(form)
+
+
+class ObiektListView(ListView):
+    model = Obiekt
+    template_name = 'abi_app/data/obiekt_list.html'
+    context_object_name = 'obiekty'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
+        try:
+            obiekty = paginator.page(page)
+        except PageNotAnInteger:
+            obiekty = paginator.page(1)
+        except EmptyPage:
+            obiekty = paginator.page(paginator.num_pages)
+        context['obiekty'] = obiekty
+        return context
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            obiekty = self.get_queryset(). \
+                filter(nazwa__icontains=search)
+        else:
+            obiekty = self.get_queryset()
+        paginator = Paginator(obiekty, 10)
+        page = self.request.GET.get('page')
+        try:
+            obiekty = paginator.page(page)
+        except PageNotAnInteger:
+            obiekty = paginator.page(1)
+        except EmptyPage:
+            obiekty = paginator.page(paginator.num_pages)
+        context = {
+            'obiekty': obiekty,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
+
+class ObiektDetailView(DetailView):
+    model = Obiekt
+    template_name = 'abi_app/data/obiekt_detail.html'
+    context_object_name = 'obiekt'
+
+
+class ObiektCreate(CreateView):
+    model = Obiekt
+    fields = ['nazwa', 'typ', 'jedn_org', 'opis']
+    template_name = 'abi_app/data/obiekt_create.html'
+    success_url = reverse_lazy('abi_obiekt_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano obiekt.')
+        return super().form_valid(form)
+
+
+class ObiektTypCreate(CreateView):
+    model = TypObiektu
+    fields = ['nazwa', ]
+    template_name = 'abi_app/data/obiekt_typ_create.html'
+    success_url = reverse_lazy('abi_obiekt_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano typ obiektu.')
+        return super().form_valid(form)
+
+
+class JednostkaListView(ListView):
+    model = JednOrg
+    template_name = 'abi_app/data/jednostka_list.html'
+    context_object_name = 'jednostki'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
+        context['jednostki'] = jednostki
+        return context
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            jednostki = self.get_queryset(). \
+                filter(nazwa__icontains=search)
+        else:
+            jednostki = self.get_queryset()
+
+        paginator = Paginator(jednostki, 10)
+        page = self.request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
+        context = {
+            'jednostki': jednostki,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
+
+class JednostkaDetailView(DetailView):
+    model = JednOrg
+    template_name = 'abi_app/data/jednostka_detail.html'
+    context_object_name = 'jednostka'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.czy_labi:
+            labi = Labi.objects.get(jednostka=self.object.id)
+        else:
+            labi = None
+        context['labi'] = labi
+        return context
+
+
+class JednostkaCreate(CreateView):
+    model = JednOrg
+    fields = ['nazwa', 'parent', 'czy_labi']
+    template_name = 'abi_app/data/jednostka_create.html'
+    success_url = reverse_lazy('abi_jednostka_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pomyślnie dodano jednostkę.')
+        return super().form_valid(form)
 
 
 # WIZARD
