@@ -3,6 +3,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+from auth_ex.models import Labi, Pracownik, JednOrg, RodzajPracownika
+from user_app.forms import WizardUprawnienia
+from user_app.models import Cart
+from wnioski.models import *
+
 
 from .models import Cart
 from auth_ex.models import (
@@ -60,40 +75,106 @@ def user_objects_available(request):
     return render(request, 'user_app/user_objects_available.html', context)
 
 
-def user_objects_list(request):
-    pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    wnioski = Wniosek.objects.filter(pracownik=pracownik)
-    historia = Historia.objects.filter(wniosek__in=wnioski, status=1)
-    dostepne_obiekty = []
-    obiekty = Obiekt.objects.all()
-    if request.method == 'POST':
-        search = request.POST['search']
-        try:
-            obiekty = Obiekt.objects.filter(nazwa__contains=search)
-        except Obiekt.DoesNotExist:
-            messages.error(request, 'Nie znaleziono obiektu')
-        if obiekty:
-            context = {
-                'pracownik': pracownik,
-                'obiekty': obiekty,
-                'search_phrase': search
-            }
-            return render(request, 'user_app/user_objects_list.html', context)
-        else:
-            context = {
-                'pracownik': pracownik,
-                'obiekty': obiekty,
-                'search_phrase': search
-            }
-            return render(request, 'user_app/user_objects_list.html', context)
+class ObiektListView(ListView):
+    model = Obiekt
+    template_name = 'user_app/user_objects_list.html'
+    context_object_name = 'obiekty'
 
-    for wniosek in historia:
-        dostepne_obiekty.append(wniosek.wniosek.obiekty)
-    context = {
-        'pracownik': pracownik,
-        'obiekty': obiekty,
-    }
-    return render(request, 'user_app/user_objects_list.html', context)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
+        try:
+            obiekty = paginator.page(page)
+        except PageNotAnInteger:
+            obiekty = paginator.page(1)
+        except EmptyPage:
+            obiekty = paginator.page(paginator.num_pages)
+        context['obiekty'] = obiekty
+        return context
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            obiekty = self.get_queryset(). \
+                filter(nazwa__icontains=search)
+        else:
+            obiekty = self.get_queryset()
+        paginator = Paginator(obiekty, 10)
+        page = self.request.GET.get('page')
+        try:
+            obiekty = paginator.page(page)
+        except PageNotAnInteger:
+            obiekty = paginator.page(1)
+        except EmptyPage:
+            obiekty = paginator.page(paginator.num_pages)
+        context = {
+            'obiekty': obiekty,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
+
+class ObiektDetailView(DetailView):
+    model = Obiekt
+    template_name = 'user_app/obiekt_detail.html'
+    context_object_name = 'obiekt'
+
+
+class JednostkaListView(ListView):
+    model = JednOrg
+    template_name = 'user_app/jednostka_list.html'
+    context_object_name = 'jednostki'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = Paginator(self.get_queryset(), 10)
+        page = self.request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
+        context['jednostki'] = jednostki
+        return context
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST.get('search')
+        if search:
+            jednostki = self.get_queryset(). \
+                filter(nazwa__icontains=search)
+        else:
+            jednostki = self.get_queryset()
+
+        paginator = Paginator(jednostki, 10)
+        page = self.request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
+        context = {
+            'jednostki': jednostki,
+            'search': search,
+        }
+        return render(request, self.template_name, context)
+
+
+class JednostkaDetailView(DetailView):
+    model = JednOrg
+    template_name = 'user_app/jednostka_detail.html'
+    context_object_name = 'jednostka'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.czy_labi:
+            labi = Labi.objects.get(jednostka=self.object.id)
+        else:
+            labi = None
+        context['labi'] = labi
+        return context
 
 
 def user_add_app(request):

@@ -33,7 +33,13 @@
                         <li><a href="{% url 'user_app_rejected' %}">Wnioski odrzucone</a></li>
                         <li><a href="{% url 'step_one' %}">Złóż wniosek</a></li>
                         <li><a href="{% url 'user_objects_available' %}">Dostępne obiekty</a></li>
-                        <li><a href="{% url 'user_objects_list' %}">Wszystkie obiekty</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dane z systemu<span class="caret"></span>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'user_objects_list' %}">Obiekty</a></li>
+                                    <li><a href="{% url 'user_jednostka_list' %}">Jednostki</a></li>
+                                </ul>
+                        </li>
                         {% for pracownik in pracownik.admin.all %}
                             <li><a href="{% url 'admin_panel' %}">Panel administratora</a></li>
                         {% endfor %}

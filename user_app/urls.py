@@ -5,8 +5,16 @@ urlpatterns = [
     url(r'^user_index', views.user_index, name='user_index'),
     url(r'^user_objects_available', views.user_objects_available,
         name='user_objects_available'),
-    url(r'^user_objects_list', views.user_objects_list,
+
+    url(r'^user_objects_list', views.ObiektListView.as_view(),
         name='user_objects_list'),
+    url(r'^user_obiekt/(?P<pk>\d+)/$', views.ObiektDetailView.as_view(),
+        name='user_obiekt_detail'),
+    url(r'^user_jednostki/$', views.JednostkaListView.as_view(),
+        name='user_jednostka_list'),
+    url(r'^user_jednostka/(?P<pk>\d+)/$', views.JednostkaDetailView.as_view(),
+        name='user_jednostka_detail'),
+
     url(r'^user_add_app', views.user_add_app, name='user_add_app'),
     url(r'^user_app_accepted', views.user_app_accepted,
         name='user_app_accepted'),
