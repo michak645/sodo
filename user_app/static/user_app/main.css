@@ -73,3 +73,12 @@
 .border-right {
     border-right: 1px solid black !important;
 }	 
+
+.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+
+.clickable {
+    cursor: pointer;
+}
