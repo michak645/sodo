@@ -1,19 +1,19 @@
 {% extends "abi_app/base_site/base_site.html" %}
 {% load bootstrap_pagination %}
 
-{% block title %}Obiekty{% endblock %}
+{% block title %}Pracownicy{% endblock %}
 
 {% block content %}
 
     <div class="row center-verticle-title">
         <div class="col-md-2">
-            <span class="title">Obiekty</span>
+            <span class="title">Pracownicy</span>
         </div>
         <form method="post" action="">{% csrf_token %}
             <div class="col-md-2">
-                <input type="text" name="search" placeholder="Szukaj po nazwie" class="form-control">
+                <input type="text" name="search" placeholder="Szukaj po nazwisku" class="form-control">
             </div>
-            <div class="col-md-1">  
+            <div class="col-md-1">
                 <input type="submit" value="Szukaj" class="btn">
             </div>
             {% if search %}
@@ -23,37 +23,40 @@
             {% endif %}
         </form>
         <span class="right">
-            <a href="{% url 'abi_obiekt_create' %}" class="btn btn-default">Dodaj obiekt</a>
-            <a href="{% url 'abi_obiekt_typ_create' %}" class="btn btn-default">Dodaj typ obiektu</a>
+            <a href="{% url 'abi_pracownik_create' %}" class="btn btn-default">Dodaj pracownika</a>
+            <a href="{% url 'abi_rodzaj_pracownik_create' %}" class="btn btn-default">Dodaj rodzaj pracownika</a>
         </span>
     </div>
-
     <div class="row">
-        {% bootstrap_pager obiekty %}
+        {% bootstrap_pager pracownicy %}
         <table class="table table-hover">
             <thead>
                 <tr>
                     <th>Lp.</th>
-                    <th>Obiekt</th>
-                    <th>Typ</th>
+                    <th>Pracownik</th>
+                    <th>Login</th>
+                    <th>Email</th>
+                    <th>Rodzaj</th>
                     <th>Jednostka organizacyjna</th>
-                    <th>Opis</th>
+                    <th>Numer ax</th>
                 </tr>
             </thead>
             <tbody>
-                {% for obiekt in obiekty %}
-                    <tr class="clickable-row" data-href="{% url 'abi_obiekt_detail' obiekt.id %}">
+                {% for pracownik in pracownicy %}
+                    <tr class="clickable-row" data-href="{% url 'abi_pracownik_detail' pracownik.pk %}">
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ obiekt }}</td>
-                        <td>{{ obiekt.typ }}</td>
-                        <td>{{ obiekt.jedn_org }}</td>
-                        <td>{{ obiekt.opis|truncatechars:"50" }}</td>
+                        <td>{{ pracownik }}</td>
+                        <td>{{ pracownik.login }}</td>
+                        <td>{{ pracownik.email }}</td>
+                        <td>{{ pracownik.rodzaj }}</td>
+                        <td>{{ pracownik.jedn_org }}</td>
+                        <td>{{ pracownik.numer_ax }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <div class="center">
-            {% bootstrap_paginate obiekty range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+            {% bootstrap_paginate pracownicy range=10 show_prev_next="false" show_first_last="true" centered="true" %}
         </div>
     </div>
 
@@ -65,4 +68,5 @@
         });
     </script>
 
+    
 {% endblock %}

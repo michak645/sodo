@@ -1,0 +1,83 @@
+{% extends 'user_app/base_site/base_site.html' %}
+
+{% block title %}Lista{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <button class="btn btn-primary" id="return">Cofnij</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>{{ jednostka }} - dane szczegółowe</strong>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Nazwa:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ jednostka.nazwa }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>ID: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ jednostka.id }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Jednostka nadrzędna:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                {% if jednostka.parent %}
+                                    <a href="{% url 'user_jednostka_detail' jednostka.parent.id %}">
+                                        {{ jednostka.parent.nazwa }}
+                                    </a>
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>LABI:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                {% if jednostka.czy_labi %}
+                                    <a href="{% url 'abi_pracownik_detail' labi.login.pk %}">{{ labi.login }}</a>
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+            $("#return").click(function(){
+                history.back(1);
+            });
+        });
+    </script>
+
+{% endblock %}

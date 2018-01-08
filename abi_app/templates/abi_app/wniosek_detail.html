@@ -1,18 +1,21 @@
 {% extends 'abi_app/base_site/base_site.html' %}
-
-{% block title %}Lista{% endblock %}
+{% block title %}ABI - panel{% endblock %}
 
 {% block content %}
 
     <div class="container">
 
         <div class="row">
+            <button class="btn btn-primary" id="return">Cofnij</button>
+        </div>
+
+        <div class="row">
             <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
-            <a target="_blank" class="btn btn-primary" href="/wniosekpdf/{{ wniosek.id }}">
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_app_pdf' wniosek.pk %}">
                 Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
             </a>
-            <a target="_blank" class="btn btn-primary" href="/wniosekraport/{{ wniosek.id }}">
-                Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_app_raport_pdf' wniosek.pk %}">
+                Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-list-alt"></span>
             </a>
         </div>
         <hr>
@@ -59,14 +62,18 @@
                     <label>Pracownicy których dotyczy: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" id="pracownicy">Pokaż pracowników</a>
-                    </p>
-                    <div class="collapse" id="collapseExample">
-                        <div class="panel panel-default">
+                    <div>
+                        <p>
+                            <button class="przycisk-maly" id="pokazPracownikow">Pokaż pracowników</button>
+                            <button class="przycisk-maly" id="ukryjPracownikow" hidden>Ukryj pracowników</button>
+                        </p>
+                    </div>
+                    <div id="collapsePracownicy" hidden>
+                        <ul>
                             {% for pracownik in wniosek.pracownicy.all %}
-                                <p>{{ pracownik }}</p>
+                                <li>{{ pracownik }}</li>
                             {% endfor %}
-                        </div>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -76,32 +83,25 @@
                     <label>Obiekty: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseobiekty" role="button" aria-expanded="false" aria-controls="collapseobiekty">Pokaż obiekty</a>
+                    <p>
+                        <button class="przycisk-maly" id="pokazObiekty">Pokaż obiekty</button>
+                        <button class="przycisk-maly" id="ukryjObiekty" hidden>Ukryj obiekty</button>
                     </p>
-                    <div class="collapse" id="collapseobiekty">
-                        {% for obiekt in wniosek.obiekty.all %}
-                            <p>{{ obiekt }}</p>
-                        {% endfor %}
+                    <div id="collapseObiekty" hidden>
+                        <ul>
+                            {% for obiekt in wniosek.obiekty.all %}
+                                <li>{{ obiekt }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-4 col-sm-4">
-                    <label>Uprawnienia: </label>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    {{ wniosek.get_uprawnienia_display }}
-                </div>
-            </div>
-
         </div>
 
-        <p>
-
-        {% if status_id == "2" %}
+        {% if status_int == '3' %}
             <div class="row">
-                <form action="" method="post">{% csrf_token %}
+                <form action="{% url 'abi_wniosek_detail' wniosek.pk %}" method="post">
+                    {% csrf_token %}
                     <input name="change" type="submit" value="Zatwierdź" class="btn btn-success">
                     <input name="change" type="submit" value="Odrzuć" class="btn btn-danger">
                 </form>
@@ -152,5 +152,33 @@
         });
     </script>
     {% endcomment %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#return").click(function(){
+                history.back(1);
+            });
+            $('#pokazPracownikow').on('click', function(){
+                $('#collapsePracownicy').fadeToggle();
+                $('#pokazPracownikow').toggle();
+                $('#ukryjPracownikow').toggle();
+            });
+            $('#ukryjPracownikow').on('click', function(){
+                $('#collapsePracownicy').fadeToggle();
+                $('#pokazPracownikow').toggle();
+                $('#ukryjPracownikow').toggle();
+            });
+            $('#pokazObiekty').on('click', function(){
+                $('#collapseObiekty').fadeToggle();
+                $('#pokazObiekty').toggle();
+                $('#ukryjObiekty').toggle();
+            });
+            $('#ukryjObiekty').on('click', function(){
+                $('#collapseObiekty').fadeToggle();
+                $('#pokazObiekty').toggle();
+                $('#ukryjObiekty').toggle();
+            });
+        });
+    </script>
 
 {% endblock %}
