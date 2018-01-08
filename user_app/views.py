@@ -263,35 +263,44 @@ def step_one(request):
     jednostka = None
     jednostki = JednOrg.objects.all()
 
-    paginator = Paginator(jednostki, 10)
+    paginator = Paginator(jednostki, 15)
     page = request.GET.get('page')
     try:
-        jedn = paginator.page(page)
+        jednostki = paginator.page(page)
     except PageNotAnInteger:
-        jedn = paginator.page(1)
+        jednostki = paginator.page(1)
     except EmptyPage:
-        jedn = paginator.page(paginator.num_pages)
+        jednostki = paginator.page(paginator.num_pages)
 
     if request.method == 'POST':
-        clear = request.POST.get('clear')
-        if clear:
-            cart.obiekty.clear()
         obj = request.POST.get('obj')
-        add = request.POST.get('add')
-        delete = request.POST.get('delete')
-        if delete:
+        if request.POST.get('clear'):
+            cart.obiekty.clear()
+        if request.POST.get('delete'):
             cart.obiekty.remove(Obiekt.objects.get(id=obj))
-        if add:
+        if request.POST.get('add'):
             cart.obiekty.add(Obiekt.objects.get(id=obj))
-        show = request.POST.get('show')
-        if show:
             jednostka = request.POST.get('jednostka')
             obj_list = Obiekt.objects.filter(jedn_org=jednostka)
-            jednostka = JednOrg.objects.get(id=jednostka).nazwa
+            jednostka = JednOrg.objects.get(id=jednostka)
+        if request.POST.get('show'):
+            jednostka = request.POST.get('jednostka')
+            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka)
+
+        if obj_list:
+            paginator = Paginator(obj_list, 15)
+            page = request.GET.get('page_obiekt')
+            try:
+                obj_list = paginator.page(page)
+            except PageNotAnInteger:
+                obj_list = paginator.page(1)
+            except EmptyPage:
+                obj_list = paginator.page(paginator.num_pages)
 
     context = {
         'wybrana_jednostka': jednostka,
-        'jednostki': jedn,
+        'jednostki': jednostki,
         'obj_list': obj_list,
         'pracownik': pracownik,
         'objs_cart': cart.obiekty.all(),

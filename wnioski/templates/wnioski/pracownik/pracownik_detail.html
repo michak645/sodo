@@ -92,7 +92,7 @@
             <button id="pokazWnioski" class="przycisk">Pokaż wnioski</button>
             <button id="ukryjWnioski" class="przycisk" hidden>Ukryj wnioski</button>
 
-            <div id="wnioski" hidden>
+            <div id="wnioski" {% if historie.number == 1 %}hidden{% endif %}>
                 <table class="table table-hover">
                     <thead>
                     <tr>

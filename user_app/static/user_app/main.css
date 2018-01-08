@@ -25,3 +25,51 @@
 .right {
     float: right;
 }
+
+.left {
+    float: left;
+}
+
+.przycisk {
+    display: block;
+    width: 150px;
+    height: 50px;
+    background: #337ab7;
+    border: none;
+    color: ivory;
+}
+
+.przycisk-maly, .przycisk-maly:link {
+    display: inline-block;
+    background: #337ab7;
+    border: none;
+    color: ivory;
+    text-align: center;
+    text-decoration: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.przycisk-maly:hover {
+    text-decoration: none;
+    color: ivory;
+}
+
+.lista-linkow {
+	background: none;
+	border: none;
+}
+.lista-linkow:hover {
+	text-decoration: underline;
+}
+.lista-wybrany {
+	background: none;
+	border: none;
+	text-decoration: underline;
+}
+
+
+.border-right {
+    border-right: 1px solid black !important;
+}	 
