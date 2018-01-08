@@ -3,6 +3,12 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import weasyprint
 import csv
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.conf import settings
+import weasyprint
+from io import BytesIO
+from django.http import HttpResponseRedirect
 
 
 def gen_app_pdf(request,pk):
@@ -13,6 +19,21 @@ def gen_app_pdf(request,pk):
     response['Content-Disposition'] = 'filename="wniosek.pdf"'.format(wniosek)
     weasyprint.HTML(string=html).write_pdf(response)
     return response
+
+
+def mail_app_pdf(request,pk):
+    wniosek = Wniosek.objects.get(pk=pk)
+    pracownik = Pracownik.objects.get(pk=wniosek.pracownik.pk)
+    subject = 'złożyłeś wniosek w systemie SODO'
+    message = 'Złożyłeś wniosek w systemie SODO. Przesyłamy go w załączniku.'
+    email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', ['kamil.trb@gmail.com'])
+    html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': wniosek , 'pracownik': pracownik})
+    out = BytesIO()
+    weasyprint.HTML(string=html).write_pdf(out)
+    email.attach('order.pdf', out.getvalue(), 'application/pdf')
+    email.send()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER')) #nie wiem co tu dac, zalezy tez od uzycia
+
 
 def gen_app_raport_pdf(request,pk):
     wniosek = Wniosek.objects.get(pk=pk)
