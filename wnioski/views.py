@@ -83,6 +83,7 @@ def wnioski(request):
 
 
 def wniosek_detail(request, pk):
+    pracownik = Labi.objects.get(id=request.session['pracownik'])
     template = 'wnioski/wniosek/wniosek_detail.html'
     w = Wniosek.objects.get(id=pk)
     # date = datetime.now()
@@ -91,6 +92,7 @@ def wniosek_detail(request, pk):
             Historia.objects.create(
                 wniosek_id=pk,
                 status='2',
+                pracownik=pracownik,
             )
             historia = Historia.objects. \
                 filter(wniosek=pk). \
@@ -101,6 +103,7 @@ def wniosek_detail(request, pk):
             Historia.objects.create(
                 wniosek_id=pk,
                 status='5',
+                pracownik=pracownik,
             )
             historia = Historia.objects.filter(wniosek=pk)
             return HttpResponseRedirect('/admin_index')
