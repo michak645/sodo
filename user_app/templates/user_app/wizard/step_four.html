@@ -17,37 +17,43 @@
 	</div>
 
 	<div class="row">
-		{% for wniosek in wnioski %}
-			<div class="col-md-6">
-				<p>{{ wniosek.labi }}</p>
-				<p>
-					{% for obiekt in wniosek.obiekty %}
-						{{ obiekt }};
-					{% endfor %}
-				</p>
-				<p>
-					{% for pracownik in wniosek.pracownicy %}
-						{{ pracownik }};
-					{% endfor %}
-				</p>
-				<p>
-					{% for uprawnienia in wniosek.uprawnienia %}
-						{{ uprawnienia }}
-					{% endfor %}
-				</p>
-				<p>{{ wniosek.typ_wniosku }}</p>
+		<form method="post" action="">{% csrf_token %}
+			{% for wniosek in wnioski %}
+				<div class="col-md-6">
+					<p>LABI: {{ wniosek.labi.login }}</p>
+					<p>
+						Obiekty:
+						<ul>
+							{% for obiekt in wniosek.obiekty %}
+								<li>{{ obiekt }}</li>
+							{% endfor %}
+						</ul>
+					</p>
+					<p>
+						Pracownicy:
+						<ul>
+							{% for pracownik in wniosek.pracownicy %}
+								<li>
+									{{ pracownik }}
+								</li>
+							{% endfor %}
+						</ul>
+					</p>
+					<p>Uprawnienia: {{ wniosek.uprawnienia }}</p>
+					<p>Typ wniosku: {{ wniosek.typ_wniosku }}</p>
 
-				<textarea class="form-control" rows="3" id="{{ wniosek.labi.id }}" placeholder="Wpisz komentarz"></textarea>
-			</div>
-		{% endfor %}
+					<textarea class="form-control" rows="3" placeholder="Wpisz komentarz" name="komentarz{{ wniosek.labi.id }}"></textarea>
+				</div>
+			{% endfor %}
+			<div class="col-md-12 center">
+	        	<a class="btn btn-primary" href="{% url 'step_three' %}">Powrót</a>
+	        	<input type="submit" value="Dodaj" class="btn btn-success">
+	    	</div>	
+
+		</form>
 	</div>
 
 
-	<div class="row center">
-        <form method="post" action="">{% csrf_token %}
-        	<a class="btn btn-primary" href="{% url 'step_three' %}">Powrót</a>
-        	<input type="submit" value="Dodaj" class="btn btn-success">
-        </form>
-    </div>
+	
 
 {% endblock %}
