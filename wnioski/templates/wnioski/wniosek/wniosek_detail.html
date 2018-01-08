@@ -62,14 +62,18 @@
                     <label>Pracownicy których dotyczy: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" id="pracownicy">Pokaż pracowników</a>
-                    </p>
-                    <div class="collapse" id="collapseExample">
-                        <div class="panel panel-default">
+                    <div>
+                        <p>
+                            <button class="przycisk-maly" id="pokazPracownikow">Pokaż pracowników</button>
+                            <button class="przycisk-maly" id="ukryjPracownikow" hidden>Ukryj pracowników</button>
+                        </p>
+                    </div>
+                    <div id="collapsePracownicy" hidden>
+                        <ul>
                             {% for pracownik in wniosek.pracownicy.all %}
-                                <p>{{ pracownik }}</p>
+                                <li>{{ pracownik }}</li>
                             {% endfor %}
-                        </div>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -79,12 +83,16 @@
                     <label>Obiekty: </label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                    <a class="przycisk-maly" data-toggle="collapse" href="#collapseobiekty" aria-expanded="false" aria-controls="collapseobiekty">Pokaż obiekty</a>
+                    <p>
+                        <button class="przycisk-maly" id="pokazObiekty">Pokaż obiekty</button>
+                        <button class="przycisk-maly" id="ukryjObiekty" hidden>Ukryj obiekty</button>
                     </p>
-                    <div class="collapse" id="collapseobiekty">
-                        {% for obiekt in wniosek.obiekty.all %}
-                            <p>{{ obiekt }}</p>
-                        {% endfor %}
+                    <div id="collapseObiekty" hidden>
+                        <ul>
+                            {% for obiekt in wniosek.obiekty.all %}
+                                <li>{{ obiekt }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -149,6 +157,26 @@
         $(document).ready(function(){
             $("#return").click(function(){
                 history.back(1);
+            });
+            $('#pokazPracownikow').on('click', function(){
+                $('#collapsePracownicy').fadeToggle();
+                $('#pokazPracownikow').toggle();
+                $('#ukryjPracownikow').toggle();
+            });
+            $('#ukryjPracownikow').on('click', function(){
+                $('#collapsePracownicy').fadeToggle();
+                $('#pokazPracownikow').toggle();
+                $('#ukryjPracownikow').toggle();
+            });
+            $('#pokazObiekty').on('click', function(){
+                $('#collapseObiekty').fadeToggle();
+                $('#pokazObiekty').toggle();
+                $('#ukryjObiekty').toggle();
+            });
+            $('#ukryjObiekty').on('click', function(){
+                $('#collapseObiekty').fadeToggle();
+                $('#pokazObiekty').toggle();
+                $('#ukryjObiekty').toggle();
             });
         });
     </script>
