@@ -103,6 +103,7 @@ def wniosek_list(request):
             wnioski_list = Wniosek.objects.all().order_by('-data')
     else:
         wnioski_list = Wniosek.objects.all().order_by('-data')
+        search = None
 
     paginator = Paginator(wnioski_list, 20)
 
@@ -115,6 +116,7 @@ def wniosek_list(request):
         wnioski = paginator.page(paginator.num_pages)
 
     context = {
+        'search': search,
         'pracownik': pracownik,
         'wnioski': wnioski,
     }
@@ -122,33 +124,42 @@ def wniosek_list(request):
 
 
 def wniosek_detail(request, pk):
+    pracownik = Labi.objects.get(id=request.session['pracownik'])
+    template = 'abi_app/wniosek_detail.html'
     w = Wniosek.objects.get(id=pk)
+    # date = datetime.now()
     if request.method == 'POST':
         if request.POST.get('change') == "Zatwierdź":
             Historia.objects.create(
                 wniosek_id=pk,
-                status='3',
+                status='2',
+                pracownik=pracownik,
             )
             historia = Historia.objects. \
                 filter(wniosek=pk). \
                 order_by('-data')
+
+            return HttpResponseRedirect('/abi_index')
         elif request.POST.get('change') == "Odrzuć":
             Historia.objects.create(
                 wniosek_id=pk,
                 status='5',
+                pracownik=pracownik,
             )
             historia = Historia.objects.filter(wniosek=pk)
+            return HttpResponseRedirect('/abi_index')
     else:
         historia = Historia.objects. \
             filter(wniosek=pk). \
             order_by('-data')
-    context = {
-        'wniosek': w,
-        'historia': historia,
-        'status': historia[0].get_status_display(),
-        'status_id': historia[0].status,
-    }
-    return render(request, 'abi_app/wniosek_detail.html', context)
+        status = historia[0].get_status_display()
+        status_int = historia[0].status
+        return render(request, template, {
+            'wniosek': w,
+            'historia': historia,
+            'status': status,
+            'status_int': status_int,
+        })
 
 
 class PracownikListView(ListView):

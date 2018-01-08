@@ -2,7 +2,7 @@ from django.conf.urls import url
 from abi_app import views
 
 urlpatterns = [
-    url(r'^abi_index', views.abi_index, name='abi_index'),
+    url(r'^abi_index$', views.abi_index, name='abi_index'),
 
     url(r'^abi/wniosek_list', views.wniosek_list, name='wniosek_list'),
     url(r'^abi/wniosek_detail/(?P<pk>\d+)/$', views.wniosek_detail,
