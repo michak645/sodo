@@ -126,3 +126,11 @@ hr {
 .form-error {
     color: red;
 }
+
+.title {
+    font-size: 24px;
+}
+
+.center-verticle-title {
+    line-height: 34px;
+}

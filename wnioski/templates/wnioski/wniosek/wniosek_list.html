@@ -1,25 +1,31 @@
 {% extends "wnioski/base_site/base_site.html" %}
+{% load bootstrap_pagination %}
 
 {% block title %}Lista{% endblock %}
 
 {% block content %}
 
-    <div class="row">
-        <h3>Lista wniosków</h3>
-    </div>
-
-    <div class="row">
+    <div class="row center-verticle-title">
+        <div class="col-md-2">
+            <span class="title">Lista wniosków</span>
+        </div>
         <form method="post" action="">{% csrf_token %}
             <div class="col-md-2">
                 <input type="text" name="search" placeholder="Wyszukaj pracownika" class="form-control">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <input type="submit" value="Szukaj" class="btn">
             </div>
+            {% if search %}
+                <div class="col-md-3 middle">
+                    <p>Wyszukiwana fraza: {{ search }}</p>
+                </div>
+            {% endif %}
         </form>
     </div>
 
     <div class="row">
+        {% bootstrap_pager wnioski %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -48,22 +54,8 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-    <div class="row">
-        <div class="pagination">
-            <span class="step-links">
-                {% if wnioski.has_previous %}
-                    <a href="?page={{ wnioski.previous_page_number }}">Poprzednia</a>
-                {% endif %}
-
-                <span class="current">
-                    Strona {{ wnioski.number }} z {{ wnioski.paginator.num_pages }}.
-                </span>
-
-                {% if wnioski.has_next %}
-                    <a href="?page={{ wnioski.next_page_number }}">Dalej</a>
-                {% endif %}
-            </span>
+        <div class="center">
+            {% bootstrap_paginate wnioski range=10 show_prev_next="false" show_first_last="true" centered="true" %}
         </div>
     </div>
 

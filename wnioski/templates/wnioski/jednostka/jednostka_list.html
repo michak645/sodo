@@ -1,16 +1,14 @@
 {% extends "wnioski/base_site/base_site.html" %}
+{% load bootstrap_pagination %}
 
 {% block title %}Lista{% endblock %}
 
 {% block content %}
 
-    <div class="row">
-        <h3 class="left">Jednostki organizacyjne</h3>
-        <span class="right">
-            <a href="{% url 'labi_jednostka_create' %}" class="btn btn-default">Dodaj jednostkę</a>
-        </span>
-    </div>
-    <div class="row">
+    <div class="row center-verticle-title">
+        <div class="col-md-3">
+            <span class="title">Jednostki organizacyjne</span>
+        </div>
         <form method="post" action="">{% csrf_token %}
             <div class="col-md-2">
                 <input type="text" name="search" placeholder="Szukaj po nazwie" class="form-control">
@@ -24,8 +22,13 @@
                 </div>
             {% endif %}
         </form>
+        <span class="right">
+            <a href="{% url 'labi_jednostka_create' %}" class="btn btn-default">Dodaj jednostkę</a>
+        </span>
     </div>
+
     <div class="row">
+        {% bootstrap_pager jednostki %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -52,18 +55,8 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="pagination">
-            <span class="step-links">
-                {% if jednostki.has_previous %}
-                    <a href="?page={{ jednostki.previous_page_number }}">previous</a>
-                {% endif %}
-                <span class="current">
-                    Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
-                </span>
-                {% if jednostki.has_next %}
-                    <a href="?page={{ jednostki.next_page_number }}">next</a>
-                {% endif %}
-            </span>
+        <div class="center">
+            {% bootstrap_paginate jednostki range=10 show_prev_next="false" show_first_last="true" centered="true" %}
         </div>
     </div>
 

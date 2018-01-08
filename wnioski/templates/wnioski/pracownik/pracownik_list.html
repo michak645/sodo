@@ -1,17 +1,14 @@
 {% extends "wnioski/base_site/base_site.html" %}
+{% load bootstrap_pagination %}
 
 {% block title %}Pracownicy{% endblock %}
 
 {% block content %}
 
-    <div class="row">
-        <h3 class="left">Pracownicy</h3>
-        <span class="right">
-            <a href="{% url 'labi_pracownik_create' %}" class="btn btn-default">Dodaj pracownika</a>
-            <a href="{% url 'labi_rodzaj_pracownik_create' %}" class="btn btn-default">Dodaj rodzaj pracownika</a>
-        </span>
-    </div>
-    <div class="row">
+    <div class="row center-verticle-title">
+        <div class="col-md-2">
+            <span class="title">Pracownicy</span>
+        </div>
         <form method="post" action="">{% csrf_token %}
             <div class="col-md-2">
                 <input type="text" name="search" placeholder="Szukaj po nazwisku" class="form-control">
@@ -25,8 +22,13 @@
                 </div>
             {% endif %}
         </form>
+        <span class="right">
+            <a href="{% url 'labi_pracownik_create' %}" class="btn btn-default">Dodaj pracownika</a>
+            <a href="{% url 'labi_rodzaj_pracownik_create' %}" class="btn btn-default">Dodaj rodzaj pracownika</a>
+        </span>
     </div>
     <div class="row">
+        {% bootstrap_pager pracownicy %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -53,20 +55,8 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="pagination">
-            <span class="step-links">
-                {% if pracownicy.has_previous %}
-                    <a href="?page={{ pracownicy.previous_page_number }}">previous</a>
-                {% endif %}
-
-                <span class="current">
-                    Page {{ pracownicy.number }} of {{ pracownicy.paginator.num_pages }}.
-                </span>
-
-                {% if pracownicy.has_next %}
-                    <a href="?page={{ pracownicy.next_page_number }}">next</a>
-                {% endif %}
-            </span>
+        <div class="center">
+            {% bootstrap_paginate pracownicy range=10 show_prev_next="false" show_first_last="true" centered="true" %}
         </div>
     </div>
 
