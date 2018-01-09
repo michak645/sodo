@@ -59,6 +59,28 @@
         </div>
     </div>
 
+    <div class="row">
+            <h4>Eksport danych do plików CSV</h4>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_apps_raport_csv' %}">
+                Wnioski<span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_objs_raport_csv' %}">
+                Obiekty<span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_appupr_raport_csv' %}">
+                Wnioski-Uprawnienia<span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_appobj_raport_csv' %}">
+                Wnioski-Obiekty<span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_appprac_raport_csv' %}">
+                Wnioski-Pracownicy<span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_hist_raport_csv' %}">
+                Historia<span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+        </div>
+
     <script type="text/javascript">
         $(document).ready(function($) {
             $(".clickable-row").click(function() {

@@ -83,7 +83,7 @@ def gen_appupr_raport_csv(request):
 def gen_appobj_raport_csv(request):
     wnioski = Wniosek.objects.all()
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="raport_wnioskiuprawnienia.csv"'
+    response['Content-Disposition'] = 'attachment; filename="raport_wnioskiobiekty.csv"'
     writer = csv.writer(response)
     writer.writerow(['id_wniosku', 'id_obj'])
     for w in wnioski:
@@ -95,7 +95,7 @@ def gen_appobj_raport_csv(request):
 def gen_appprac_raport_csv(request):
     wnioski = Wniosek.objects.all()
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="raport_wnioskiuprawnienia.csv"'
+    response['Content-Disposition'] = 'attachment; filename="raport_wnioskipracownicy.csv"'
     writer = csv.writer(response)
     writer.writerow(['id_wniosku', 'id_prac'])
     for w in wnioski:
@@ -107,7 +107,7 @@ def gen_appprac_raport_csv(request):
 def gen_hist_raport_csv(request):
     historie = Historia.objects.all()
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="raport_wnioskiuprawnienia.csv"'
+    response['Content-Disposition'] = 'attachment; filename="raport_historia.csv"'
     writer = csv.writer(response)
     writer.writerow(['id_hist', 'id_wniosku', 'data', 'status_id', 'status', 'id_prac'])
     for h in historie:

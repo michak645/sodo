@@ -1,4 +1,4 @@
-{% extends 'user_app/base_site/base_site.html' %}
+{% extends 'wnioski/base_site/base_site.html' %}
 
 {% block content %}
 
@@ -7,160 +7,116 @@
     </div>
 
     <div class="row">
-        <h3>Obiekty</h3>
+        <h3>Wybierz obiekty</h3>
         <hr>
     	<div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">1. Wybierz jednostkę</div>
-                <div class="panel-body">
-                    <form method="post" action="">{% csrf_token %}
-                        <div class="row">
-                            {% for jedn in jednostki %}
+            <h4>I. Wybierz jednostkę</h4>
+            <form method="post" action="">{% csrf_token %}
+                <input type="text" name="szukaj-jednostki" placeholder="Szukaj jednostki">
+                <input type="submit" value="Szukaj">
+            </form>
+            <form method="post" action="">{% csrf_token %}
+                <div class="row">
+                    <ol>
+                        {% for jedn in jednostki %}
+                            <li>
                                 <form method="post" action="">{% csrf_token %}
                                     <input type="checkbox" name="show" value="True" checked hidden>
                                     <input type="text" value="{{ jedn.id }}" name="jednostka" hidden>
-                                    <p>
-                                        <input class="btn btn-link" type="submit" value="{{ jedn }}">
-                                    </p>
+                                    <input class="{% if jedn.id == wybrana_jednostka.id %}lista-wybrany{% else %}lista-linkow{% endif %}" type="submit" value="{{ jedn }}">
                                 </form>
-                            {% endfor %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if jednostki.has_previous %}
+                                <a href="?page={{ jednostki.previous_page_number }}">previous</a>
+                            {% endif %}
 
-                            <div class="pagination">
-                                <span class="step-links">
-                                    {% if jednostki.has_previous %}
-                                        <a href="?page={{ jednostki.previous_page_number }}">previous</a>
-                                    {% endif %}
+                            <span class="current">
+                                Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
+                            </span>
 
-                                    <span class="current">
-                                        Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
-                                    </span>
-
-                                    {% if jednostki.has_next %}
-                                        <a href="?page={{ jednostki.next_page_number }}">next</a>
-                                    {% endif %}
-                                </span>
-                            </div>
-                        </div>
-                    </form>
+                            {% if jednostki.has_next %}
+                                <a href="?page={{ jednostki.next_page_number }}">next</a>
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
-            </div>
+            </form>
     	</div>
         <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">2. Wybierz obiekt</div>
-                <div class="panel-body">
-                    {% if obj_list %}
-                        <form id="obiekt-search" action="" class="styled" method="post">
-                            <fieldset>
-                                <input type="text" class="text-input" id="obiekt-filter" placeholder="Szukaj...">
-                            </fieldset>
+            <h4>II. Wybierz obiekt</h4>
+            <form method="post" action="">{% csrf_token %}
+                <input type="text" name="szukaj-obiektu" placeholder="Szukaj obiektu">
+                <input type="text" value="{{ wybrana_jednostka.id }}" name="wybrana-jednostka" hidden>
+                <input type="submit" value="Szukaj">
+            </form>
+            {% if obj_list %}
+                <ol>
+                    {% for obj in obj_list %}
+                        <form method="post" action="">{% csrf_token %}
+                            <li>
+                                <span hidden>{{ obj.nazwa }}</span>
+                                <input type="checkbox" name="add" value="True" checked hidden>
+                                <input type="text" value="{{ obj.id }}" name="obj" hidden>
+                                <input type="text" value="{{ wybrana_jednostka.id }}" name="jednostka" hidden>
+                                <input class="{% if obj in objs_cart %}lista-wybrany disabled{% else %}lista-linkow{% endif %}" type="submit" value="{{ obj }}">
+                            </li>
                         </form>
-                        {% for obj in obj_list %}
-                            <form method="post" action="">{% csrf_token %}
-                                <span class="obiekt-search-field">
-                                    <input type="checkbox" name="add" value="True" checked hidden>
-                                    <input type="text" value="{{ obj.id }}" name="obj" hidden>
-                                    <p>
-                                        {{ obj }}
-                                        <input class="btn btn-success" type="submit" value="Dodaj" {% if obj in objs_cart %}disabled{% endif %}>
-                                    </p>
-                                </span>
-                            </form>
-                        {% endfor %}
-                    {% else%}
-                        <p>Nie ma żadnych obiektów</p>
-                    {% endif %}
+                    {% endfor %}
+                </ol>
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if obj_list.has_previous %}
+                            <a href="?page_obiekt={{ obj_list.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ obj_list.number }} of {{ obj_list.paginator.num_pages }}.
+                        </span>
+
+                        {% if obj_list.has_next %}
+                            <a href="?page_obiekt={{ obj_list.next_page_number }}">next</a>
+                        {% endif %}
+                    </span>
                 </div>
-            </div>
+            {% else%}
+                <p>Nie ma przypisanych obiektów do tej jednostki</p>
+            {% endif %}
         </div>
     	
     	<div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                	3. Wybrane obiekty
-                	<form method="post" action="" class="right">{% csrf_token %}
-			            <input type="checkbox" name="clear" value="True" checked hidden>
-			            <input type="submit" class="btn btn-primary" value="Wyczyść">
-			        </form>
-            	</div>
-                <div class="panel-body require">
-            		{% for obj in objs_cart %}
+        	<h4>
+                <span class="left">III. Wybrane obiekty</span>
+            	<form method="post" action="" class="">{% csrf_token %}
+		            <input type="checkbox" name="clear" value="True" checked hidden>
+		            <input type="submit" class="przycisk-maly" value="Wyczyść">
+		        </form>
+            </h4>
+            <div class="clearfix"></div>
+            <ol>
+        		{% for obj in objs_cart %}
+                    <li>
          				<form method="post" action="">{% csrf_token %}
         					<input type="text" value="{{ obj.id }}" name="obj" hidden>
         					<input type="checkbox" name="delete" value="True" checked hidden>
-        					<p>
-        						{{ obj }}
-            					<input class="btn btn-warning" type="submit" value="Usuń">
-        					</p>
+        					<input class="lista-linkow" type="submit" value="{{ obj }}">
         				</form>
-                    {% empty %}
-         			    <p>Brak</p>
-                    {% endfor %}
-                </div>
-            </div>
+                    </li>
+                {% empty %}
+     			    <p>Brak</p>
+                {% endfor %}
+            </ol>
     	</div>
     </div>
 
     <div class="clearfix"></div>
 
     <div class="row center">
-		<a class="btn btn-primary" href="{% url 'user_index' %}">Anuluj</a>
-		<a id="dalej" class="btn btn-primary" >Dalej</a>
+		<a class="btn btn-primary" href="{% url 'admin_index' %}">Anuluj</a>
+		<a class="btn btn-primary {% if not objs_cart %}disabled{% endif %}" href="{% url 'labi_step_two' %}">Dalej</a>
     </div>
-
-
-<script type="text/javascript">
-    
-$(document).ready(function(){
-    $("#obiekt-filter").keyup(function(){
-        var filter = $(this).val();
-        $(".obiekt-search-field").each(function(){
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    $("#pracownik-filter").keyup(function(){
-        var filter = $(this).val();
-        $(".pracownik-search-field").each(function(){
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    $("#jednostka-filter").keyup(function(){
-        var filter = $(this).val();
-        $(".jednostka-search-field").each(function(){
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    var prac_ok = false;
-    $( "#dalej" ).on( "click", function() {
-        if($( "#prac-require" ).text().indexOf("Brak") >= 0){
-            $('.info').show()
-        } else {
-            prac_ok = true;
-        }
-
-        if(prac_ok){
-            window.location.href = "{% url 'step_two' %}";
-        }
-    });
-
-
-});
-
-</script>
 
 {% endblock %}
