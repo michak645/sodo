@@ -16,7 +16,10 @@ from .models import (
     ZatwierdzonePrzezAS,
     PracownicyObiektyUprawnienia,
 )
-from .forms import ObiektFiltrowanieForm
+from .forms import (
+    ObiektFiltrowanieForm,
+    ObiektyFiltrowanieForm,
+)
 from auth_ex.models import (
     JednOrg,
     Pracownik,
@@ -291,55 +294,52 @@ class RodzajPracownikaCreate(CreateView):
         return super().get(*args, **kwargs)
 
 
-class ObiektListView(ListView):
-    model = Obiekt
-    template_name = 'wnioski/obiekt/obiekt_list.html'
-    context_object_name = 'obiekty'
+def obiekt_list(request):
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.session['pracownik']:
-            pracownik = Labi.objects.get(
-                id=self.request.session['pracownik']
-            )
-            context['pracownik'] = pracownik
-        paginator = Paginator(self.get_queryset(), 10)
-        page = self.request.GET.get('page')
-        try:
-            obiekty = paginator.page(page)
-        except PageNotAnInteger:
-            obiekty = paginator.page(1)
-        except EmptyPage:
-            obiekty = paginator.page(paginator.num_pages)
-        context['obiekty'] = obiekty
-        return context
+    obiekty = Obiekt.objects.all().order_by('nazwa')
 
-    def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
-            return redirect('index')
-        return super().get(*args, **kwargs)
+    if request.method == 'POST':
+        form = ObiektyFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = ObiektFiltrowanieForm()
+            else:
+                if form.cleaned_data['nazwa']:
+                    obiekty = obiekty.filter(
+                        nazwa__icontains=form.cleaned_data['nazwa']
+                    )
+                if form.cleaned_data['jednostka']:
+                    jedn = form.cleaned_data['jednostka']
+                    obiekty = obiekty.filter(
+                        jedn_org__nazwa__icontains=jedn
+                    )
+                if form.cleaned_data['typ']:
+                    obiekty = obiekty.filter(
+                        typ__nazwa__icontains=form.cleaned_data['typ'],
+                    )
+    else:
+        form = ObiektyFiltrowanieForm()
 
-    def post(self, request, *args, **kwargs):
-        search = request.POST.get('search')
-        if search:
-            obiekty = self.get_queryset(). \
-                filter(nazwa__icontains=search)
-        else:
-            obiekty = self.get_queryset()
-        paginator = Paginator(obiekty, 10)
-        page = self.request.GET.get('page')
-        try:
-            obiekty = paginator.page(page)
-        except PageNotAnInteger:
-            obiekty = paginator.page(1)
-        except EmptyPage:
-            obiekty = paginator.page(paginator.num_pages)
-        context = {
-            'obiekty': obiekty,
-            'search': search,
-        }
-        return render(request, self.template_name, context)
+    paginator = Paginator(obiekty, 10)
+    page = request.GET.get('page')
+    try:
+        obiekty = paginator.page(page)
+    except PageNotAnInteger:
+        obiekty = paginator.page(1)
+    except EmptyPage:
+        obiekty = paginator.page(paginator.num_pages)
+
+    context = {
+        'pracownik': pracownik,
+        'obiekty': obiekty,
+        'form': form,
+    }
+    return render(request, 'wnioski/obiekt/obiekt_list.html', context)
 
 
 def obiekt_detail(request, pk):

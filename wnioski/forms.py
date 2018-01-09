@@ -70,3 +70,9 @@ class ObiektFiltrowanieForm(forms.Form):
         choices=uprawnienia_choices,
         required=False,
     )
+
+
+class ObiektyFiltrowanieForm(forms.Form):
+    nazwa = forms.CharField(max_length=100, required=False)
+    jednostka = forms.CharField(max_length=100, required=False)
+    typ = forms.CharField(max_length=100, required=False)
