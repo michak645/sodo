@@ -14,6 +14,26 @@ def find_labi(jedn):
 
 
 def index(request):
+    pracownik = request.session['pracownik']
+    if pracownik:
+        try:
+            Pracownik.objects.get(
+                login=pracownik
+            )
+            return redirect('user_index')
+        except Pracownik.DoesNotExist:
+            pass
+        try:
+            labi = Labi.objects.get(
+                id=pracownik
+            )
+            if labi.jednostka == '1':
+                return redirect('abi_index')
+            else:
+                return redirect('admin_index')
+        except Labi.DoesNotExist:
+            pass
+
     if request.method == 'POST':
         login = request.POST.get('login')
         try:

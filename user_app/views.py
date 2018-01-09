@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.views.generic import ListView, DetailView
 
 from .models import Cart
@@ -12,7 +11,6 @@ from auth_ex.models import (
     Labi,
 )
 from user_app.forms import (
-    AddApplicationForm,
     WizardUprawnienia,
 )
 from wnioski.models import (

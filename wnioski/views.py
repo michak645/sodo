@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 
@@ -29,14 +27,18 @@ from user_app.forms import WizardUprawnienia
 
 
 def admin_index(request):
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
     wnioski = Wniosek.objects.all()
-    admin = Labi.objects.get(id=request.session['pracownik'])
     to_approve = []
 
     for wniosek in wnioski:
         obiekt = wniosek.obiekty.all()[0]
         wniosek_labi = find_labi(obiekt.jedn_org.id)
-        if wniosek_labi == admin:
+        if wniosek_labi == pracownik:
             historia = Historia.objects.filter(
                 wniosek=wniosek.id,
             ).order_by('-data')[0]
@@ -44,7 +46,7 @@ def admin_index(request):
                 to_approve.append(historia)
 
     context = {
-        'admin': admin,
+        'pracownik': pracownik,
         'wnioski': wnioski,
         'to_approve': to_approve,
     }
@@ -52,7 +54,11 @@ def admin_index(request):
 
 
 def wnioski(request):
-    pracownik = Labi.objects.get(id=request.session['pracownik'])
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
 
     if request.method == 'POST':
         search = request.POST.get('search')
@@ -85,7 +91,11 @@ def wnioski(request):
 
 
 def wniosek_detail(request, pk):
-    pracownik = Labi.objects.get(id=request.session['pracownik'])
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
     template = 'wnioski/wniosek/wniosek_detail.html'
     w = Wniosek.objects.get(id=pk)
     # date = datetime.now()
@@ -131,6 +141,11 @@ class PracownikListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
         try:
@@ -163,6 +178,12 @@ class PracownikListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class PracownikDetailView(DetailView):
     model = Pracownik
@@ -171,6 +192,11 @@ class PracownikDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         wnioski = Wniosek.objects.filter(
             pracownik=self.object.pk).order_by('-data')
         historie = []
@@ -204,6 +230,12 @@ class PracownikDetailView(DetailView):
         context['obiekty'] = obiekty
         return context
 
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class PracownikCreate(CreateView):
     model = Pracownik
@@ -216,6 +248,21 @@ class PracownikCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano pracownika.')
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class RodzajPracownikaCreate(CreateView):
     model = RodzajPracownika
@@ -227,6 +274,21 @@ class RodzajPracownikaCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano rodzaj pracownika.')
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class ObiektListView(ListView):
     model = Obiekt
@@ -235,6 +297,11 @@ class ObiektListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
         try:
@@ -245,6 +312,12 @@ class ObiektListView(ListView):
             obiekty = paginator.page(paginator.num_pages)
         context['obiekty'] = obiekty
         return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         search = request.POST.get('search')
@@ -273,6 +346,21 @@ class ObiektDetailView(DetailView):
     template_name = 'wnioski/obiekt/obiekt_detail.html'
     context_object_name = 'obiekt'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class ObiektCreate(CreateView):
     model = Obiekt
@@ -283,6 +371,21 @@ class ObiektCreate(CreateView):
     def form_valid(self, form):
         messages.success(self.request, 'Pomyślnie dodano obiekt.')
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
 
 class ObiektTypCreate(CreateView):
@@ -295,6 +398,21 @@ class ObiektTypCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano typ obiektu.')
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class JednostkaListView(ListView):
     model = JednOrg
@@ -303,6 +421,11 @@ class JednostkaListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
         try:
@@ -336,6 +459,12 @@ class JednostkaListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class JednostkaDetailView(DetailView):
     model = JednOrg
@@ -344,12 +473,23 @@ class JednostkaDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         if self.object.czy_labi:
             labi = Labi.objects.get(jednostka=self.object.id)
         else:
             labi = None
         context['labi'] = labi
         return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
 
 class JednostkaCreate(CreateView):
@@ -362,11 +502,29 @@ class JednostkaCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano jednostkę.')
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Labi.objects.get(
+                id=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 def step_one(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart, created = Cart.objects.get_or_create(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart, created = Cart.objects.get_or_create(id=pracownik.pk)
     obj_list = None
     jednostka = None
     jednostki = JednOrg.objects.all()
@@ -408,9 +566,12 @@ def step_one(request):
 
 
 def step_two(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart = Cart.objects.get(id=pracownik.pk)
     prac_list = None
     jednostka = None
     jednostki = JednOrg.objects.all()
@@ -452,9 +613,12 @@ def step_two(request):
 
 def step_three(request):
     # czy_chcesz_zostac_dodany_do_wnioski_checkbox = False
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart = Cart.objects.get(id=pracownik.pk)
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
         login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
@@ -504,9 +668,12 @@ def get_labi(jedn):
 
 
 def step_four(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart = Cart.objects.get(id=pracownik.pk)
 
     cart_objs = cart.obiekty.all()
     labi_list = []
