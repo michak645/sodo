@@ -50,6 +50,17 @@
                             <p>{{ obiekt.opis }}</p>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Aktywny: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                {% if obiekt.czy_aktywny %}Tak{% else %}Nie{% endif %}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -138,3 +138,16 @@ hr {
 .clickable {
     cursor: pointer;
 }
+
+.lista-linkow {
+    background: none;
+    border: none;
+}
+.lista-linkow:hover {
+    text-decoration: underline;
+}
+.lista-wybrany {
+    background: none;
+    border: none;
+    text-decoration: underline;
+}

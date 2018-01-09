@@ -356,6 +356,7 @@ def step_one(request):
             obj_list = Obiekt.objects.filter(
                 jedn_org=jednostka,
                 nazwa__icontains=szukaj_obiektu,
+                czy_aktywny=True
             )
 
         if request.POST.get('clear'):
@@ -367,12 +368,18 @@ def step_one(request):
         if request.POST.get('add'):
             cart.obiekty.add(Obiekt.objects.get(id=obj))
             jednostka = request.POST.get('jednostka')
-            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            obj_list = Obiekt.objects.filter(
+                jedn_org=jednostka,
+                czy_aktywny=True
+            )
             jednostka = JednOrg.objects.get(id=jednostka)
 
         if request.POST.get('show'):
             jednostka = request.POST.get('jednostka')
-            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            obj_list = Obiekt.objects.filter(
+                jedn_org=jednostka,
+                czy_aktywny=True
+            )
             jednostka = JednOrg.objects.get(id=jednostka)
 
         if obj_list:
@@ -434,6 +441,7 @@ def step_two(request):
             prac_list = Pracownik.objects.filter(
                 jedn_org=jednostka,
                 nazwisko__icontains=szukaj_pracownika,
+                czy_aktywny=True,
             )
 
         if request.POST.get('clear'):
@@ -445,12 +453,18 @@ def step_two(request):
         if request.POST.get('add'):
             cart.pracownicy.add(Pracownik.objects.get(login=prac))
             jednostka = request.POST.get('jednostka')
-            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
+            prac_list = Pracownik.objects.filter(
+                jedn_org=jednostka,
+                czy_aktywny=True,
+            )
             jednostka = JednOrg.objects.get(id=jednostka)
 
         if request.POST.get('show'):
             jednostka = request.POST.get('jednostka')
-            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
+            prac_list = Pracownik.objects.filter(
+                jedn_org=jednostka,
+                czy_aktywny=True,
+            )
             jednostka = JednOrg.objects.get(id=jednostka)
 
         if prac_list:
