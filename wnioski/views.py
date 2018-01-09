@@ -32,7 +32,7 @@ def admin_index(request):
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
-    wnioski = Wniosek.objects.all()
+    wnioski = Wniosek.objects.all().order_by('-data')
     to_approve = []
 
     for wniosek in wnioski:

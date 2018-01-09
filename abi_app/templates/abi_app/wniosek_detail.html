@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        {% if status_int == '3' %}
+        {% if status_int == '2' %}
             <div class="row">
                 <form action="{% url 'abi_wniosek_detail' wniosek.pk %}" method="post">
                     {% csrf_token %}

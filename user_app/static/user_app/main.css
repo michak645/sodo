@@ -84,3 +84,7 @@
     background: #C0C0C0 !important;
     color: black !important;
 }
+
+.clickable {
+    cursor: pointer;
+}

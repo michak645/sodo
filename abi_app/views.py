@@ -132,21 +132,29 @@ def wniosek_detail(request, pk):
         if request.POST.get('change') == "Zatwierdź":
             Historia.objects.create(
                 wniosek_id=pk,
-                status='2',
-                pracownik=pracownik,
+                status='3',
+                pracownik=pracownik.login,
             )
             historia = Historia.objects. \
                 filter(wniosek=pk). \
                 order_by('-data')
+            ZatwierdzonePrzezAS.objects.create(
+                wniosek=w,
+                obiekt=obiekt,
+            )
 
             return HttpResponseRedirect('/abi_index')
         elif request.POST.get('change') == "Odrzuć":
             Historia.objects.create(
                 wniosek_id=pk,
                 status='5',
-                pracownik=pracownik,
+                pracownik=pracownik.login,
             )
             historia = Historia.objects.filter(wniosek=pk)
+            ZatwierdzonePrzezAS.objects.create(
+                wniosek=w,
+                obiekt=obiekt,
+            )
             return HttpResponseRedirect('/abi_index')
     else:
         historia = Historia.objects. \

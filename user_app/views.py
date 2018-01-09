@@ -65,12 +65,15 @@ def user_objects_available(request):
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
 
+    # bierzemy wszystko z pou
+
     wnioski = Wniosek.objects.all()
     wnioski_pracownika = []
     for wniosek in wnioski:
         for prac_wniosek in wniosek.pracownicy.all():
             if prac_wniosek.pk == pracownik.pk:
-                wnioski_pracownika.append(wniosek)
+                if wniosek.typ == '1':
+                    wnioski_pracownika.append(wniosek)
 
     obiekty_zatwierdzone = ZatwierdzonePrzezAS.objects.filter(
         wniosek__in=wnioski_pracownika,
