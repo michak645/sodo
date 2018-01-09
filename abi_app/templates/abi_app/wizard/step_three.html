@@ -9,72 +9,61 @@
     <div class="row">
         <div class="col-md-6">
             <h3>Obiekty</h3>
-            {% for obiekt, prac_upra in obiekty.items %}
-                <div class="panel panel-default">
-                    <div class="panel-heading" id="click-collapse{{ forloop.counter }}">{{ obiekt }}</div>
-                    {% if prac_upra %}
-                        <div class="panel-body" id="panel-collapse{{ forloop.counter }}">
-                            {% for prac, upra in prac_upra.items %}
-                                <p>{{ prac }}</p>
+            <ol>
+                {% for obiekt, prac_upra in obiekty.items %}
+                    {% with forloop.counter as count %}
+                        <li>
+                            <span class="lista-linkow clickable" data-toggle="collapse" data-target="#collapseExample{{ count }}" aria-expanded="false" aria-controls="collapseExample{{ count }}">
+                                {{ obiekt }}
+                            </span>
+                            {% if prac_upra %}
                                 <ul>
-                                    {% for u in upra %}
-                                        <li>{{ u.get_uprawnienia }}</li>
+                                    {% for prac, upra in prac_upra.items %}
+                                            <div class="collapse" id="collapseExample{{ count }}">
+                                                <div class="card card-body">
+                                                    <li>
+                                                        <p>{{ prac }}</p>
+                                                        <ul>
+                                                            {% for u in upra %}
+                                                                <li>{{ u.get_uprawnienia }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                </div>
+                                            </div>
                                     {% endfor %}
                                 </ul>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                            {% endif %}
+                        </li>
+                    {% endwith %}
+                {% endfor %}
+            </ol>
         </div>
         <div class="col-md-6">
             <h3>Pracownicy</h3>
             <ul>
-                {% for prac in cart.pracownicy.all %}
-                    <li>{{ prac }}</li>
+                {% for pracownik in pracownicy %}
+                    <li>{{ pracownik }}</li>
                 {% endfor %}
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if pracownicy.has_previous %}
+                            <a href="?page={{ pracownicy.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ pracownicy.number }} of {{ pracownicy.paginator.num_pages }}.
+                        </span>
+
+                        {% if pracownicy.has_next %}
+                            <a href="?page={{ pracownicy.next_page_number }}">next</a>
+                        {% endif %}
+                    </span>
+                </div>
             </ul>
         </div>
     </div>
-    <div class="row">
-        <div class="panel-group col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse1">
-                            Aktualne uprawnienia wybranych pracowników do wybranych obiektów
-                        </a>
-                    </h4>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse">
-                    <ul class="list-group">
-                        {% for c in cart.obiekty.all %}
-                            <li class="list-group-item">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h6 class="panel-title">
-                                            {{ c }}
-                                        </h6>
-                                    </div>
-                                    <div class="panel-body">
-                                        <ul class="list-group">
-                                            {% for a in aktualne_uprawnienia %}
-                                                {% if a.id_obiektu == c %}
-                                                    <li class="list-group-item">
-                                                        {{ a.login }} | {{ a.get_uprawnienia_display }}
-                                                    </li>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <div class="row">
         <form method="post" action="">{% csrf_token %}
             <div class="col-md-6">

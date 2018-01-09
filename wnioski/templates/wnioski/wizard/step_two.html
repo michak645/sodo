@@ -1,4 +1,4 @@
-{% extends 'user_app/base_site/base_site.html' %}
+{% extends 'wnioski/base_site/base_site.html' %}
 
 {% block content %}
 
@@ -7,158 +7,116 @@
     </div>
 
     <div class="row">
-        <h3>Pracownicy</h3>
+        <h3>Wybierz pracowników</h3>
         <hr>
         <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">1. Wybierz jednostkę</div>
-                <div class="panel-body">
-                    <form method="post" action="">{% csrf_token %}
-                        <div class="row">
-                            {% for jedn in jednostki %}
+            <h4>1. Wybierz jednostkę</h4>
+            <form method="post" action="">{% csrf_token %}
+                <input type="text" name="szukaj-jednostki" placeholder="Szukaj jednostki">
+                <input type="submit" value="Szukaj">
+            </form>
+            <form method="post" action="">{% csrf_token %}
+                <div class="row">
+                    <ol>
+                        {% for jedn in jednostki %}
+                            <li>
                                 <form method="post" action="">{% csrf_token %}
                                     <input type="checkbox" name="show" value="True" checked hidden>
                                     <input type="text" value="{{ jedn.id }}" name="jednostka" hidden>
-                                    <p>
-                                        <input class="btn" type="submit" value="{{ jedn }}">
-                                    </p>
+                                    <input class="{% if jedn.id == wybrana_jednostka.id %}lista-wybrany{% else %}lista-linkow{% endif %}" type="submit" value="{{ jedn }}">
                                 </form>
-                            {% endfor %}
-
-                            <div class="pagination">
-                                <span class="step-links">
-                                    {% if jednostki.has_previous %}
-                                        <a href="?page={{ jednostki.previous_page_number }}">previous</a>
-                                    {% endif %}
-
-                                    <span class="current">
-                                        Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
-                                    </span>
-
-                                    {% if jednostki.has_next %}
-                                        <a href="?page={{ jednostki.next_page_number }}">next</a>
-                                    {% endif %}
-                                </span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">2. Wybierz pracowników</div>
-                <div class="panel-body">
-                    {% if prac_list %}
-                        <form id="pracownik-search" action="" class="styled" method="post">
-                            <fieldset>
-                                <input type="text" class="text-input" id="pracownik-filter" placeholder="Szukaj...">
-                            </fieldset>
-                        </form>
-                        {% for prac in prac_list %}
-                            <form method="post" action="">{% csrf_token %}
-                                <span class="pracownik-search-field">
-                                    <input type="checkbox" name="add_prac" value="True" checked hidden>
-                                    <input type="text" value="{{ prac.login }}" name="prac" hidden>
-                                    <p>
-                                        {{ prac }}
-                                        <input class="btn btn-success" type="submit" value="Dodaj" {% if prac in prac_cart %}disabled{% endif %}>
-                                    </p>
-                                </span>
-                            </form>
+                            </li>
                         {% endfor %}
-                    {% else %}
-                        <p>Brak</p>
-                    {% endif %}
+                    </ol>
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if jednostki.has_previous %}
+                                <a href="?page={{ jednostki.previous_page_number }}">previous</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
+                            </span>
+
+                            {% if jednostki.has_next %}
+                                <a href="?page={{ jednostki.next_page_number }}">next</a>
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
         <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    3. Wybrani pracownicy
-                    <form method="post" action="" class="right">{% csrf_token %}
-                        <input type="checkbox" name="clear" value="True" checked hidden>
-                        <input type="submit" class="btn btn-primary" value="Wyczyść">
-                    </form>
+            <h4>II. Wybierz pracowników</h4>
+            <form method="post" action="">{% csrf_token %}
+                <input type="text" name="szukaj-pracownika" placeholder="Szukaj pracownika">
+                <input type="text" value="{{ wybrana_jednostka.id }}" name="wybrana-jednostka" hidden>
+                <input type="submit" value="Szukaj">
+            </form>
+            {% if prac_list %}
+                <ol>
+                    {% for prac in prac_list %}
+                        <li>
+                            <form method="post" action="">{% csrf_token %}
+                                <input type="checkbox" name="add" value="True" checked hidden>
+                                <input type="text" value="{{ prac.login }}" name="prac" hidden>
+                                <input type="text" value="{{ wybrana_jednostka.id }}" name="jednostka" hidden>
+                                <input class="{% if prac in prac_cart %}lista-wybrany disabled{% else %}lista-linkow{% endif %}" type="submit" value="{{ prac }}">
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ol>
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if prac_list.has_previous %}
+                            <a href="?page_obiekt={{ prac_list.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ prac_list.number }} of {{ prac_list.paginator.num_pages }}.
+                        </span>
+
+                        {% if prac_list.has_next %}
+                            <a href="?page_obiekt={{ prac_list.next_page_number }}">next</a>
+                        {% endif %}
+                    </span>
                 </div>
-                <div class="panel-body prac-require">
-                    <p hidden class="info">To pole jest wymagane</p>
-                    {% for prac in prac_cart %}
+            {% else %}
+                <p>Nie ma pracowników w tej jednostce</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <h4>
+                <span class="left">III. Wybrani pracownicy</span>
+                <form method="post" action="">{% csrf_token %}
+                    <input type="checkbox" name="clear" value="True" checked hidden>
+                    <input type="text" value="{{ wybrana_jednostka.id }}" name="jednostka" hidden>
+                    <input type="submit" class="przycisk-maly" value="Wyczyść">
+                </form>
+            </h4>
+            <div class="clearfix"></div>
+            <ol>
+                {% for prac in prac_cart %}
+                    <li>
                         <form method="post" action="">{% csrf_token %}
                             <input type="text" value="{{ prac.login }}" name="prac" hidden>
-                            <input type="checkbox" name="delete_prac" value="True" checked hidden>
-                            <p>
-                                {{ prac }}
-                                <input class="btn btn-warning" type="submit" value="Usuń">
-                            </p>
+                            <input type="checkbox" name="delete" value="True" checked hidden>
+                            <input class="lista-linkow" type="submit" value="{{ prac }}">
                         </form>
-                    {% empty %}
-                        <p>Brak</p>
-                    {% endfor %}
-                </div>
-            </div>
+                    </li>
+                {% empty %}
+                    <p>Brak</p>
+                {% endfor %}
+            </ol>
         </div>
     </div>
 
+    <div class="clearfix"></div>
+
     <div class="row center">
-        <a class="btn btn-primary" href="{% url 'step_one' %}">Powrót</a>
-        <a id="dalej" class="btn btn-primary" >Dalej</a>
+        <a class="btn btn-primary" href="{% url 'labi_step_two' %}">Powrót</a>
+        <a class="btn btn-primary {% if not prac_cart %}disabled{% endif %}" href="{% url 'labi_step_three' %}">Dalej</a>
     </div>
-
-
-<script type="text/javascript">
-    
-$(document).ready(function(){
-    $("#obiekt-filter").keyup(function(){
-        var filter = $(this).val();
-        $(".obiekt-search-field").each(function(){
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    $("#pracownik-filter").keyup(function(){
-        var filter = $(this).val();
-        $(".pracownik-search-field").each(function(){
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    $("#jednostka-filter").keyup(function(){
-        var filter = $(this).val();
-        $(".jednostka-search-field").each(function(){
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    var prac_ok = false;
-    $( "#dalej" ).on( "click", function() {
-        if($( "#prac-require" ).text().indexOf("Brak") >= 0){
-            $('.info').show()
-        } else {
-            prac_ok = true;
-        }
-
-        if(prac_ok){
-            window.location.href = "{% url 'step_three' %}";
-        }
-    });
-
-
-});
-
-</script>
 
 {% endblock %}

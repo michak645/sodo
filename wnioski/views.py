@@ -527,37 +527,67 @@ def step_one(request):
     cart, created = Cart.objects.get_or_create(id=pracownik.pk)
     obj_list = None
     jednostka = None
-    jednostki = JednOrg.objects.all()
+    jednostki = JednOrg.objects.all().order_by('nazwa')
+
+    if request.method == 'POST':
+        obj = request.POST.get('obj')
+
+        szukaj_jednostki = request.POST.get('szukaj-jednostki')
+        if szukaj_jednostki:
+            jednostki = JednOrg.objects.filter(
+                nazwa__icontains=szukaj_jednostki
+            )
+        szukaj_obiektu = request.POST.get('szukaj-obiektu')
+        if szukaj_obiektu:
+            jednostka = request.POST.get('wybrana-jednostka')
+            if jednostka:
+                jednostka = JednOrg.objects.get(id=jednostka)
+            else:
+                messages.warning(request, 'Najpierw wybierz jednostkę')
+            obj_list = Obiekt.objects.filter(
+                jedn_org=jednostka,
+                nazwa__icontains=szukaj_obiektu,
+            )
+
+        if request.POST.get('clear'):
+            cart.obiekty.clear()
+
+        if request.POST.get('delete'):
+            cart.obiekty.remove(Obiekt.objects.get(id=obj))
+
+        if request.POST.get('add'):
+            cart.obiekty.add(Obiekt.objects.get(id=obj))
+            jednostka = request.POST.get('jednostka')
+            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka)
+
+        if request.POST.get('show'):
+            jednostka = request.POST.get('jednostka')
+            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka)
+
+        if obj_list:
+            paginator = Paginator(obj_list, 10)
+            page = request.GET.get('page_obiekt')
+            try:
+                obj_list = paginator.page(page)
+            except PageNotAnInteger:
+                obj_list = paginator.page(1)
+            except EmptyPage:
+                obj_list = paginator.page(paginator.num_pages)
 
     paginator = Paginator(jednostki, 10)
     page = request.GET.get('page')
     try:
-        jedn = paginator.page(page)
+        jednostki = paginator.page(page)
     except PageNotAnInteger:
-        jedn = paginator.page(1)
+        jednostki = paginator.page(1)
     except EmptyPage:
-        jedn = paginator.page(paginator.num_pages)
-
-    if request.method == 'POST':
-        clear = request.POST.get('clear')
-        if clear:
-            cart.obiekty.clear()
-        obj = request.POST.get('obj')
-        add = request.POST.get('add')
-        delete = request.POST.get('delete')
-        if delete:
-            cart.obiekty.remove(Obiekt.objects.get(id=obj))
-        if add:
-            cart.obiekty.add(Obiekt.objects.get(id=obj))
-        show = request.POST.get('show')
-        if show:
-            jednostka = request.POST.get('jednostka')
-            obj_list = Obiekt.objects.filter(jedn_org=jednostka)
-            jednostka = JednOrg.objects.get(id=jednostka).nazwa
+        jednostki = paginator.page(paginator.num_pages)
 
     context = {
         'wybrana_jednostka': jednostka,
-        'jednostki': jedn,
+        'jednostki': jednostki,
         'obj_list': obj_list,
         'pracownik': pracownik,
         'objs_cart': cart.obiekty.all(),
@@ -574,36 +604,68 @@ def step_two(request):
     cart = Cart.objects.get(id=pracownik.pk)
     prac_list = None
     jednostka = None
-    jednostki = JednOrg.objects.all()
+    jednostki = JednOrg.objects.all().order_by('nazwa')
+
+    if request.method == 'POST':
+        prac = request.POST.get('prac')
+
+        szukaj_jednostki = request.POST.get('szukaj-jednostki')
+        if szukaj_jednostki:
+            jednostki = JednOrg.objects.filter(
+                nazwa__icontains=szukaj_jednostki
+            )
+
+        szukaj_pracownika = request.POST.get('szukaj-pracownika')
+        if szukaj_pracownika:
+            jednostka = request.POST.get('wybrana-jednostka')
+            if jednostka:
+                jednostka = JednOrg.objects.get(id=jednostka)
+            else:
+                messages.warning(request, 'Najpierw wybierz jednostkę')
+            prac_list = Pracownik.objects.filter(
+                jedn_org=jednostka,
+                nazwisko__icontains=szukaj_pracownika,
+            )
+
+        if request.POST.get('clear'):
+            cart.pracownicy.clear()
+
+        if request.POST.get('delete'):
+            cart.pracownicy.remove(Pracownik.objects.get(login=prac))
+
+        if request.POST.get('add'):
+            cart.pracownicy.add(Pracownik.objects.get(login=prac))
+            jednostka = request.POST.get('jednostka')
+            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka)
+
+        if request.POST.get('show'):
+            jednostka = request.POST.get('jednostka')
+            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
+            jednostka = JednOrg.objects.get(id=jednostka)
+
+        if prac_list:
+            paginator = Paginator(prac_list, 10)
+            page = request.GET.get('page_obiekt')
+            try:
+                prac_list = paginator.page(page)
+            except PageNotAnInteger:
+                prac_list = paginator.page(1)
+            except EmptyPage:
+                prac_list = paginator.page(paginator.num_pages)
 
     paginator = Paginator(jednostki, 10)
     page = request.GET.get('page')
     try:
-        jedn = paginator.page(page)
+        jednostki = paginator.page(page)
     except PageNotAnInteger:
-        jedn = paginator.page(1)
+        jednostki = paginator.page(1)
     except EmptyPage:
-        jedn = paginator.page(paginator.num_pages)
+        jednostki = paginator.page(paginator.num_pages)
 
-    if request.method == 'POST':
-        clear = request.POST.get('clear')
-        if clear:
-            cart.pracownicy.clear()
-        prac = request.POST.get('prac')
-        add_prac = request.POST.get('add_prac')
-        show = request.POST.get('show')
-        if show:
-            jednostka = request.POST.get('jednostka')
-            prac_list = Pracownik.objects.filter(jedn_org=jednostka)
-            jednostka = JednOrg.objects.get(id=jednostka).nazwa
-        if add_prac:
-            cart.pracownicy.add(Pracownik.objects.get(login=prac))
-        delete_prac = request.POST.get('delete_prac')
-        if delete_prac:
-            cart.pracownicy.remove(Pracownik.objects.get(login=prac))
     context = {
         'wybrana_jednostka': jednostka,
-        'jednostki': jedn,
+        'jednostki': jednostki,
         'pracownik': pracownik,
         'prac_list': prac_list,
         'prac_cart': cart.pracownicy.all(),
@@ -612,7 +674,6 @@ def step_two(request):
 
 
 def step_three(request):
-    # czy_chcesz_zostac_dodany_do_wnioski_checkbox = False
     if request.session['pracownik']:
         pracownik = Labi.objects.get(id=request.session['pracownik'])
     else:
@@ -623,7 +684,6 @@ def step_three(request):
         login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
     )
-
     obiekty = {}
     for obiekt in cart.obiekty.all():
         pracownicy = {}
@@ -643,11 +703,26 @@ def step_three(request):
             cart.uprawnienia = form.cleaned_data['uprawnienia']
             cart.typ_wniosku = form.cleaned_data['typ_wniosku']
             cart.save()
-            return HttpResponseRedirect('/wizard/step_four')
+            return HttpResponseRedirect('labi/wizard/step_four')
+        else:
+            messages.error(request, 'Wypełnij poprawnie formularz')
     else:
         form = WizardUprawnienia()
+
+    pracownicy = cart.pracownicy.all()
+
+    paginator = Paginator(pracownicy, 10)
+    page = request.GET.get('page')
+    try:
+        pracownicy = paginator.page(page)
+    except PageNotAnInteger:
+        pracownicy = paginator.page(1)
+    except EmptyPage:
+        pracownicy = paginator.page(paginator.num_pages)
+
     context = {
         'pracownik': pracownik,
+        'pracownicy': pracownicy,
         'cart': cart,
         'aktualne_uprawnienia': aktualne_uprawnienia,
         'form': form,
@@ -691,8 +766,8 @@ def step_four(request):
                 wniosek_obiekty.append(obj)
         wniosek['obiekty'] = wniosek_obiekty
         wniosek['pracownicy'] = cart.pracownicy.all()
-        wniosek['uprawnienia'] = cart.uprawnienia
-        wniosek['typ_wniosku'] = cart.typ_wniosku
+        wniosek['uprawnienia'] = cart.get_uprawnienia_display()
+        wniosek['typ_wniosku'] = cart.get_typ_wniosku_display()
         wnioski.append(wniosek)
 
     if request.method == 'POST':
@@ -706,9 +781,12 @@ def step_four(request):
                 w.pracownicy.add(pracownik)
             for obiekt in wniosek['obiekty']:
                 w.obiekty.add(obiekt)
+            komentarz_id = 'komentarz' + str(wniosek['labi'].id)
+            komentarz = request.POST.get(komentarz_id)
+            w.komentarz = komentarz
             w.save()
         cart.delete()
-        return redirect('admin_index')
+        return HttpResponseRedirect('/admin_index')
     context = {
         'wnioski': wnioski,
         'pracownik': pracownik,

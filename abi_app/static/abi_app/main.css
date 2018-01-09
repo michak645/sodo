@@ -172,3 +172,20 @@ hr {
 .center-verticle-title {
     line-height: 34px;
 }
+
+.lista-linkow {
+    background: none;
+    border: none;
+}
+.lista-linkow:hover {
+    text-decoration: underline;
+}
+.lista-wybrany {
+    background: none;
+    border: none;
+    text-decoration: underline;
+}
+
+.clickable {
+    cursor: pointer;
+}
