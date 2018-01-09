@@ -3,21 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView
-from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-
-from auth_ex.models import Labi, Pracownik, JednOrg, RodzajPracownika
-from user_app.forms import WizardUprawnienia
-from user_app.models import Cart
-from wnioski.models import *
-
 
 from .models import Cart
 from auth_ex.models import (
@@ -27,7 +13,7 @@ from auth_ex.models import (
 )
 from user_app.forms import (
     AddApplicationForm,
-    WizardUprawnienia
+    WizardUprawnienia,
 )
 from wnioski.models import (
     Historia, Wniosek, Obiekt, PracownicyObiektyUprawnienia,
@@ -36,12 +22,23 @@ from wnioski.models import (
 )
 
 
+def logout(request):
+    pracownik = request.session['pracownik']
+    if pracownik:
+        request.session['pracownik'] = None
+    return redirect('index')
+
+
 def get_latest_history(wniosek_id):
     return Historia.objects.filter(wniosek=wniosek_id).order_by('-data')[0]
 
 
 def user_index(request):
-    pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = []
     for wniosek in wnioski:
@@ -55,7 +52,11 @@ def user_index(request):
 
 
 def user_objects_available(request):
-    pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
 
     wnioski = Wniosek.objects.all()
     wnioski_pracownika = []
@@ -81,6 +82,10 @@ class ObiektListView(ListView):
     context_object_name = 'obiekty'
 
     def get_context_data(self, *args, **kwargs):
+        if self.request.session['pracownik']:
+            pracownik = Pracownik.objects.get(
+                login=self.request.session['pracownik']
+            )
         context = super().get_context_data(**kwargs)
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
@@ -91,6 +96,7 @@ class ObiektListView(ListView):
         except EmptyPage:
             obiekty = paginator.page(paginator.num_pages)
         context['obiekty'] = obiekty
+        context['pracownik'] = pracownik
         return context
 
     def post(self, request, *args, **kwargs):
@@ -114,11 +120,32 @@ class ObiektListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class ObiektDetailView(DetailView):
     model = Obiekt
     template_name = 'user_app/obiekt_detail.html'
     context_object_name = 'obiekt'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Pracownik.objects.get(
+                login=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
 
 class JednostkaListView(ListView):
@@ -128,6 +155,11 @@ class JednostkaListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Pracownik.objects.get(
+                login=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
         try:
@@ -161,6 +193,12 @@ class JednostkaListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class JednostkaDetailView(DetailView):
     model = JednOrg
@@ -169,6 +207,11 @@ class JednostkaDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.session['pracownik']:
+            pracownik = Pracownik.objects.get(
+                login=self.request.session['pracownik']
+            )
+            context['pracownik'] = pracownik
         if self.object.czy_labi:
             labi = Labi.objects.get(jednostka=self.object.id)
         else:
@@ -176,112 +219,20 @@ class JednostkaDetailView(DetailView):
         context['labi'] = labi
         return context
 
-
-def user_add_app(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    if request.method == 'POST':
-        form = AddApplicationForm(request.POST, initial={
-            'pracownik': pracownik})
-        if form.is_valid():
-            try:
-                query = Wniosek.objects.filter(
-                    pracownik=form.cleaned_data['pracownik'],
-                    typ=form.cleaned_data['typ'],
-                    uprawnienia=form.cleaned_data['uprawnienia'],
-                    obiekt=form.cleaned_data['obiekt']
-                ).order_by('-data')[0]
-            except IndexError:
-                query = None
-
-            if query:
-                wnioski = Wniosek.objects.filter(
-                    pracownik=form.cleaned_data['pracownik'],
-                    obiekt=form.cleaned_data['obiekt'],
-                    uprawnienia=form.cleaned_data['uprawnienia']
-                )
-                historia = Historia.objects.filter(
-                    wniosek__in=wnioski
-                ).order_by('-data')[0]
-                '''
-                status zatwierdzony/przetwarzanie/odrzucony
-                dla przetwarzanego odrzucamy zawsze
-                '''
-                if historia.status == '5':
-                    messages.warning(
-                        request,
-                        'Wniosek do obiektu {0} o uprawnieniu {1}'
-                        ' jest przetwarzany'.
-                        format(
-                            historia.wniosek.obiekt,
-                            historia.wniosek.get_uprawnienia_display()
-                        )
-                    )
-                    return redirect('user_index')
-
-                '''
-                typ wniosku, przyznanie uprawnien lub odrzucenie
-                jeśli przyznano uprawnienia, to zezwalamy tylko na
-                odrzucanie i na odwrót
-                '''
-                if historia.wniosek.typ == form.cleaned_data['typ'] \
-                   and historia.status == '1':
-                    messages.warning(
-                        request,
-                        'Taki wniosek został już złożony i zatwierdzony'
-                    )
-                    return redirect('user_index')
-
-            form.save()
-            messages.success(request, 'Dodano wniosek')
-            return redirect('user_index')
-        else:
-            messages.warning(request, 'Popraw formularz')
-            return redirect('user_add_app')
-    else:
-        form = AddApplicationForm(initial={'pracownik': pracownik})
-    context = {
-        'pracownik': pracownik,
-        'form': form,
-    }
-    return render(request, 'user_app/user_add_app.html', context)
-
-
-def user_app_add_object(request, pk):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    obiekt = Obiekt.objects.get(pk=pk)
-    if request.method == 'POST':
-        form = AddApplicationForm(request.POST, initial={
-            'pracownik': pracownik,
-            'obiekt': obiekt
-        })
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Dodano wniosek')
-            return redirect('user_index')
-        else:
-            messages.warning(request, 'Popraw formularz')
-            messages.warning(request, '{0}'.format(form.errors.as_text()))
-            return HttpResponseRedirect(
-                reverse('user_app_add_object', kwargs={'pk': pk}))
-    else:
-        form = AddApplicationForm(initial={
-            'pracownik': pracownik,
-            'obiekt': obiekt.id
-        })
-    context = {
-        'form': form,
-        'obiekt': obiekt,
-        'pracownik': pracownik,
-    }
-    return render(request, 'user_app/user_app_add_object.html', context)
+    def get(self, *args, **kwargs):
+        if not self.request.session['pracownik']:
+            messages.warning(self.request, 'Musisz się najpierw zalogować')
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
 
 def user_app_accepted(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    wnioski = Wniosek.objects.filter(pracownik=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historie = []
     for wniosek in wnioski:
         historia = Historia.objects.filter(
@@ -296,9 +247,12 @@ def user_app_accepted(request):
 
 
 def user_app_rejected(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    wnioski = Wniosek.objects.filter(pracownik=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historie = []
     for wniosek in wnioski:
         historia = Historia.objects.filter(
@@ -313,8 +267,11 @@ def user_app_rejected(request):
 
 
 def user_profile(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
     context = {
         'pracownik': pracownik,
     }
@@ -322,10 +279,13 @@ def user_profile(request):
 
 
 def user_app_detail(request, pk):
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
     wniosek = Wniosek.objects.get(pk=pk)
     historia = Historia.objects.filter(wniosek=pk).order_by('-data')
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
     context = {
         'wniosek': wniosek,
         'historia': historia,
@@ -337,9 +297,12 @@ def user_app_detail(request, pk):
 # WIZARD
 
 def step_one(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart, created = Cart.objects.get_or_create(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart, created = Cart.objects.get_or_create(id=pracownik.pk)
     obj_list = None
     jednostka = None
     jednostki = JednOrg.objects.all().order_by('nazwa')
@@ -411,9 +374,12 @@ def step_one(request):
 
 
 def step_two(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart = Cart.objects.get(id=pracownik.pk)
     prac_list = None
     jednostka = None
     jednostki = JednOrg.objects.all().order_by('nazwa')
@@ -486,9 +452,12 @@ def step_two(request):
 
 
 def step_three(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart = Cart.objects.get(id=pracownik.pk)
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
         login__in=cart.pracownicy.all(),
         id_obiektu__in=cart.obiekty.all()
@@ -552,9 +521,12 @@ def get_labi(jedn):
 
 
 def step_four(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
-    cart = Cart.objects.get(id=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    cart = Cart.objects.get(id=pracownik.pk)
 
     cart_objs = cart.obiekty.all()
     labi_list = []
@@ -602,8 +574,11 @@ def step_four(request):
 
 
 def admin_panel(request):
-    pracownik_id = request.session['pracownik']
-    pracownik = Pracownik.objects.get(login=pracownik_id)
+    if request.session['pracownik']:
+        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
     obiekty_admina = AdministratorObiektu.objects.filter(pracownik=pracownik)
 
     if request.method == 'POST':
