@@ -240,7 +240,7 @@ def user_app_accepted(request):
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
-    wnioski = Wniosek.objects.filter(pracownik=pracownik)
+    wnioski = Wniosek.objects.filter(pracownik=pracownik).order_by('-data')
     historie = []
     for wniosek in wnioski:
         historia = Historia.objects.filter(
@@ -270,13 +270,23 @@ def user_app_rejected(request):
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
-    wnioski = Wniosek.objects.filter(pracownik=pracownik)
+    wnioski = Wniosek.objects.filter(pracownik=pracownik).order_by('-data')
     historie = []
     for wniosek in wnioski:
         historia = Historia.objects.filter(
             wniosek=wniosek.pk).order_by('-data')[0]
         if historia.status == '5':
             historie.append(historia)
+
+    paginator = Paginator(historie, 10)
+    page = request.GET.get('page')
+    try:
+        historie = paginator.page(page)
+    except PageNotAnInteger:
+        historie = paginator.page(1)
+    except EmptyPage:
+        historie = paginator.page(paginator.num_pages)
+
     context = {
         'pracownik': pracownik,
         'historie': historie,

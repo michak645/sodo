@@ -2,50 +2,157 @@
 
 {% block content %}
 
-    <div class="row">
-        <div class="col-md-10 col-md-offset-1">
-            <div class="panel panel-default">
-                <div class="panel-heading"> {{ wniosek }}</div>
-                <div class="panel-body">
-                    <p><strong>Data:</strong> {{ wniosek.data }}</p>
-                    <p><strong>Typ wniosku:</strong> {{ wniosek.typ }}</p>
-                    <p><strong>Pracownik składający:</strong> {{ wniosek.pracownik }}</p>
-                    <p><strong>Obiekt:</strong> {{ wniosek.obiekt }}</p>
+    <div class="container">
+
+        <div class="row">
+            <button class="btn btn-primary" id="return">Cofnij</button>
+        </div>
+
+        <div class="row">
+            <h3>Dane szczegółowe wniosku <i><b>{{wniosek.prac_sklada}}</b></i></h3>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_app_pdf' wniosek.pk %}">
+                Generuj PDF dla wniosku <span class="glyphicon glyphicon-file"></span>
+            </a>
+            <a target="_blank" class="btn btn-default" href="{% url 'gen_app_raport_pdf' wniosek.pk %}">
+                Generuj raport PDF dla wniosku <span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+        </div>
+        <hr>
+        <div class="row">
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Status wniosku: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ historia.0.get_status_display }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Typ wniosku: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.get_typ_display }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Data: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.data }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Pracownik składający: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ wniosek.pracownik }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Pracownicy których dotyczy: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <div>
+                        <p>
+                            <button class="przycisk-maly" id="pokazPracownikow">Pokaż pracowników</button>
+                            <button class="przycisk-maly" id="ukryjPracownikow" hidden>Ukryj pracowników</button>
+                        </p>
+                    </div>
+                    <div id="collapsePracownicy" hidden>
+                        <ul>
+                            {% for pracownik in wniosek.pracownicy.all %}
+                                <li>{{ pracownik }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Obiekty: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>
+                        <button class="przycisk-maly" id="pokazObiekty">Pokaż obiekty</button>
+                        <button class="przycisk-maly" id="ukryjObiekty" hidden>Ukryj obiekty</button>
+                    </p>
+                    <div id="collapseObiekty" hidden>
+                        <ul>
+                            {% for obiekt in wniosek.obiekty.all %}
+                                <li>{{ obiekt }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <hr>
+        {% if historia %}
+            <div class="row">
+                <h3>Historia wniosku</h3>
+            </div>
+
+            <div class="row table">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>Wniosek</th>
+                        <th>Data zmiany</th>
+                        <th>Status</th>
+                    </tr>
+                    {% for h in historia %}
+                        <tr>
+                            <td>{{ h.wniosek }}</td>
+                            <td>{{ h.data|date:"d M Y, H i " }}</td>
+                            <td>{{ h.get_status }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% else %}
+            <div class="row">
+                <h3>Brak historii wniosku</h3>
+            </div>
+        {% endif %}
+
     </div>
-    <div class="row">
-        <a target="_blank" class="btn btn-default" href="{% url 'gen_app_pdf' wniosek.pk %}">
-            Eksportuj wniosek do PDF <span class="glyphicon glyphicon-file"></span>
-        </a>
-        <a target="_blank" class="btn btn-default" href="{% url 'gen_app_raport_pdf' wniosek.pk %}">
-            Generuj raport dla wniosku <span class="glyphicon glyphicon-list-alt"></span>
-        </a>
-    </div>
-    <div class="row">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th scope="col">Lp.</th>
-                <th scope="col">Typ</th>
-                <th scope="col">Obiekt</th>
-                <th scope="col">Status</th>
-                <th scope="col">Data</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for wniosek in historia %}
-                <tr>
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ wniosek.wniosek.typ }}</td>
-                    <td>{{ wniosek.wniosek.obiekt }}</td>
-                    <td>{{ wniosek.get_status }}</td>
-                    <td>{{ wniosek.data }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#return").click(function(){
+                history.back(1);
+            });
+            $('#pokazPracownikow').on('click', function(){
+                $('#collapsePracownicy').fadeToggle();
+                $('#pokazPracownikow').toggle();
+                $('#ukryjPracownikow').toggle();
+            });
+            $('#ukryjPracownikow').on('click', function(){
+                $('#collapsePracownicy').fadeToggle();
+                $('#pokazPracownikow').toggle();
+                $('#ukryjPracownikow').toggle();
+            });
+            $('#pokazObiekty').on('click', function(){
+                $('#collapseObiekty').fadeToggle();
+                $('#pokazObiekty').toggle();
+                $('#ukryjObiekty').toggle();
+            });
+            $('#ukryjObiekty').on('click', function(){
+                $('#collapseObiekty').fadeToggle();
+                $('#pokazObiekty').toggle();
+                $('#ukryjObiekty').toggle();
+            });
+        });
+    </script>
 
 {% endblock %}
