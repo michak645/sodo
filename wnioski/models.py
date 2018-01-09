@@ -81,6 +81,7 @@ class Obiekt(models.Model):
     # jedn_org = models.ForeignKey(JednOrg, on_delete=models.SET(set_parent))
     jedn_org = models.ForeignKey(JednOrg, on_delete=models.CASCADE)
     opis = models.TextField()
+    czy_aktywny = models.BooleanField('Czy obiekt aktywny', default=True)
 
     def __str__(self):
         return u'{0}'.format(self.nazwa)
