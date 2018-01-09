@@ -42,7 +42,7 @@ def admin_index(request):
             historia = Historia.objects.filter(
                 wniosek=wniosek.id,
             ).order_by('-data')[0]
-            if historia.get_status() == 'Złożony':
+            if historia.status == '1':
                 to_approve.append(historia)
 
     context = {
@@ -104,7 +104,7 @@ def wniosek_detail(request, pk):
             Historia.objects.create(
                 wniosek_id=pk,
                 status='2',
-                pracownik=pracownik,
+                pracownik=pracownik.login,
             )
             historia = Historia.objects. \
                 filter(wniosek=pk). \
@@ -115,7 +115,7 @@ def wniosek_detail(request, pk):
             Historia.objects.create(
                 wniosek_id=pk,
                 status='5',
-                pracownik=pracownik,
+                pracownik=pracownik.login,
             )
             historia = Historia.objects.filter(wniosek=pk)
             return HttpResponseRedirect('/admin_index')

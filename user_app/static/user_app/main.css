@@ -79,6 +79,12 @@
    cursor: default;
 }
 
-.clickable {
+.clickable-row {
     cursor: pointer;
+}
+
+.clickable-row:hover {
+    cursor: pointer;
+    background: #C0C0C0 !important;
+    color: black !important;
 }

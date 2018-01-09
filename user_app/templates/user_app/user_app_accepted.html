@@ -1,4 +1,5 @@
 {% extends 'user_app/base_site/base_site.html' %}
+{% load bootstrap_pagination %}
 
 {% block content %}
 
@@ -8,33 +9,55 @@
         </div>
 
         <div class="row">
+            {% bootstrap_pager historie %}
             <table class="table table-hover">
                 <thead>
-                <tr>
-                    <th scope="col">Lp.</th>
-                    <th scope="col">Wniosek</th>
-                    <th scope="col">Typ</th>
-                    <th scope="col">Obiekt</th>
-                    <th scope="col">Data</th>
-                </tr>
+                    <tr>
+                        <th scope="col">Lp.</th>
+                        <th scope="col">Pracownicy</th>
+                        <th scope="col">Typ</th>
+                        <th scope="col">Uprawnienia</th>
+                        <th scope="col">Obiekt</th>
+                        <th scope="col">Data</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for wniosek in historie %}
-                    <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td><a href="{% url 'user_app_detail' wniosek.wniosek.id %}">{{ wniosek }}</a></td>
-                        <td>{{ wniosek.wniosek.typ }}</td>
-                        <td>{{ wniosek.wniosek.obiekt }}</td>
-                        <td>{{ wniosek.data }}</td>
-                    </tr>
-                {% endfor %}
+                    {% for wniosek in historie %}
+                        <tr class="clickable-row" data-href="{% url 'user_app_detail' wniosek.wniosek.id %}">
+                            <th scope="row">{{ forloop.counter }}</th>
+                                <td>
+                                    {% for pracownik in wniosek.wniosek.pracownicy.all %}
+                                        {{ pracownik }}<br>
+                                    {% endfor %}
+                                </td>
+                                <td>{{ wniosek.wniosek.get_typ_display }}</td>
+                                <td>{{ wniosek.wniosek.get_uprawnienia_display }}</td>
+                                <td>
+                                    {% for obiekt in wniosek.wniosek.obiekty.all %}
+                                        {{ obiekt }}<br>
+                                    {% endfor %}
+                                </td>
+                                <td>{{ wniosek.data }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
+            <div class="center">
+                {% bootstrap_paginate historie range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+            </div>
         </div>
     {% else %}
         <div class="row">
             <h2 class="center">Brak przyjętych wniosków</h2>
         </div>
     {% endif %}
+
+    <script type="text/javascript">
+        $(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
 
 {% endblock %}

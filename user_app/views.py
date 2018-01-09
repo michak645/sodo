@@ -42,6 +42,15 @@ def user_index(request):
     for wniosek in wnioski:
         if get_latest_history(wniosek.id).status == '1':
             historia.append(get_latest_history(wniosek.id))
+
+    paginator = Paginator(historia, 10)
+    page = request.GET.get('page')
+    try:
+        historia = paginator.page(page)
+    except PageNotAnInteger:
+        historia = paginator.page(1)
+    except EmptyPage:
+        historia = paginator.page(paginator.num_pages)
     context = {
         'pracownik': pracownik,
         'historia': historia,
@@ -185,6 +194,7 @@ class JednostkaListView(ListView):
             jednostki = paginator.page(1)
         except EmptyPage:
             jednostki = paginator.page(paginator.num_pages)
+
         context = {
             'jednostki': jednostki,
             'search': search,
@@ -235,8 +245,18 @@ def user_app_accepted(request):
     for wniosek in wnioski:
         historia = Historia.objects.filter(
             wniosek=wniosek.pk).order_by('-data')[0]
-        if historia.status == '2':
+        if historia.status == '3' or historia.status == '4':
             historie.append(historia)
+
+    paginator = Paginator(historie, 10)
+    page = request.GET.get('page')
+    try:
+        historie = paginator.page(page)
+    except PageNotAnInteger:
+        historie = paginator.page(1)
+    except EmptyPage:
+        historie = paginator.page(paginator.num_pages)
+
     context = {
         'pracownik': pracownik,
         'historie': historie,
@@ -255,7 +275,7 @@ def user_app_rejected(request):
     for wniosek in wnioski:
         historia = Historia.objects.filter(
             wniosek=wniosek.pk).order_by('-data')[0]
-        if historia.status == '2':
+        if historia.status == '5':
             historie.append(historia)
     context = {
         'pracownik': pracownik,
