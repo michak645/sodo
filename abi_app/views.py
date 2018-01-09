@@ -408,11 +408,8 @@ class JednostkaCreate(CreateView):
 
 # WIZARD
 def step_one(request):
-    # labi = Labi.objects.get(id=request.session['pracownik'])
-    # pracownik = Pracownik.objects.get(pk=labi.login.pk)
-    # to powyzej bylo moze sie przyda
     if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
@@ -488,10 +485,8 @@ def step_one(request):
 
 
 def step_two(request):
-    # labi = Labi.objects.get(id=request.session['pracownik'])
-    # pracownik = Pracownik.objects.get(pk=labi.login.pk)
     if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
@@ -568,10 +563,8 @@ def step_two(request):
 
 
 def step_three(request):
-    # labi = Labi.objects.get(id=request.session['pracownik'])
-    # pracownik = Pracownik.objects.get(pk=labi.login.pk)
     if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
@@ -599,7 +592,7 @@ def step_three(request):
             cart.uprawnienia = form.cleaned_data['uprawnienia']
             cart.typ_wniosku = form.cleaned_data['typ_wniosku']
             cart.save()
-            return HttpResponseRedirect('abi/wizard/step_four')
+            return redirect('abi_step_four')
         else:
             messages.error(request, 'Wypełnij poprawnie formularz')
     else:
@@ -639,10 +632,8 @@ def get_labi(jedn):
 
 
 def step_four(request):
-    # labi = Labi.objects.get(id=request.session['pracownik'])
-    # pracownik = Pracownik.objects.get(pk=labi.login.pk)
     if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
     else:
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
@@ -672,7 +663,7 @@ def step_four(request):
         for wniosek in wnioski:
             w = Wniosek.objects.create(
                 typ=cart.typ_wniosku,
-                pracownik=pracownik,
+                pracownik=pracownik.login,
                 uprawnienia=cart.uprawnienia,
             )
             for pracownik in cart.pracownicy.all():
