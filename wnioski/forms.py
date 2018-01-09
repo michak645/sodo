@@ -2,8 +2,6 @@ from django.forms import ModelForm
 from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
 
-from multiselectfield import MultiSelectField
-
 
 class WniosekForm(ModelForm):
     class Meta:

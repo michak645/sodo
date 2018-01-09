@@ -50,6 +50,32 @@
                             <p>{{ obiekt.opis }}</p>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Opis: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ obiekt.opis }}</p>
+                        </div>
+                    </div>
+                    
+                    <form method="post" action="">{% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Czy aktywny: </label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <input type="checkbox" name="czy_aktywny"{% if obiekt.czy_aktywny %}value="True" checked{% else %}value="False"{% endif %}>
+                                    {% if obiekt.czy_aktywny %}Tak{% else %}Nie{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <input type="submit" value="Zapisz">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

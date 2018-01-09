@@ -13,6 +13,8 @@ from user_app.forms import WizardUprawnienia
 from user_app.models import Cart
 from wnioski.models import *
 
+from .forms import PracownikAktywnyForm
+
 
 def abi_index(request):
     pracownik = Labi.objects.get(id=request.session['pracownik'])
@@ -215,45 +217,52 @@ class PracownikListView(ListView):
         return render(request, self.template_name, context)
 
 
-class PracownikDetailView(DetailView):
-    model = Pracownik
-    template_name = 'abi_app/data/pracownik_detail.html'
-    context_object_name = 'pracownik'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        wnioski = Wniosek.objects.filter(
-            pracownik=self.object.pk).order_by('-data')
-        historie = []
-        for wniosek in wnioski:
-            try:
-                hist = Historia.objects.filter(
-                    wniosek=wniosek).order_by('-data')[0]
-                historie.append(hist)
-            except IndexError:
-                hist = None
-        wnioski_pracownika = []
-        for wniosek in wnioski:
-            for prac_wniosek in wniosek.pracownicy.all():
-                if prac_wniosek.pk == self.object.pk:
-                    wnioski_pracownika.append(wniosek)
-
-        paginator = Paginator(historie, 5)
-        page = self.request.GET.get('page')
+def pracownik_detail(request, pk):
+    # AUTORYZACJA
+    pracownik = Pracownik.objects.get(pk=pk)
+    wnioski = Wniosek.objects.filter(
+        pracownik=pracownik.pk).order_by('-data')
+    historie = []
+    for wniosek in wnioski:
         try:
-            historie = paginator.page(page)
-        except PageNotAnInteger:
-            historie = paginator.page(1)
-        except EmptyPage:
-            historie = paginator.page(paginator.num_pages)
+            hist = Historia.objects.filter(
+                wniosek=wniosek).order_by('-data')[0]
+            historie.append(hist)
+        except IndexError:
+            hist = None
+    wnioski_pracownika = []
+    for wniosek in wnioski:
+        for prac_wniosek in wniosek.pracownicy.all():
+            if prac_wniosek.pk == pracownik.pk:
+                wnioski_pracownika.append(wniosek)
 
-        obiekty = ZatwierdzonePrzezAS.objects.filter(
-            wniosek__in=wnioski_pracownika,
-        )
+    if request.method == 'POST':
+        czy_aktywny = request.POST.get('czy_aktywny')
+        if czy_aktywny:
+            pracownik.czy_aktywny = True
+        else:
+            pracownik.czy_aktywny = False
+        pracownik.save()
 
-        context['historie'] = historie
-        context['obiekty'] = obiekty
-        return context
+    paginator = Paginator(historie, 5)
+    page = request.GET.get('page')
+    try:
+        historie = paginator.page(page)
+    except PageNotAnInteger:
+        historie = paginator.page(1)
+    except EmptyPage:
+        historie = paginator.page(paginator.num_pages)
+
+    obiekty = ZatwierdzonePrzezAS.objects.filter(
+        wniosek__in=wnioski_pracownika,
+    )
+
+    context = {
+        'pracownik': pracownik,
+        'historie': historie,
+        'obiekty': obiekty,
+    }
+    return render(request, 'abi_app/data/pracownik_detail.html', context)
 
 
 class PracownikCreate(CreateView):
@@ -319,10 +328,20 @@ class ObiektListView(ListView):
         return render(request, self.template_name, context)
 
 
-class ObiektDetailView(DetailView):
-    model = Obiekt
-    template_name = 'abi_app/data/obiekt_detail.html'
-    context_object_name = 'obiekt'
+def obiekt_detail(request, pk):
+    # AUTORYZACJA
+    obiekt = Obiekt.objects.get(pk=pk)
+    if request.method == 'POST':
+        czy_aktywny = request.POST.get('czy_aktywny')
+        if czy_aktywny:
+            obiekt.czy_aktywny = True
+        else:
+            obiekt.czy_aktywny = False
+        obiekt.save()
+    context = {
+        'obiekt': obiekt,
+    }
+    return render(request, 'abi_app/data/obiekt_detail.html', context)
 
 
 class ObiektCreate(CreateView):

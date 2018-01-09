@@ -11,10 +11,10 @@ urlpatterns = [
     url(r'^abi/pracownicy/$', views.PracownikListView.as_view(), name='abi_pracownik_list'),
     url(r'^abi/pracownik/create/$', views.PracownikCreate.as_view(), name='abi_pracownik_create'),
     url(r'^abi/pracownik_rodzaj/create/$', views.RodzajPracownikaCreate.as_view(), name='abi_rodzaj_pracownik_create'),
-    url(r'^abi/pracownik/(?P<pk>[\w-]+)/$', views.PracownikDetailView.as_view(), name='abi_pracownik_detail'),
+    url(r'^abi/pracownik/(?P<pk>[\w-]+)/$', views.pracownik_detail, name='abi_pracownik_detail'),
 
     url(r'^abi/obiekty/$', views.ObiektListView.as_view(), name='abi_obiekt_list'),
-    url(r'^abi/obiekt/(?P<pk>\d+)/$', views.ObiektDetailView.as_view(), name='abi_obiekt_detail'),
+    url(r'^abi/obiekt/(?P<pk>\d+)/$', views.obiekt_detail, name='abi_obiekt_detail'),
     url(r'^abi/obiekt/create/$', views.ObiektCreate.as_view(), name='abi_obiekt_create'),
     url(r'^abi/obiekt_typ/create/$', views.ObiektTypCreate.as_view(), name='abi_obiekt_typ_create'),
 

@@ -86,6 +86,19 @@
                 <p>{{ pracownik.rodzaj }}</p>
             </div>
         </div>
+        
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Czy aktywny: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                {% if pracownik.czy_aktywny %}
+                    <p>Tak</p>
+                {% else %}
+                    <p>Nie</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
     <hr>
     <div class="row">
