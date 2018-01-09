@@ -55,8 +55,57 @@
         </div>
     </div>
 
-    
-
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h3>Obecne uprawnienia do obiektu</h3>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading center clickable" id="filtr">Filtruj</div>
+                <div class="panel-body" id="filtr-content" hidden>
+                    <div class="row">
+                        <form action="" method="post">{% csrf_token %}
+                            <div class="col-md-6">
+                                <input type="text" name="{{ form.jednostka.html_name }}" placeholder="Szukaj jednostki" {% if form.jednostka.value %}value="{{ form.jednostka.value }}"{% endif %}>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" name="{{ form.pracownik.html_name }}" placeholder="Szukaj pracownika" {% if form.pracownik.value %}value="{{ form.pracownik.value }}"{% endif %}>
+                            </div><br>
+                            <div class="col-md-12">
+                                {% for key, value in form.uprawnienia.field.choices %}
+                                    <div class="col-md-6">
+                                        <input id="uprawnienie{{ forloop.counter }}" type="checkbox" name="{{ form.uprawnienia.html_name }}" value="{{ key }}" {% if key in form.uprawnienia.value %}checked{% endif %}>
+                                        <label for="uprawnienie{{ forloop.counter }}">{{ value }}</label><br>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12 center">
+                                <input type="submit" value="Filtruj" class="btn btn-primary">
+                                <input type="submit" name="clear" value="Wyczyść filtr" class="btn btn-primary">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+            {% for jednostka in jednostki %}
+                <p><strong>{{ jednostka }}</strong></p>
+                {% for pracownik in pracownicy %}
+                    {% if pracownik.jedn_org == jednostka %}
+                        <p>{{ pracownik }}</p>
+                        <ul>
+                            {% for uprawnienia in pou %}
+                                {% if uprawnienia.login == pracownik %}
+                                    <li>{{ uprawnienia.get_uprawnienia_display }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
 
     <script type="text/javascript">
         $(document).ready(function(){
@@ -65,6 +114,9 @@
             });
             $("#return").click(function(){
                 history.back(1);
+            });
+            $("#filtr").on("click", function(){
+                $("#filtr-content").fadeToggle();
             });
         });
     </script>

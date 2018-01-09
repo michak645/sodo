@@ -2,6 +2,8 @@ from django.forms import ModelForm
 from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
 
+from multiselectfield import MultiSelectField
+
 
 class WniosekForm(ModelForm):
     class Meta:
@@ -49,3 +51,22 @@ class EditTypObiektuForm(ModelForm):
     class Meta:
         model = TypObiektu
         fields = ('nazwa', )
+
+
+class ObiektFiltrowanieForm(forms.Form):
+    uprawnienia_choices = (
+        ('1', 'Wgląd'),
+        ('2', 'Tworzenie'),
+        ('3', 'Modyfikacja'),
+        ('4', 'Przetwarzanie na serwerze i w biurze'),
+        ('5', 'Przechowywanie'),
+        ('6', 'Usuwanie, niszczenie'),
+        ('7', 'Udostępnianie, powierzanie, przesyłanie'),
+    )
+    jednostka = forms.CharField(max_length=100, required=False)
+    pracownik = forms.CharField(max_length=100, required=False)
+    uprawnienia = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        choices=uprawnienia_choices,
+        required=False,
+    )

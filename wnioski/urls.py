@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^pracownik/(?P<pk>[\w-]+)/$', views.PracownikDetailView.as_view(), name='labi_pracownik_detail'),
 
     url(r'^obiekty/$', views.ObiektListView.as_view(), name='labi_obiekt_list'),
-    url(r'^obiekt/(?P<pk>\d+)/$', views.ObiektDetailView.as_view(), name='labi_obiekt_detail'),
+    url(r'^obiekt/(?P<pk>\d+)/$', views.obiekt_detail, name='labi_obiekt_detail'),
     url(r'^obiekt/create/$', views.ObiektCreate.as_view(), name='labi_obiekt_create'),
     url(r'^obiekt_typ/create/$', views.ObiektTypCreate.as_view(), name='labi_obiekt_typ_create'),
 

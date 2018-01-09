@@ -16,6 +16,7 @@ from .models import (
     ZatwierdzonePrzezAS,
     PracownicyObiektyUprawnienia,
 )
+from .forms import ObiektFiltrowanieForm
 from auth_ex.models import (
     JednOrg,
     Pracownik,
@@ -341,25 +342,52 @@ class ObiektListView(ListView):
         return render(request, self.template_name, context)
 
 
-class ObiektDetailView(DetailView):
-    model = Obiekt
-    template_name = 'wnioski/obiekt/obiekt_detail.html'
-    context_object_name = 'obiekt'
+def obiekt_detail(request, pk):
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    obiekt = Obiekt.objects.get(pk=pk)
+    pou = PracownicyObiektyUprawnienia.objects.filter(
+        id_obiektu=obiekt
+    )
+    pracownicy = Pracownik.objects.filter(
+        login__in=pou.values('login')
+    )
+    jednostki = JednOrg.objects.filter(
+        id__in=pracownicy.values('jedn_org')
+    )
+    if request.method == 'POST':
+        form = ObiektFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = ObiektFiltrowanieForm()
+            else:
+                if form.cleaned_data['pracownik']:
+                    pracownicy = pracownicy.filter(
+                        nazwisko__icontains=form.cleaned_data['pracownik']
+                    )
+                if form.cleaned_data['jednostka']:
+                    jednostki = jednostki.filter(
+                        nazwa__icontains=form.cleaned_data['jednostka']
+                    )
+                if form.cleaned_data['uprawnienia']:
+                    pou = pou.filter(
+                        uprawnienia__in=form.cleaned_data['uprawnienia'],
+                    )
+    else:
+        form = ObiektFiltrowanieForm()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.session['pracownik']:
-            pracownik = Labi.objects.get(
-                id=self.request.session['pracownik']
-            )
-            context['pracownik'] = pracownik
-        return context
-
-    def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
-            return redirect('index')
-        return super().get(*args, **kwargs)
+    context = {
+        'pracownik': pracownik,
+        'obiekt': obiekt,
+        'pou': pou,
+        'form': form,
+        'pracownicy': pracownicy,
+        'jednostki': jednostki,
+    }
+    return render(request, 'wnioski/obiekt/obiekt_detail.html', context)
 
 
 class ObiektCreate(CreateView):

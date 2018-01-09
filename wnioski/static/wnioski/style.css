@@ -134,3 +134,7 @@ hr {
 .center-verticle-title {
     line-height: 34px;
 }
+
+.clickable {
+    cursor: pointer;
+}
