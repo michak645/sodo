@@ -21,9 +21,9 @@ from wnioski.models import (
 
 
 def authenticate(request):
-    pracownik = request.session['pracownik']
+    prac = request.session['pracownik']
     try:
-        pracownik = Pracownik.objects.get(pk=pracownik)
+        pracownik = Pracownik.objects.get(pk=prac)
     except Pracownik.DoesNotExist:
         pracownik = None
     if pracownik:
@@ -77,10 +77,12 @@ def user_index(request):
 
 
 def user_objects_available(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
 
     # bierzemy wszystko z pou
@@ -110,10 +112,7 @@ class ObiektListView(ListView):
     context_object_name = 'obiekty'
 
     def get_context_data(self, *args, **kwargs):
-        if self.request.session['pracownik']:
-            pracownik = Pracownik.objects.get(
-                login=self.request.session['pracownik']
-            )
+        pracownik = authenticate(self.request)
         context = super().get_context_data(**kwargs)
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
@@ -149,8 +148,12 @@ class ObiektListView(ListView):
         return render(request, self.template_name, context)
 
     def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako pracownik'
+            )
             return redirect('index')
         return super().get(*args, **kwargs)
 
@@ -162,16 +165,17 @@ class ObiektDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.session['pracownik']:
-            pracownik = Pracownik.objects.get(
-                login=self.request.session['pracownik']
-            )
-            context['pracownik'] = pracownik
+        pracownik = authenticate(self.request)
+        context['pracownik'] = pracownik
         return context
 
     def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako pracownik'
+            )
             return redirect('index')
         return super().get(*args, **kwargs)
 
@@ -183,11 +187,8 @@ class JednostkaListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.session['pracownik']:
-            pracownik = Pracownik.objects.get(
-                login=self.request.session['pracownik']
-            )
-            context['pracownik'] = pracownik
+        pracownik = authenticate(self.request)
+        context['pracownik'] = pracownik
         paginator = Paginator(self.get_queryset(), 10)
         page = self.request.GET.get('page')
         try:
@@ -223,8 +224,12 @@ class JednostkaListView(ListView):
         return render(request, self.template_name, context)
 
     def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako pracownik'
+            )
             return redirect('index')
         return super().get(*args, **kwargs)
 
@@ -236,11 +241,8 @@ class JednostkaDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.session['pracownik']:
-            pracownik = Pracownik.objects.get(
-                login=self.request.session['pracownik']
-            )
-            context['pracownik'] = pracownik
+        pracownik = authenticate(self.request)
+        context['pracownik'] = pracownik
         if self.object.czy_labi:
             labi = Labi.objects.get(jednostka=self.object.id)
         else:
@@ -249,17 +251,23 @@ class JednostkaDetailView(DetailView):
         return context
 
     def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako pracownik'
+            )
             return redirect('index')
         return super().get(*args, **kwargs)
 
 
 def user_app_accepted(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     wnioski = Wniosek.objects.filter(pracownik=pracownik).order_by('-data')
     historie = []
@@ -286,10 +294,12 @@ def user_app_accepted(request):
 
 
 def user_app_rejected(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     wnioski = Wniosek.objects.filter(pracownik=pracownik).order_by('-data')
     historie = []
@@ -316,10 +326,12 @@ def user_app_rejected(request):
 
 
 def user_profile(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     context = {
         'pracownik': pracownik,
@@ -328,10 +340,12 @@ def user_profile(request):
 
 
 def user_app_detail(request, pk):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     wniosek = Wniosek.objects.get(pk=pk)
     historia = Historia.objects.filter(wniosek=pk).order_by('-data')
@@ -346,10 +360,12 @@ def user_app_detail(request, pk):
 # WIZARD
 
 def step_one(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     cart, created = Cart.objects.get_or_create(id=pracownik.pk)
     obj_list = None
@@ -430,10 +446,12 @@ def step_one(request):
 
 
 def step_two(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     cart = Cart.objects.get(id=pracownik.pk)
     prac_list = None
@@ -515,10 +533,12 @@ def step_two(request):
 
 
 def step_three(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     cart = Cart.objects.get(id=pracownik.pk)
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
@@ -584,10 +604,12 @@ def get_labi(jedn):
 
 
 def step_four(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     cart = Cart.objects.get(id=pracownik.pk)
 
@@ -637,10 +659,12 @@ def step_four(request):
 
 
 def admin_panel(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
     obiekty_admina = AdministratorObiektu.objects.filter(pracownik=pracownik)
 

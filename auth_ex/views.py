@@ -13,27 +13,27 @@ def find_labi(jedn):
         return find_labi(jednostka.parent.id)
 
 
-def authenticate(request):
-    pracownik = request.session['pracownik']
-    typ = ''
-    try:
-        pracownik = int(pracownik)
-    except (ValueError, TypeError):
-        pass
-    try:
-        labi = Labi.objects.get(id=pracownik)
-        typ = 'labi'
-        if labi.jednostka.pk == '1':
-            typ = 'abi'
-    except Labi.DoesNotExist:
-        typ = ''
+# def authenticate(request):
+#     pracownik = request.session['pracownik']
+#     typ = ''
+#     try:
+#         pracownik = int(pracownik)
+#     except (ValueError, TypeError):
+#         pass
+#     try:
+#         labi = Labi.objects.get(id=pracownik)
+#         typ = 'labi'
+#         if labi.jednostka.pk == '1':
+#             typ = 'abi'
+#     except Labi.DoesNotExist:
+#         typ = ''
 
-    try:
-        Pracownik.objects.get(login=pracownik)
-        typ = 'pracownik'
-    except Pracownik.DoesNotExist:
-        typ = ''
-    return typ
+#     try:
+#         Pracownik.objects.get(login=pracownik)
+#         typ = 'pracownik'
+#     except Pracownik.DoesNotExist:
+#         typ = ''
+#     return typ
 
 
 def index(request):
@@ -41,13 +41,13 @@ def index(request):
     labi = False
     abi = False
 
-    typ = authenticate(request)
-    if typ == 'pracownik':
-        return redirect('user_index')
-    if typ == 'labi':
-        return redirect('admin_index')
-    if typ == 'abi':
-        return redirect('abi_index')
+    # typ = authenticate(request)
+    # if typ == 'pracownik':
+    #     return redirect('user_index')
+    # if typ == 'labi':
+    #     return redirect('admin_index')
+    # if typ == 'abi':
+    #     return redirect('abi_index')
 
     if request.method == 'POST':
         username = request.POST.get('username')
