@@ -85,23 +85,33 @@ def user_objects_available(request):
         )
         return redirect('index')
 
-    # bierzemy wszystko z pou
-
-    wnioski = Wniosek.objects.all()
-    wnioski_pracownika = []
-    for wniosek in wnioski:
-        for prac_wniosek in wniosek.pracownicy.all():
-            if prac_wniosek.pk == pracownik.pk:
-                if wniosek.typ == '1':
-                    wnioski_pracownika.append(wniosek)
-
-    obiekty_zatwierdzone = ZatwierdzonePrzezAS.objects.filter(
-        wniosek__in=wnioski_pracownika,
+    pou = PracownicyObiektyUprawnienia.objects.filter(
+        login=pracownik,
     )
+    obiekty_filter = pou.values('id_obiektu')
+    obiekty = Obiekt.objects.filter(id__in=obiekty_filter)
+
+    if request.method == 'POST':
+        nazwa_filter = request.POST.get('nazwa_filter')
+        if nazwa_filter:
+            obiekty = obiekty.filter(nazwa__icontains=nazwa_filter)
+    else:
+        nazwa_filter = ''
+
+    paginator = Paginator(obiekty, 10)
+    page = request.GET.get('page')
+    try:
+        obiekty = paginator.page(page)
+    except PageNotAnInteger:
+        obiekty = paginator.page(1)
+    except EmptyPage:
+        obiekty = paginator.page(paginator.num_pages)
 
     context = {
         'pracownik': pracownik,
-        'obiekty': obiekty_zatwierdzone,
+        'pou': pou,
+        'obiekty': obiekty,
+        'nazwa_filter': nazwa_filter,
     }
     return render(request, 'user_app/user_objects_available.html', context)
 
