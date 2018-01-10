@@ -1,0 +1,26 @@
+{% extends "wnioski/base_site/base_site.html" %}
+
+{% block title %}SODO{% endblock %}
+
+{% block content %}
+
+	<div class="row center">
+		<h3>Dodaj administratora obiektu</h3>
+	</div>
+
+	<div class="row">
+        <div class="col-md-6">
+            Pracownicy:<br>
+            {% for p in pracownicy %}
+                {{ p }}<br>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            Obiekty:<br>
+            {% for o in obiekty %}
+                {{ o.nazwa }}<br>
+            {% endfor %}
+        </div>
+	</div>
+        
+{% endblock %}

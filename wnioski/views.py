@@ -19,6 +19,7 @@ from .models import (
     TypObiektu,
     ZatwierdzonePrzezAS,
     PracownicyObiektyUprawnienia,
+    AdministratorObiektu,
 )
 from .forms import (
     ObiektFiltrowanieForm,
@@ -279,7 +280,7 @@ class PracownikListView(ListView):
 class PracownikDetailView(DetailView):
     model = Pracownik
     template_name = 'wnioski/pracownik/pracownik_detail.html'
-    context_object_name = 'pracownik'
+    context_object_name = 'prac'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -381,6 +382,25 @@ class RodzajPracownikaCreate(CreateView):
         return super().get(*args, **kwargs)
 
 
+def as_create(request):
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    pracownicy = Pracownik.objects.all()
+    obiekty = Obiekt.objects.all()
+    obiekty_labi = []
+    for o in obiekty:
+        if (get_labi(o.jedn_org.id)==pracownik):
+            obiekty_labi.append(o)
+    context = {
+        'pracownicy': pracownicy,
+        'obiekty': obiekty_labi,
+    }
+    return render(request, 'wnioski/as/as_create.html', context)
+
+
 def obiekt_list(request):
     if request.session['pracownik']:
         pracownik = Labi.objects.get(id=request.session['pracownik'])
@@ -436,6 +456,10 @@ def obiekt_detail(request, pk):
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
     obiekt = Obiekt.objects.get(pk=pk)
+    try:
+        as_obiekt = AdministratorObiektu.objects.get(obiekt=obiekt)
+    except AdministratorObiektu.DoesNotExist:
+        as_obiekt = None
     pou = PracownicyObiektyUprawnienia.objects.filter(
         id_obiektu=obiekt
     )
@@ -473,6 +497,7 @@ def obiekt_detail(request, pk):
         'form': form,
         'pracownicy': pracownicy,
         'jednostki': jednostki,
+        'as_obiekt' : as_obiekt,
     }
     return render(request, 'wnioski/obiekt/obiekt_detail.html', context)
 
