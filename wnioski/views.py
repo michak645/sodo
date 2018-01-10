@@ -19,6 +19,7 @@ from .models import (
 from .forms import (
     ObiektFiltrowanieForm,
     ObiektyFiltrowanieForm,
+    WniosekFiltrowanieForm
 )
 from auth_ex.models import (
     JednOrg,
@@ -90,20 +91,42 @@ def wnioski(request):
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
 
+    wnioski = Wniosek.objects.all().order_by('-data')
+
     if request.method == 'POST':
-        search = request.POST.get('search')
-        if search:
-            wnioski_list = Wniosek.objects.filter(
-                pracownik__nazwisko__icontains=search,
-            ).order_by('-data')
-        else:
-            wnioski_list = Wniosek.objects.all().order_by('-data')
+        form = WniosekFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = ObiektFiltrowanieForm()
+            else:
+                obiekt = form.cleaned_data['obiekt']
+                if obiekt:
+                    wnioski = wnioski.filter(
+                        obiekty__nazwa__icontains=obiekt
+                    )
+                jednostka = form.cleaned_data['jednostka']
+                if jednostka:
+                    wnioski = wnioski.filter(
+                        obiekty__jedn_org__nazwa__icontains=jednostka
+                    )
+                pracownik = form.cleaned_data['pracownik']
+                if pracownik:
+                    wnioski = wnioski.filter(
+                        pracownik__nazwisko__icontains=pracownik,
+                    )
+                # if form.cleaned_data['data']:
+                #     wnioski = wnioski.filter(
+                #         uprawnienia__in=form.cleaned_data['uprawnienia'],
+                #     )
+                uprawnienia = form.cleaned_data['uprawnienia']
+                if uprawnienia:
+                    wnioski = wnioski.filter(
+                        uprawnienia__in=form.cleaned_data['uprawnienia'],
+                    )
     else:
-        wnioski_list = Wniosek.objects.all().order_by('-data')
-        search = None
+        form = WniosekFiltrowanieForm()
 
-    paginator = Paginator(wnioski_list, 10)
-
+    paginator = Paginator(wnioski, 10)
     page = request.GET.get('page')
     try:
         wnioski = paginator.page(page)
@@ -113,7 +136,7 @@ def wnioski(request):
         wnioski = paginator.page(paginator.num_pages)
 
     context = {
-        'search': search,
+        'form': form,
         'pracownik': pracownik,
         'wnioski': wnioski,
     }

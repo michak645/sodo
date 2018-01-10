@@ -36,12 +36,12 @@
                     </thead>
                     <tbody>
                     {% for wniosek in wnioski %}
-                        <tr class="clickable-row" data-href="{% url 'abi_wniosek_detail' wniosek.wniosek.id %}">
+                        <tr>
                             <th>
                                 <input type="checkbox" name="decyzja" value="{{ wniosek.wniosek.id }}">
                             </th>
                             <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{ wniosek|truncatechars:"70" }}</td>
+                            <td class="clickable-row" data-href="{% url 'abi_wniosek_detail' wniosek.wniosek.id %}">{{ wniosek|truncatechars:"70" }}</td>
                             <td>{{ wniosek.wniosek.get_typ_display }}</td>
                             <td>{{ wniosek.get_status_display }}</td>
                             <td>{{ wniosek.data }}</td>
