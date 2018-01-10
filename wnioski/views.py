@@ -118,14 +118,14 @@ def wnioski(request):
                     wnioski = wnioski.filter(
                         pracownik__nazwisko__icontains=pracownik,
                     )
-                # if form.cleaned_data['data']:
-                #     wnioski = wnioski.filter(
-                #         uprawnienia__in=form.cleaned_data['uprawnienia'],
-                #     )
                 uprawnienia = form.cleaned_data['uprawnienia']
                 if uprawnienia:
                     wnioski = wnioski.filter(
-                        uprawnienia__in=form.cleaned_data['uprawnienia'],
+                        uprawnienia__icontains=uprawnienia,
+                    )
+                if form.cleaned_data['data']:
+                    wnioski = wnioski.filter(
+                        data__date=form.cleaned_data['data'],
                     )
     else:
         form = WniosekFiltrowanieForm()

@@ -89,8 +89,7 @@ class WniosekFiltrowanieForm(forms.Form):
     jednostka = forms.CharField(max_length=100, required=False)
     obiekt = forms.CharField(max_length=100, required=False)
     pracownik = forms.CharField(max_length=100, required=False)
-    uprawnienia = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
+    uprawnienia = forms.ChoiceField(
         choices=uprawnienia_choices,
         required=False,
     )

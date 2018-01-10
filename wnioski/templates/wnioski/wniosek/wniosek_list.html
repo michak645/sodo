@@ -32,12 +32,14 @@
                                     <input type="date" name="{{ form.data.html_name }}" {% if form.data.value %}value="{{ form.data.value }}"{% endif %}>
                                 </div>
                                 <div class="col-md-12">
-                                    {% for key, value in form.uprawnienia.field.choices %}
-                                        <div class="col-md-6">
-                                            <input id="uprawnienie{{ forloop.counter }}" type="checkbox" name="{{ form.uprawnienia.html_name }}" value="{{ key }}" {% if key in form.uprawnienia.value %}checked{% endif %}>
-                                            <label for="uprawnienie{{ forloop.counter }}">{{ value }}</label>
-                                        </div>
-                                    {% endfor %}
+                                    <select name="{{ form.uprawnienia.html_name }}">
+                                        <option value="">Uprawnienia</option>
+                                        {% for key, value in form.uprawnienia.field.choices %}
+                                            <option value="{{ key }}" {% if form.uprawnienia.value == key %}selected{% endif %}>
+                                                {{ value }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                                 <div class="col-md-12 center">
                                     <input type="submit" value="Filtruj" class="btn btn-primary">
