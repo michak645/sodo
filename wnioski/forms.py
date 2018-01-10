@@ -74,3 +74,24 @@ class ObiektyFiltrowanieForm(forms.Form):
     nazwa = forms.CharField(max_length=100, required=False)
     jednostka = forms.CharField(max_length=100, required=False)
     typ = forms.CharField(max_length=100, required=False)
+
+
+class WniosekFiltrowanieForm(forms.Form):
+    uprawnienia_choices = (
+        ('1', 'Wgląd'),
+        ('2', 'Tworzenie'),
+        ('3', 'Modyfikacja'),
+        ('4', 'Przetwarzanie na serwerze i w biurze'),
+        ('5', 'Przechowywanie'),
+        ('6', 'Usuwanie, niszczenie'),
+        ('7', 'Udostępnianie, powierzanie, przesyłanie'),
+    )
+    jednostka = forms.CharField(max_length=100, required=False)
+    obiekt = forms.CharField(max_length=100, required=False)
+    pracownik = forms.CharField(max_length=100, required=False)
+    uprawnienia = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        choices=uprawnienia_choices,
+        required=False,
+    )
+    data = forms.DateTimeField(required=False)

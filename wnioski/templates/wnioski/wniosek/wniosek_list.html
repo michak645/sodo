@@ -9,19 +9,46 @@
         <div class="col-md-2">
             <span class="title">Lista wniosków</span>
         </div>
-        <form method="post" action="">{% csrf_token %}
-            <div class="col-md-2">
-                <input type="text" name="search" placeholder="Wyszukaj pracownika" class="form-control">
-            </div>
-            <div class="col-md-1">
-                <input type="submit" value="Szukaj" class="btn">
-            </div>
-            {% if search %}
-                <div class="col-md-3 middle">
-                    <p>Wyszukiwana fraza: {{ search }}</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading center clickable" id="filtr">Filtruj</div>
+                <div class="panel-body" id="filtr-content" hidden>
+                    <form method="post" action="">{% csrf_token %}
+                        <div class="row">
+                            <form action="" method="post">{% csrf_token %}
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.obiekt.html_name }}" placeholder="Obiekt" {% if form.obiekt.value %}value="{{ form.obiekt.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.jednostka.html_name }}" placeholder="Szukaj jednostki" {% if form.jednostka.value %}value="{{ form.jednostka.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.pracownik.html_name }}" placeholder="Pracownik składający" {% if form.pracownik.value %}value="{{ form.pracownik.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="date" name="{{ form.data.html_name }}" {% if form.data.value %}value="{{ form.data.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-12">
+                                    {% for key, value in form.uprawnienia.field.choices %}
+                                        <div class="col-md-6">
+                                            <input id="uprawnienie{{ forloop.counter }}" type="checkbox" name="{{ form.uprawnienia.html_name }}" value="{{ key }}" {% if key in form.uprawnienia.value %}checked{% endif %}>
+                                            <label for="uprawnienie{{ forloop.counter }}">{{ value }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-12 center">
+                                    <input type="submit" value="Filtruj" class="btn btn-primary">
+                                    <input type="submit" name="clear" value="Wyczyść filtr" class="btn btn-primary">
+                                </div>
+                            </form>
+                        </div>
+                    </form>
                 </div>
-            {% endif %}
-        </form>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -43,10 +70,10 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ wniosek.pracownik }}</td>
                         <td>{{ wniosek.get_typ_display }}</td>
-                        <td>{{ wniosek.get_uprawnienia_display }}</td>
+                        <td>{{ wniosek.get_uprawnienia_display|truncatechars:"60" }}</td>
                         <td>
                             {% for obiekt in wniosek.obiekty.all %}
-                                {{ obiekt }}<br>
+                                {{ obiekt }}
                             {% endfor %}
                         </td>
                         <td>{{ wniosek.data }}</td>
@@ -63,6 +90,12 @@
         $(document).ready(function($) {
             $(".clickable-row").click(function() {
                 window.location = $(this).data("href");
+            });
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+            $("#filtr").on("click", function(){
+                $("#filtr-content").fadeToggle();
             });
         });
     </script>

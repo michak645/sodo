@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        {% if status_int == '1' %}        
+        {% if historia.0.status == '1' %}        
             <div class="row">
                 <form action="{% url 'labi_wniosek_detail' wniosek.pk %}" method="post">
                     {% csrf_token %}
@@ -137,21 +137,6 @@
         {% endif %}
 
     </div>
-
-    {% comment %}
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('#pracownicy').on('click', function(){
-                $('#pracownicy').hide();
-                $('#collapseExample').show()
-            });
-            $('#collapseExample').on('click', function(){
-                $('#pracownicy').show();
-                $('#collapseExample').hide()
-            });
-        });
-    </script>
-    {% endcomment %}
 
     <script type="text/javascript">
         $(document).ready(function(){
