@@ -395,16 +395,30 @@ def as_create(request):
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
     pracownicy = Pracownik.objects.all()
-    obiekty = Obiekt.objects.all()
-    obiekty_labi = []
-    for o in obiekty:
-        if (get_labi(o.jedn_org.id) == pracownik):
-            obiekty_labi.append(o)
+    obiekty_z_as = AdministratorObiektu.objects.values('obiekt')
+    obiekty = Obiekt.objects.exclude(id__in=obiekty_z_as)
 
     obiekt = None
     prac = None
 
     if request.method == 'POST':
+        if request.POST.get('szukaj'):
+            if request.POST.get('szukaj_obiektu'):
+                obiekty = obiekty.filter(
+                    nazwa__icontains=request.POST.get('szukaj_obiektu')
+                )
+            if request.POST.get('szukaj_pracownika'):
+                pracownicy = pracownicy.filter(
+                    nazwisko__icontains=request.POST.get('szukaj_pracownika')
+                )
+            if request.POST.get('wybrany_prac'):
+                prac = Pracownik.objects.get(
+                    pk=request.POST.get('wybrany_prac'),
+                )
+            if request.POST.get('wybrany_obiekt'):
+                obiekt = Obiekt.objects.get(
+                    id=request.POST.get('wybrany_obiekt'),
+                )
         if request.POST.get('add_obiekt'):
             obiekt = Obiekt.objects.get(
                 id=request.POST.get('obiekt'),
@@ -442,6 +456,30 @@ def as_create(request):
                 return redirect('admin_index')
             else:
                 messages.error(request, 'błąd')
+
+    paginator = Paginator(pracownicy, 10)
+    page = request.GET.get('page')
+    try:
+        pracownicy = paginator.page(page)
+    except PageNotAnInteger:
+        pracownicy = paginator.page(1)
+    except EmptyPage:
+        pracownicy = paginator.page(paginator.num_pages)
+
+    obiekty_labi = []
+    for o in obiekty:
+        if (get_labi(o.jedn_org.id) == pracownik):
+            obiekty_labi.append(o)
+
+    paginator = Paginator(obiekty_labi, 10)
+    page = request.GET.get('page')
+    try:
+        obiekty_labi = paginator.page(page)
+    except PageNotAnInteger:
+        obiekty_labi = paginator.page(1)
+    except EmptyPage:
+        obiekty_labi = paginator.page(paginator.num_pages)
+
     context = {
         'pracownicy': pracownicy,
         'obiekty': obiekty_labi,
