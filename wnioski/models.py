@@ -138,6 +138,12 @@ class Wniosek(models.Model):
             pracownik=self.pracownik,
         )
 
+    def get_obiekty(self):
+        obiekty = ', '.join(
+            [str(o) for o in self.obiekty.all()]
+        )
+        return obiekty
+
 
 class Historia(models.Model):
     CHOICES_LIST = (
