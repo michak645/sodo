@@ -151,3 +151,6 @@ hr {
     border: none;
     text-decoration: underline;
 }
+.disabled {
+    pointer-events:none;
+}

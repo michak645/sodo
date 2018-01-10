@@ -9,18 +9,46 @@
 	</div>
 
 	<div class="row">
-        <div class="col-md-6">
-            Pracownicy:<br>
-            {% for p in pracownicy %}
-                {{ p }}<br>
-            {% endfor %}
-        </div>
-        <div class="col-md-6">
-            Obiekty:<br>
-            {% for o in obiekty %}
-                {{ o.nazwa }}<br>
-            {% endfor %}
+        <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-6">
+                <h4>Obiekty:</h4>
+                <p>Wybrany : {% if obiekt %}{{ obiekt }}{% else %}Brak{% endif %}</p>
+                <ol>
+                    {% for o in obiekty %}
+                        <li >
+                            <form method="post" action="">{% csrf_token %}
+                                <input type="checkbox" name="add_obiekt" value="True" checked hidden>
+                                <input type="checkbox" name="wybrany_prac" value="{{ prac.pk }}" checked hidden>
+                                <input type="text" value="{{ o.id }}" name="obiekt" hidden>
+                                <input class="lista-linkow" type="submit" value="{{ o }}">
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="col-md-6">
+                <h4>Pracownicy:</h4>
+                <p>Wybrany : {% if prac %}{{ prac }}{% else %}Brak{% endif %}</p>
+                <ol>
+                    {% for p in pracownicy %}
+                        <li >
+                            <form method="post" action="">{% csrf_token %}
+                                <input type="checkbox" name="add_prac" value="True" checked hidden>
+                                <input type="checkbox" name="wybrany_obiekt" value="{{ obiekt.id }}" checked hidden>
+                                <input type="text" value="{{ p.pk }}" name="prac" hidden>
+                                <input class="lista-linkow" type="submit" value="{{ p }}">
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="col-md-12 center">
+                <form method="post" action="">{% csrf_token %}
+                    <input type="checkbox" name="wybrany_obiekt" value="{{ obiekt.id }}" checked hidden>
+                    <input type="checkbox" name="wybrany_prac" value="{{ prac.pk }}" checked hidden>
+                    <input type="submit" name="zapisz" value="Zapisz" class="btn btn-success">
+                </form>
+            </div>
         </div>
 	</div>
-        
 {% endblock %}

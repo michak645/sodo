@@ -27,6 +27,7 @@ from .forms import (
     WniosekFiltrowanieForm,
     PracownicyFiltrowanieForm,
     JednostkiFiltrowanieForm,
+    AdministratorObiektuForm,
 )
 from auth_ex.models import (
     JednOrg,
@@ -397,11 +398,55 @@ def as_create(request):
     obiekty = Obiekt.objects.all()
     obiekty_labi = []
     for o in obiekty:
-        if (get_labi(o.jedn_org.id)==pracownik):
+        if (get_labi(o.jedn_org.id) == pracownik):
             obiekty_labi.append(o)
+
+    obiekt = None
+    prac = None
+
+    if request.method == 'POST':
+        if request.POST.get('add_obiekt'):
+            obiekt = Obiekt.objects.get(
+                id=request.POST.get('obiekt'),
+            )
+            if request.POST.get('wybrany_prac'):
+                prac = Pracownik.objects.get(
+                    pk=request.POST.get('wybrany_prac'),
+                )
+        if request.POST.get('add_prac'):
+            prac = Pracownik.objects.get(
+                pk=request.POST.get('prac'),
+            )
+            if request.POST.get('wybrany_obiekt'):
+                obiekt = Obiekt.objects.get(
+                    id=request.POST.get('wybrany_obiekt'),
+                )
+        if request.POST.get('zapisz'):
+            obiekt = request.POST.get('wybrany_obiekt')
+            prac = request.POST.get('wybrany_prac')
+            if obiekt and prac:
+                obiekt = Obiekt.objects.get(
+                    id=obiekt,
+                )
+                prac = Pracownik.objects.get(
+                    pk=prac,
+                )
+                AdministratorObiektu.objects.create(
+                    pracownik=prac,
+                    obiekt=obiekt,
+                )
+                messages.success(
+                    request,
+                    'Pomyslnie dodano administratora systemu'
+                )
+                return redirect('admin_index')
+            else:
+                messages.error(request, 'błąd')
     context = {
         'pracownicy': pracownicy,
         'obiekty': obiekty_labi,
+        'obiekt': obiekt,
+        'prac': prac,
     }
     return render(request, 'wnioski/as/as_create.html', context)
 
@@ -502,7 +547,7 @@ def obiekt_detail(request, pk):
         'form': form,
         'pracownicy': pracownicy,
         'jednostki': jednostki,
-        'as_obiekt' : as_obiekt,
+        'as_obiekt': as_obiekt,
     }
     return render(request, 'wnioski/obiekt/obiekt_detail.html', context)
 

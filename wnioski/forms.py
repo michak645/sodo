@@ -1,5 +1,8 @@
 from django.forms import ModelForm
-from .models import Wniosek, Obiekt, TypObiektu
+from .models import (
+    Wniosek, Obiekt, TypObiektu,
+    AdministratorObiektu
+)
 from django import forms
 from auth_ex.models import RodzajPracownika
 
@@ -111,3 +114,9 @@ class WniosekFiltrowanieForm(forms.Form):
         required=False,
     )
     data = forms.DateTimeField(required=False)
+
+
+class AdministratorObiektuForm(ModelForm):
+    class Meta:
+        model = AdministratorObiektu
+        fields = ('pracownik', 'obiekt',)
