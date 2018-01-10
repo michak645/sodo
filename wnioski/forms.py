@@ -114,9 +114,3 @@ class WniosekFiltrowanieForm(forms.Form):
         required=False,
     )
     data = forms.DateTimeField(required=False)
-
-
-class AdministratorObiektuForm(ModelForm):
-    class Meta:
-        model = AdministratorObiektu
-        fields = ('pracownik', 'obiekt',)
