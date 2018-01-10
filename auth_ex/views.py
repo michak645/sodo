@@ -13,47 +13,78 @@ def find_labi(jedn):
         return find_labi(jednostka.parent.id)
 
 
+def authenticate(request):
+    pracownik = request.session['pracownik']
+    typ = ''
+    try:
+        pracownik = int(pracownik)
+    except (ValueError, TypeError):
+        pass
+    try:
+        labi = Labi.objects.get(id=pracownik)
+        typ = 'labi'
+        if labi.jednostka.pk == '1':
+            typ = 'abi'
+    except Labi.DoesNotExist:
+        typ = ''
+
+    try:
+        Pracownik.objects.get(login=pracownik)
+        typ = 'pracownik'
+    except Pracownik.DoesNotExist:
+        typ = ''
+    return typ
+
+
 def index(request):
-    # try:
-    #     Pracownik.objects.get(
-    #         login=request.session['pracownik']
-    #     )
-    #     return redirect('user_index')
-    # except Pracownik.DoesNotExist:
-    #     pass
-    # try:
-    #     labi = Labi.objects.get(
-    #         id=request.session['pracownik']
-    #     )
-    #     if labi.jednostka == '1':
-    #         return redirect('abi_index')
-    #     else:
-    #         return redirect('admin_index')
-    # except Labi.DoesNotExist:
-    #     pass
+    prac = False
+    labi = False
+    abi = False
+
+    typ = authenticate(request)
+    if typ == 'pracownik':
+        return redirect('user_index')
+    if typ == 'labi':
+        return redirect('admin_index')
+    if typ == 'abi':
+        return redirect('abi_index')
 
     if request.method == 'POST':
-        login = request.POST.get('login')
-        try:
-            admin = Labi.objects.get(login=login)
-            request.session['pracownik'] = admin.id
-        except Labi.DoesNotExist:
-            admin = None
-        if admin is None:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        if username and password:
             try:
-                pracownik = Pracownik.objects.get(login=login)
-                request.session['pracownik'] = pracownik.login
+                pracownik = Pracownik.objects.get(
+                    login=username,
+                    password=password,
+                    czy_user=True,
+                )
+                prac = True
+                request.session['pracownik'] = pracownik.pk
             except Pracownik.DoesNotExist:
-                admin = None
                 pracownik = None
+                prac = False
+                messages.error(request, 'Błędne dane logowania')
 
-        if admin:
-            if admin.jednostka.id == '1':
-                return redirect('abi_index')
-            return redirect('admin_index')
-        elif pracownik:
-            return redirect('user_index')
+            if pracownik:
+                try:
+                    pracownik = Labi.objects.get(login=pracownik)
+                    labi = True
+                    request.session['pracownik'] = pracownik.pk
+                except Labi.DoesNotExist:
+                    labi = False
+                if labi:
+                    if pracownik.jednostka == '1':
+                        abi = True
+                        request.session['pracownik'] = pracownik.pk
+                    else:
+                        abi = False
+                if abi:
+                    return redirect('abi_index')
+                elif labi:
+                    return redirect('admin_index')
+                elif prac:
+                    return redirect('user_index')
         else:
             messages.error(request, 'Błąd logowania')
-            return redirect('index')
     return render(request, 'auth_ex/index.html')

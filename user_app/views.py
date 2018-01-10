@@ -20,6 +20,21 @@ from wnioski.models import (
 )
 
 
+def authenticate(request):
+    pracownik = request.session['pracownik']
+    try:
+        pracownik = Pracownik.objects.get(pk=pracownik)
+    except Pracownik.DoesNotExist:
+        pracownik = None
+    if pracownik:
+        try:
+            Labi.objects.get(login=pracownik)
+            pracownik = None
+        except Labi.DoesNotExist:
+            return pracownik
+    return pracownik
+
+
 def logout(request):
     pracownik = request.session['pracownik']
     if pracownik:
@@ -32,11 +47,14 @@ def get_latest_history(wniosek_id):
 
 
 def user_index(request):
-    if request.session['pracownik']:
-        pracownik = Pracownik.objects.get(login=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
         return redirect('index')
+
     wnioski = Wniosek.objects.filter(pracownik=pracownik)
     historia = []
     for wniosek in wnioski:

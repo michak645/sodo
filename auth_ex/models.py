@@ -1,6 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
+from django.core.exceptions import ValidationError
 # from wnioski.models import Obiekt
 
 '''
@@ -45,6 +46,8 @@ class RodzajPracownika(models.Model):
 class Pracownik(models.Model):
     login = models.CharField(
         'Login', primary_key=True, max_length=15, unique=True)
+    password = models.CharField(
+        'Haslo', max_length=30, null=True, blank=True)
     imie = models.CharField('Imie', max_length=90)
     nazwisko = models.CharField('Nazwisko', max_length=90)
     email = models.EmailField('Email', max_length=60)
@@ -60,12 +63,17 @@ class Pracownik(models.Model):
         JednOrg, related_name='+', null=True, on_delete=models.CASCADE)
     numer_ax = models.CharField(max_length=6, unique=True, null=True)
     czy_aktywny = models.BooleanField(default=True)
+    czy_user = models.BooleanField(default=False)
 
     def __str__(self):
         return '{} {}'.format(self.imie, self.nazwisko)
 
     def name(self):
         return '{} {}'.format(self.imie, self.nazwisko)
+
+    def clean(self):
+        if self.czy_user and not self.password:
+            raise ValidationError('Password is required')
 
 
 class Labi(models.Model):
