@@ -1,4 +1,5 @@
 {% extends 'abi_app/base_site/base_site.html' %}
+{% load bootstrap_pagination %}
 
 {% block content %}
 
@@ -28,20 +29,8 @@
                             </li>
                         {% endfor %}
                     </ol>
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if jednostki.has_previous %}
-                                <a href="?page={{ jednostki.previous_page_number }}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
-                            </span>
-
-                            {% if jednostki.has_next %}
-                                <a href="?page={{ jednostki.next_page_number }}">next</a>
-                            {% endif %}
-                        </span>
+                    <div class="center">
+                        {% bootstrap_paginate jednostki range=3 show_prev_next="true" show_first_last="true" centered="true" %}
                     </div>
                 </div>
             </form>
@@ -51,7 +40,12 @@
             <form method="post" action="">{% csrf_token %}
                 <input type="text" name="szukaj-obiektu" placeholder="Szukaj obiektu">
                 <input type="text" value="{{ wybrana_jednostka.id }}" name="wybrana-jednostka" hidden>
-                <input type="submit" value="Szukaj">
+                <input type="submit" value="Szukaj"><br>
+                <input type="checkbox" name="szukaj_wszedzie" value="True">
+                <label>Wszędzie</label>
+                {% if not wszedzie %}
+                    <input class="btn-link" type="submit" name="dodaj_wszystkie" value="Dodaj wszystkie">
+                {% endif %}
             </form>
             {% if obj_list %}
                 <ol>
@@ -67,26 +61,14 @@
                         </form>
                     {% endfor %}
                 </ol>
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if obj_list.has_previous %}
-                            <a href="?page_obiekt={{ obj_list.previous_page_number }}">previous</a>
-                        {% endif %}
-
-                        <span class="current">
-                            Page {{ obj_list.number }} of {{ obj_list.paginator.num_pages }}.
-                        </span>
-
-                        {% if obj_list.has_next %}
-                            <a href="?page_obiekt={{ obj_list.next_page_number }}">next</a>
-                        {% endif %}
-                    </span>
+                <div class="center">
+                    {% bootstrap_paginate obj_list range=3 show_prev_next="true" show_first_last="true" centered="true" %}
                 </div>
             {% else%}
                 <p>Nie ma przypisanych obiektów do tej jednostki</p>
             {% endif %}
         </div>
-    	
+
     	<div class="col-md-4">
         	<h4>
                 <span class="left">III. Wybrane obiekty</span>
@@ -97,17 +79,22 @@
             </h4>
             <div class="clearfix"></div>
             <ol>
-        		{% for obj in objs_cart %}
-                    <li>
-         				<form method="post" action="">{% csrf_token %}
-        					<input type="text" value="{{ obj.id }}" name="obj" hidden>
-        					<input type="checkbox" name="delete" value="True" checked hidden>
-        					<input class="lista-linkow" type="submit" value="{{ obj }}">
-        				</form>
-                    </li>
-                {% empty %}
+                {% if objs_cart %}
+            		{% for obj in objs_cart %}
+                        <li>
+             				<form method="post" action="">{% csrf_token %}
+            					<input type="text" value="{{ obj.id }}" name="obj" hidden>
+            					<input type="checkbox" name="delete" value="True" checked hidden>
+            					<input class="lista-linkow" type="submit" value="{{ obj }}">
+            				</form>
+                        </li>
+                    {% endfor %}
+                    <div class="center">
+                        {% bootstrap_paginate objs_cart range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+                    </div>
+                {% else %}
      			    <p>Brak</p>
-                {% endfor %}
+                {% endif %}
             </ol>
     	</div>
     </div>

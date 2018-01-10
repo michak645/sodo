@@ -371,6 +371,7 @@ def step_one(request):
     obj_list = None
     jednostka = None
     jednostki = JednOrg.objects.all().order_by('nazwa')
+    wszedzie = False
 
     if request.method == 'POST':
         obj = request.POST.get('obj')
@@ -383,15 +384,23 @@ def step_one(request):
         szukaj_obiektu = request.POST.get('szukaj-obiektu')
         if szukaj_obiektu:
             jednostka = request.POST.get('wybrana-jednostka')
-            if jednostka:
-                jednostka = JednOrg.objects.get(id=jednostka)
+            if request.POST.get('szukaj_wszedzie'):
+                obj_list = Obiekt.objects.filter(
+                    nazwa__icontains=szukaj_obiektu,
+                    czy_aktywny=True
+                )
+                wszedzie = True
             else:
-                messages.warning(request, 'Najpierw wybierz jednostkę')
-            obj_list = Obiekt.objects.filter(
-                jedn_org=jednostka,
-                nazwa__icontains=szukaj_obiektu,
-                czy_aktywny=True
-            )
+                if jednostka:
+                    jednostka = JednOrg.objects.get(id=jednostka)
+                else:
+                    messages.warning(request, 'Najpierw wybierz jednostkę')
+                obj_list = Obiekt.objects.filter(
+                    jedn_org=jednostka,
+                    nazwa__icontains=szukaj_obiektu,
+                    czy_aktywny=True
+                )
+                wszedzie = False
 
         if request.POST.get('clear'):
             cart.obiekty.clear()
@@ -402,11 +411,12 @@ def step_one(request):
         if request.POST.get('add'):
             cart.obiekty.add(Obiekt.objects.get(id=obj))
             jednostka = request.POST.get('jednostka')
-            obj_list = Obiekt.objects.filter(
-                jedn_org=jednostka,
-                czy_aktywny=True
-            )
-            jednostka = JednOrg.objects.get(id=jednostka)
+            if jednostka:
+                obj_list = Obiekt.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
+                jednostka = JednOrg.objects.get(id=jednostka)
 
         if request.POST.get('show'):
             jednostka = request.POST.get('jednostka')
@@ -416,6 +426,23 @@ def step_one(request):
             )
             jednostka = JednOrg.objects.get(id=jednostka)
 
+        if request.POST.get('dodaj_wszystkie'):
+            jednostka = request.POST.get('wybrana-jednostka')
+            if jednostka:
+                obj_list = Obiekt.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
+                obiekty = Obiekt.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
+                for obiekt in obiekty:
+                    cart.obiekty.add(obiekt)
+                obj_list = Obiekt.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
         if obj_list:
             paginator = Paginator(obj_list, 10)
             page = request.GET.get('page_obiekt')
@@ -435,12 +462,23 @@ def step_one(request):
     except EmptyPage:
         jednostki = paginator.page(paginator.num_pages)
 
+    objs_cart = cart.obiekty.all()
+    paginator = Paginator(objs_cart, 10)
+    page = request.GET.get('page')
+    try:
+        objs_cart = paginator.page(page)
+    except PageNotAnInteger:
+        objs_cart = paginator.page(1)
+    except EmptyPage:
+        objs_cart = paginator.page(paginator.num_pages)
+
     context = {
         'wybrana_jednostka': jednostka,
         'jednostki': jednostki,
         'obj_list': obj_list,
         'pracownik': pracownik,
-        'objs_cart': cart.obiekty.all(),
+        'objs_cart': objs_cart,
+        'wszedzie': wszedzie,
     }
     return render(request, 'user_app/wizard/step_one.html', context)
 
@@ -457,6 +495,7 @@ def step_two(request):
     prac_list = None
     jednostka = None
     jednostki = JednOrg.objects.all().order_by('nazwa')
+    wszedzie = False
 
     if request.method == 'POST':
         prac = request.POST.get('prac')
@@ -470,15 +509,23 @@ def step_two(request):
         szukaj_pracownika = request.POST.get('szukaj-pracownika')
         if szukaj_pracownika:
             jednostka = request.POST.get('wybrana-jednostka')
-            if jednostka:
-                jednostka = JednOrg.objects.get(id=jednostka)
+            if request.POST.get('szukaj_wszedzie'):
+                prac_list = Pracownik.objects.filter(
+                    nazwisko__icontains=szukaj_pracownika,
+                    czy_aktywny=True
+                )
+                wszedzie = True
             else:
-                messages.warning(request, 'Najpierw wybierz jednostkę')
-            prac_list = Pracownik.objects.filter(
-                jedn_org=jednostka,
-                nazwisko__icontains=szukaj_pracownika,
-                czy_aktywny=True,
-            )
+                if jednostka:
+                    jednostka = JednOrg.objects.get(id=jednostka)
+                else:
+                    messages.warning(request, 'Najpierw wybierz jednostkę')
+                prac_list = Pracownik.objects.filter(
+                    jedn_org=jednostka,
+                    nazwisko__icontains=szukaj_pracownika,
+                    czy_aktywny=True,
+                )
+                wszedzie = False
 
         if request.POST.get('clear'):
             cart.pracownicy.clear()
@@ -489,11 +536,12 @@ def step_two(request):
         if request.POST.get('add'):
             cart.pracownicy.add(Pracownik.objects.get(login=prac))
             jednostka = request.POST.get('jednostka')
-            prac_list = Pracownik.objects.filter(
-                jedn_org=jednostka,
-                czy_aktywny=True,
-            )
-            jednostka = JednOrg.objects.get(id=jednostka)
+            if jednostka:
+                prac_list = Pracownik.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True,
+                )
+                jednostka = JednOrg.objects.get(id=jednostka)
 
         if request.POST.get('show'):
             jednostka = request.POST.get('jednostka')
@@ -502,6 +550,24 @@ def step_two(request):
                 czy_aktywny=True,
             )
             jednostka = JednOrg.objects.get(id=jednostka)
+
+        if request.POST.get('dodaj_wszystkie'):
+            jednostka = request.POST.get('wybrana-jednostka')
+            if jednostka:
+                prac_list = Pracownik.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
+                pracownicy_temp = Pracownik.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
+                for pracownik in pracownicy_temp:
+                    cart.pracownicy.add(pracownik)
+                prac_list = Pracownik.objects.filter(
+                    jedn_org=jednostka,
+                    czy_aktywny=True
+                )
 
         if prac_list:
             paginator = Paginator(prac_list, 10)
@@ -522,12 +588,23 @@ def step_two(request):
     except EmptyPage:
         jednostki = paginator.page(paginator.num_pages)
 
+    prac_cart = cart.pracownicy.all()
+    paginator = Paginator(prac_cart, 10)
+    page = request.GET.get('page')
+    try:
+        prac_cart = paginator.page(page)
+    except PageNotAnInteger:
+        prac_cart = paginator.page(1)
+    except EmptyPage:
+        prac_cart = paginator.page(paginator.num_pages)
+
     context = {
         'wybrana_jednostka': jednostka,
         'jednostki': jednostki,
         'pracownik': pracownik,
         'prac_list': prac_list,
-        'prac_cart': cart.pracownicy.all(),
+        'prac_cart': prac_cart,
+        'wszedzie': wszedzie,
     }
     return render(request, 'user_app/wizard/step_two.html', context)
 
@@ -555,7 +632,6 @@ def step_three(request):
             )
             if pou:
                 pracownicy[pracownik] = pou
-        print(pracownicy)
         obiekty[obiekt] = pracownicy
 
     if request.method == 'POST':
@@ -564,7 +640,7 @@ def step_three(request):
             cart.uprawnienia = form.cleaned_data['uprawnienia']
             cart.typ_wniosku = form.cleaned_data['typ_wniosku']
             cart.save()
-            return HttpResponseRedirect('/wizard/step_four')
+            return redirect('step_four')
         else:
             messages.error(request, 'Wypełnij poprawnie formularz')
     else:
@@ -590,7 +666,6 @@ def step_three(request):
         'obiekty': obiekty,
     }
     return render(request, 'user_app/wizard/step_three.html', context)
-
 
 def get_labi(jedn):
     try:
@@ -640,14 +715,28 @@ def step_four(request):
                 pracownik=pracownik,
                 uprawnienia=cart.uprawnienia,
             )
-            for pracownik in cart.pracownicy.all():
-                w.pracownicy.add(pracownik)
+            for prac_temp in cart.pracownicy.all():
+                w.pracownicy.add(prac_temp)
             for obiekt in wniosek['obiekty']:
                 w.obiekty.add(obiekt)
             komentarz_id = 'komentarz' + str(wniosek['labi'].id)
             komentarz = request.POST.get(komentarz_id)
             w.komentarz = komentarz
             w.save()
+            ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
+            subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
+            message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
+                'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
+                'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
+                'Wiadomość wygenerowana automatycznie.'
+            send_addr = w.pracownik.email
+            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+            html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
+            out = BytesIO()
+            weasyprint.HTML(string=html).write_pdf(out)
+            email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
+            email.send()
+            '''
         cart.delete()
         return HttpResponseRedirect('/user_index')
     context = {

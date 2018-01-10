@@ -1,4 +1,5 @@
 {% extends 'abi_app/base_site/base_site.html' %}
+{% load bootstrap_pagination %}
 
 {% block content %}
 
@@ -10,7 +11,7 @@
         <h3>Wybierz pracowników</h3>
         <hr>
         <div class="col-md-4">
-            <h4>1. Wybierz jednostkę</h4>
+            <h4>I. Wybierz jednostkę</h4>
             <form method="post" action="">{% csrf_token %}
                 <input type="text" name="szukaj-jednostki" placeholder="Szukaj jednostki">
                 <input type="submit" value="Szukaj">
@@ -28,21 +29,9 @@
                             </li>
                         {% endfor %}
                     </ol>
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if jednostki.has_previous %}
-                                <a href="?page={{ jednostki.previous_page_number }}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ jednostki.number }} of {{ jednostki.paginator.num_pages }}.
-                            </span>
-
-                            {% if jednostki.has_next %}
-                                <a href="?page={{ jednostki.next_page_number }}">next</a>
-                            {% endif %}
-                        </span>
-                    </div>
+                <div class="center">
+                    {% bootstrap_paginate jednostki range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+                </div>
                 </div>
             </form>
         </div>
@@ -51,7 +40,12 @@
             <form method="post" action="">{% csrf_token %}
                 <input type="text" name="szukaj-pracownika" placeholder="Szukaj pracownika">
                 <input type="text" value="{{ wybrana_jednostka.id }}" name="wybrana-jednostka" hidden>
-                <input type="submit" value="Szukaj">
+                <input type="submit" value="Szukaj"><br>
+                <input type="checkbox" name="szukaj_wszedzie" value="True">
+                <label>Wszędzie</label>
+                {% if not wszedzie %}
+                    <input class="btn-link" type="submit" name="dodaj_wszystkie" value="Dodaj wszystkie">
+                {% endif %}
             </form>
             {% if prac_list %}
                 <ol>
@@ -66,20 +60,8 @@
                         </li>
                     {% endfor %}
                 </ol>
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if prac_list.has_previous %}
-                            <a href="?page_obiekt={{ prac_list.previous_page_number }}">previous</a>
-                        {% endif %}
-
-                        <span class="current">
-                            Page {{ prac_list.number }} of {{ prac_list.paginator.num_pages }}.
-                        </span>
-
-                        {% if prac_list.has_next %}
-                            <a href="?page_obiekt={{ prac_list.next_page_number }}">next</a>
-                        {% endif %}
-                    </span>
+                <div class="center">
+                    {% bootstrap_paginate prac_list range=3 show_prev_next="true" show_first_last="true" centered="true" %}
                 </div>
             {% else %}
                 <p>Nie ma pracowników w tej jednostce</p>
@@ -97,17 +79,23 @@
             </h4>
             <div class="clearfix"></div>
             <ol>
-                {% for prac in prac_cart %}
-                    <li>
-                        <form method="post" action="">{% csrf_token %}
-                            <input type="text" value="{{ prac.login }}" name="prac" hidden>
-                            <input type="checkbox" name="delete" value="True" checked hidden>
-                            <input class="lista-linkow" type="submit" value="{{ prac }}">
-                        </form>
-                    </li>
-                {% empty %}
+                {% if prac_cart %}
+                    {% for prac in prac_cart %}
+                        <li>
+                            <form method="post" action="">{% csrf_token %}
+                                <input type="text" value="{{ prac.login }}" name="prac" hidden>
+                                <input type="checkbox" name="delete" value="True" checked hidden>
+                                <input class="lista-linkow" type="submit" value="{{ prac }}">
+                            </form>
+                        </li>
+                    {% endfor %}
+                    <div class="center">
+                        {% bootstrap_paginate prac_cart range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+                    </div>
+                {% else %}
                     <p>Brak</p>
-                {% endfor %}
+                {% endif %}
+            </ol>
             </ol>
         </div>
     </div>
