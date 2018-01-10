@@ -25,6 +25,7 @@ from .forms import (
     ObiektyFiltrowanieForm,
     WniosekFiltrowanieForm,
     PracownicyFiltrowanieForm,
+    JednostkiFiltrowanieForm,
 )
 from auth_ex.models import (
     JednOrg,
@@ -533,56 +534,53 @@ class ObiektTypCreate(CreateView):
         return super().get(*args, **kwargs)
 
 
-class JednostkaListView(ListView):
-    model = JednOrg
-    template_name = 'wnioski/jednostka/jednostka_list.html'
-    context_object_name = 'jednostki'
+def jednostka_list(request):
+    if request.session['pracownik']:
+        pracownik = Labi.objects.get(id=request.session['pracownik'])
+    else:
+        messages.warning(request, 'Musisz się najpierw zalogować')
+        return redirect('index')
+    jednostki = JednOrg.objects.all().order_by('nazwa')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.session['pracownik']:
-            pracownik = Labi.objects.get(
-                id=self.request.session['pracownik']
-            )
-            context['pracownik'] = pracownik
-        paginator = Paginator(self.get_queryset(), 10)
-        page = self.request.GET.get('page')
-        try:
-            jednostki = paginator.page(page)
-        except PageNotAnInteger:
-            jednostki = paginator.page(1)
-        except EmptyPage:
-            jednostki = paginator.page(paginator.num_pages)
-        context['jednostki'] = jednostki
-        return context
+    if request.method == 'POST':
+        form = JednostkiFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = ObiektFiltrowanieForm()
+            else:
+                nazwa = form.cleaned_data['nazwa']
+                if nazwa:
+                    jednostki = jednostki.filter(
+                        nazwa__icontains=nazwa
+                    )
+                czy_labi = form.cleaned_data['czy_labi']
+                if czy_labi:
+                    jednostki = jednostki.filter(
+                        czy_labi=czy_labi
+                    )
+                parent = form.cleaned_data['parent']
+                if parent:
+                    jednostki = jednostki.filter(
+                        parent__nazwa__icontains=parent,
+                    )
+    else:
+        form = JednostkiFiltrowanieForm()
 
-    def post(self, request, *args, **kwargs):
-        search = request.POST.get('search')
-        if search:
-            jednostki = self.get_queryset(). \
-                filter(nazwa__icontains=search)
-        else:
-            jednostki = self.get_queryset()
+    paginator = Paginator(jednostki, 10)
+    page = request.GET.get('page')
+    try:
+        jednostki = paginator.page(page)
+    except PageNotAnInteger:
+        jednostki = paginator.page(1)
+    except EmptyPage:
+        jednostki = paginator.page(paginator.num_pages)
 
-        paginator = Paginator(jednostki, 10)
-        page = self.request.GET.get('page')
-        try:
-            jednostki = paginator.page(page)
-        except PageNotAnInteger:
-            jednostki = paginator.page(1)
-        except EmptyPage:
-            jednostki = paginator.page(paginator.num_pages)
-        context = {
-            'jednostki': jednostki,
-            'search': search,
-        }
-        return render(request, self.template_name, context)
-
-    def get(self, *args, **kwargs):
-        if not self.request.session['pracownik']:
-            messages.warning(self.request, 'Musisz się najpierw zalogować')
-            return redirect('index')
-        return super().get(*args, **kwargs)
+    context = {
+        'pracownik': pracownik,
+        'jednostki': jednostki,
+        'form': form,
+    }
+    return render(request, 'wnioski/jednostka/jednostka_list.html', context)
 
 
 class JednostkaDetailView(DetailView):

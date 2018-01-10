@@ -1,5 +1,5 @@
 {% extends "wnioski/base_site/base_site.html" %}
-{% load bootstrap_pagination %}
+{% load bootstrap_pagination static %}
 
 {% block title %}Pracownicy{% endblock %}
 
@@ -87,16 +87,6 @@
         </div>
     </div>
 
-    <script type="text/javascript">
-        $(document).ready(function($) {
-            $(".clickable-row").click(function() {
-                window.location = $(this).data("href");
-            });
-            $("#filtr").on("click", function(){
-                $("#filtr-content").fadeToggle();
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'wnioski/script.js' %}"></script>
 
-    
 {% endblock %}

@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^obiekt/create/$', views.ObiektCreate.as_view(), name='labi_obiekt_create'),
     url(r'^obiekt_typ/create/$', views.ObiektTypCreate.as_view(), name='labi_obiekt_typ_create'),
 
-    url(r'^jednostki/$', views.JednostkaListView.as_view(), name='labi_jednostka_list'),
+    url(r'^jednostki/$', views.jednostka_list, name='labi_jednostka_list'),
     url(r'^jednostka/(?P<pk>\d+)/$', views.JednostkaDetailView.as_view(), name='labi_jednostka_detail'),
     url(r'^jednostka/create/$', views.JednostkaCreate.as_view(), name='labi_jednostka_create'),
 

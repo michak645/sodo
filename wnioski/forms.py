@@ -87,6 +87,12 @@ class PracownicyFiltrowanieForm(forms.Form):
     )
 
 
+class JednostkiFiltrowanieForm(forms.Form):
+    nazwa = forms.CharField(max_length=100, required=False)
+    czy_labi = forms.BooleanField(required=False)
+    parent = forms.CharField(max_length=100, required=False)
+
+
 class WniosekFiltrowanieForm(forms.Form):
     uprawnienia_choices = (
         ('1', 'Wgląd'),
