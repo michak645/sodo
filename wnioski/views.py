@@ -37,8 +37,34 @@ def admin_index(request):
         messages.warning(request, 'Musisz się najpierw zalogować')
         return redirect('index')
     wnioski = Wniosek.objects.all().order_by('-data')
-    to_approve = []
 
+    if request.method == 'POST':
+        wnioski = Wniosek.objects.all().order_by('data')
+        if request.POST.get('data-nowe'):
+            wnioski = Wniosek.objects.order_by('-data')
+        elif request.POST.get('data-stare'):
+            wnioski = Wniosek.objects.order_by('data')
+
+        if request.POST.get('zatwierdz'):
+            checked = request.POST.getlist('decyzja')
+            for pk in checked:
+                Historia.objects.create(
+                    wniosek_id=pk,
+                    status='2',
+                    pracownik=pracownik.login,
+                )
+        elif request.POST.get('odrzuc'):
+            checked = request.POST.getlist('decyzja')
+            for pk in checked:
+                Historia.objects.create(
+                    wniosek_id=pk,
+                    status='5',
+                    pracownik=pracownik.login,
+                )
+            historia = Historia.objects.filter(wniosek=pk)
+            return redirect('admin_index')
+
+    to_approve = []
     for wniosek in wnioski:
         obiekt = wniosek.obiekty.all()[0]
         wniosek_labi = find_labi(obiekt.jedn_org.id)
@@ -895,8 +921,8 @@ def step_four(request):
                 pracownik=pracownik.login,
                 uprawnienia=cart.uprawnienia,
             )
-            for pracownik in cart.pracownicy.all():
-                w.pracownicy.add(pracownik)
+            for prac_temp in cart.pracownicy.all():
+                w.pracownicy.add(prac_temp)
             for obiekt in wniosek['obiekty']:
                 w.obiekty.add(obiekt)
             komentarz_id = 'komentarz' + str(wniosek['labi'].id)
