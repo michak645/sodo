@@ -351,7 +351,7 @@ class PracownikDetailView(DetailView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)
@@ -379,7 +379,7 @@ class PracownikCreate(CreateView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)
@@ -406,7 +406,7 @@ class RodzajPracownikaCreate(CreateView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)
@@ -641,7 +641,7 @@ class ObiektCreate(CreateView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)
@@ -668,7 +668,7 @@ class ObiektTypCreate(CreateView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)
@@ -746,7 +746,7 @@ class JednostkaDetailView(DetailView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)
@@ -773,7 +773,7 @@ class JednostkaCreate(CreateView):
         if not pracownik:
             messages.warning(
                 self.request,
-                'Musisz się najpierw zalogować jako pracownik'
+                'Musisz się najpierw zalogować jako LABI'
             )
             return redirect('index')
         return super().get(*args, **kwargs)

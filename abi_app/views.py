@@ -14,8 +14,22 @@ from user_app.models import Cart
 from wnioski.models import *
 
 
+def authenticate(request):
+    try:
+        prac = request.session['pracownik']
+        return Labi.objects.get(pk=prac, jednostka__id=1)
+    except:
+        return None
+
+
 def abi_index(request):
-    pracownik = Labi.objects.get(id=request.session['pracownik'])
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
+        return redirect('index')
 
     if request.method == 'POST':
         wnioski = Wniosek.objects.all().order_by('data')
@@ -91,7 +105,13 @@ def abi_index(request):
 
 
 def wniosek_list(request):
-    pracownik = Labi.objects.get(id=request.session['pracownik'])
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
+        return redirect('index')
 
     if request.method == 'POST':
         search = request.POST.get('search')
@@ -124,7 +144,14 @@ def wniosek_list(request):
 
 
 def wniosek_detail(request, pk):
-    pracownik = Labi.objects.get(id=request.session['pracownik'])
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
+        return redirect('index')
+
     template = 'abi_app/wniosek_detail.html'
     w = Wniosek.objects.get(id=pk)
     # date = datetime.now()
@@ -189,10 +216,6 @@ class PracownikListView(ListView):
         context['pracownicy'] = pracownicy
         return context
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(PracownikListView, self).dispatch(*args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         search = request.POST.get('search')
         if search:
@@ -214,10 +237,26 @@ class PracownikListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 def pracownik_detail(request, pk):
-    # AUTORYZACJA
-    pracownik = Pracownik.objects.get(pk=pk)
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
+        return redirect('index')
+
     wnioski = Wniosek.objects.filter(
         pracownik=pracownik.pk).order_by('-data')
     historie = []
@@ -274,6 +313,16 @@ class PracownikCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano pracownika.')
         return super().form_valid(form)
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class RodzajPracownikaCreate(CreateView):
     model = RodzajPracownika
@@ -284,6 +333,16 @@ class RodzajPracownikaCreate(CreateView):
     def form_valid(self, form):
         messages.success(self.request, 'Pomyślnie dodano rodzaj pracownika.')
         return super().form_valid(form)
+
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
 
 class ObiektListView(ListView):
@@ -325,9 +384,25 @@ class ObiektListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 def obiekt_detail(request, pk):
-    # AUTORYZACJA
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
+        return redirect('index')
     obiekt = Obiekt.objects.get(pk=pk)
     if request.method == 'POST':
         czy_aktywny = request.POST.get('czy_aktywny')
@@ -352,6 +427,16 @@ class ObiektCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano obiekt.')
         return super().form_valid(form)
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class ObiektTypCreate(CreateView):
     model = TypObiektu
@@ -362,6 +447,16 @@ class ObiektTypCreate(CreateView):
     def form_valid(self, form):
         messages.success(self.request, 'Pomyślnie dodano typ obiektu.')
         return super().form_valid(form)
+
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
 
 
 class JednostkaListView(ListView):
@@ -404,6 +499,16 @@ class JednostkaListView(ListView):
         }
         return render(request, self.template_name, context)
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class JednostkaDetailView(DetailView):
     model = JednOrg
@@ -419,6 +524,16 @@ class JednostkaDetailView(DetailView):
         context['labi'] = labi
         return context
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 class JednostkaCreate(CreateView):
     model = JednOrg
@@ -430,13 +545,25 @@ class JednostkaCreate(CreateView):
         messages.success(self.request, 'Pomyślnie dodano jednostkę.')
         return super().form_valid(form)
 
+    def get(self, *args, **kwargs):
+        pracownik = authenticate(self.request)
+        if not pracownik:
+            messages.warning(
+                self.request,
+                'Musisz się najpierw zalogować jako ABI'
+            )
+            return redirect('index')
+        return super().get(*args, **kwargs)
+
 
 # WIZARD
 def step_one(request):
-    if request.session['pracownik']:
-        pracownik = Labi.objects.get(id=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
         return redirect('index')
     cart, created = Cart.objects.get_or_create(id=pracownik.pk)
     obj_list = None
@@ -517,10 +644,12 @@ def step_one(request):
 
 
 def step_two(request):
-    if request.session['pracownik']:
-        pracownik = Labi.objects.get(id=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
         return redirect('index')
     cart = Cart.objects.get(id=pracownik.pk)
     prac_list = None
@@ -602,10 +731,12 @@ def step_two(request):
 
 
 def step_three(request):
-    if request.session['pracownik']:
-        pracownik = Labi.objects.get(id=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
         return redirect('index')
     cart = Cart.objects.get(id=pracownik.pk)
     aktualne_uprawnienia = PracownicyObiektyUprawnienia.objects.filter(
@@ -671,10 +802,12 @@ def get_labi(jedn):
 
 
 def step_four(request):
-    if request.session['pracownik']:
-        pracownik = Labi.objects.get(id=request.session['pracownik'])
-    else:
-        messages.warning(request, 'Musisz się najpierw zalogować')
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako ABI'
+        )
         return redirect('index')
     cart = Cart.objects.get(id=pracownik.pk)
 
