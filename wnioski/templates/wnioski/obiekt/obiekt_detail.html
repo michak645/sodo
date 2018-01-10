@@ -53,6 +53,21 @@
 
                     <div class="row">
                         <div class="col-md-6">
+                            <label>Administrator obiektu: </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                {% if as_obiekt %}
+                                    {{ as_obiekt.pracownik }}
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
                             <label>Aktywny: </label>
                         </div>
                         <div class="col-md-6">

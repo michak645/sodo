@@ -12,7 +12,7 @@
     </div>
 
     <div class="row">
-        <h3><strong>{{ pracownik }}</strong> - dane szczegółowe</h3>
+        <h3><strong>{{ prac }}</strong> - dane szczegółowe</h3>
     </div>
     <hr>
     <div class="row">
@@ -22,7 +22,7 @@
                 <label>Imię: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.imie }}</p>
+                <p>{{ prac.imie }}</p>
             </div>
         </div>
 
@@ -31,7 +31,7 @@
                 <label>Nazwisko: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.nazwisko }}</p>
+                <p>{{ prac.nazwisko }}</p>
             </div>
         </div>
 
@@ -41,7 +41,7 @@
                 <label>Email: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.email }}</p>
+                <p>{{ prac.email }}</p>
             </div>
         </div>
 
@@ -51,7 +51,7 @@
                 <label>Login: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.login }}</p>
+                <p>{{ prac.login }}</p>
             </div>
         </div>
 
@@ -61,7 +61,7 @@
                 <label>Jednostka organizacyjna: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.jedn_org }}</p>
+                <p>{{ prac.jedn_org }}</p>
             </div>
         </div>
 
@@ -70,7 +70,7 @@
                 <label>Szkolenie: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                {% if pracownik.szkolenie %}
+                {% if prac.szkolenie %}
                     <p>Przeszedł</p>
                 {% else %}
                     <p>Nie przeszedł</p>
@@ -83,7 +83,7 @@
                 <label>Rodzaj użytkownika: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.rodzaj }}</p>
+                <p>{{ prac.rodzaj }}</p>
             </div>
         </div>
         
@@ -92,7 +92,7 @@
                 <label>Czy aktywny: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                {% if pracownik.czy_aktywny %}
+                {% if prac.czy_aktywny %}
                     <p>Tak</p>
                 {% else %}
                     <p>Nie</p>

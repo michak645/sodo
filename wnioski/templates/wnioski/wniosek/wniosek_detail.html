@@ -96,6 +96,21 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Komentarz do wniosku: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>
+                        {% if wniosek.komentarz %}
+                            {{ wniosek.komentarz }}
+                        {% else %}
+                            Brak
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
         </div>
 
         {% if historia.0.status == '1' %}        
