@@ -13,8 +13,6 @@ from user_app.forms import WizardUprawnienia
 from user_app.models import Cart
 from wnioski.models import *
 
-from .forms import PracownikAktywnyForm
-
 
 def abi_index(request):
     pracownik = Labi.objects.get(id=request.session['pracownik'])
@@ -39,11 +37,11 @@ def abi_index(request):
                 )
                 if w.typ == '1':
                     for obiekt in w.obiekty.all():
-                        for pracownik in w.pracownicy.all():
+                        for prac in w.pracownicy.all():
                             for uprawnienia in w.uprawnienia:
                                 PracownicyObiektyUprawnienia.objects \
                                     .get_or_create(
-                                        login=pracownik,
+                                        login=prac,
                                         id_obiektu=obiekt,
                                         uprawnienia=uprawnienia
                                     )
@@ -54,10 +52,10 @@ def abi_index(request):
                 elif w.typ == '2':
                     try:
                         for obiekt in w.obiekty.all():
-                            for pracownik in w.pracownicy.all():
+                            for prac in w.pracownicy.all():
                                 for uprawnienia in w.uprawnienia:
                                     PracownicyObiektyUprawnienia.objects.get(
-                                        login=pracownik,
+                                        login=prac,
                                         id_obiektu=obiekt,
                                         uprawnienia=uprawnienia
                                     ).delete()

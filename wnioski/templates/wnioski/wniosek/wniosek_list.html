@@ -72,12 +72,8 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ wniosek.pracownik }}</td>
                         <td>{{ wniosek.get_typ_display }}</td>
-                        <td>{{ wniosek.get_uprawnienia_display|truncatechars:"60" }}</td>
-                        <td>
-                            {% for obiekt in wniosek.obiekty.all %}
-                                {{ obiekt }}
-                            {% endfor %}
-                        </td>
+                        <td>{{ wniosek.get_uprawnienia_display|truncatechars:"50" }}</td>
+                        <td>{{ wniosek.get_obiekty|truncatechars:"40" }}</td>
                         <td>{{ wniosek.data }}</td>
                     </tr>
                 {% endfor %}

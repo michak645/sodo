@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from .models import Wniosek, Obiekt, TypObiektu
 from django import forms
+from auth_ex.models import RodzajPracownika
 
 
 class WniosekForm(ModelForm):
@@ -74,6 +75,22 @@ class ObiektyFiltrowanieForm(forms.Form):
     nazwa = forms.CharField(max_length=100, required=False)
     jednostka = forms.CharField(max_length=100, required=False)
     typ = forms.CharField(max_length=100, required=False)
+
+
+class PracownicyFiltrowanieForm(forms.Form):
+    nazwisko = forms.CharField(max_length=100, required=False)
+    jednostka = forms.CharField(max_length=100, required=False)
+    numer_ax = forms.CharField(max_length=100, required=False)
+    rodzaj = forms.ModelChoiceField(
+        queryset=RodzajPracownika.objects.all().order_by('rodzaj'),
+        required=False,
+    )
+
+
+class JednostkiFiltrowanieForm(forms.Form):
+    nazwa = forms.CharField(max_length=100, required=False)
+    czy_labi = forms.BooleanField(required=False)
+    parent = forms.CharField(max_length=100, required=False)
 
 
 class WniosekFiltrowanieForm(forms.Form):

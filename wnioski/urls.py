@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^wnioski/$', views.wnioski, name='labi_wniosek_list'),
     url(r'^wniosek/(?P<pk>\d+)/$', views.wniosek_detail, name='labi_wniosek_detail'),
 
-    url(r'^pracownicy/$', views.PracownikListView.as_view(), name='labi_pracownik_list'),
+    url(r'^pracownicy/$', views.pracownik_list, name='labi_pracownik_list'),
     url(r'^pracownik/create/$', views.PracownikCreate.as_view(), name='labi_pracownik_create'),
     url(r'^pracownik_rodzaj/create/$', views.RodzajPracownikaCreate.as_view(), name='labi_rodzaj_pracownik_create'),
     url(r'^pracownik/(?P<pk>[\w-]+)/$', views.PracownikDetailView.as_view(), name='labi_pracownik_detail'),
@@ -20,7 +20,7 @@ urlpatterns = [
 
     url(r'^as/create/$', views.as_create, name='labi_as_create'),
 
-    url(r'^jednostki/$', views.JednostkaListView.as_view(), name='labi_jednostka_list'),
+    url(r'^jednostki/$', views.jednostka_list, name='labi_jednostka_list'),
     url(r'^jednostka/(?P<pk>\d+)/$', views.JednostkaDetailView.as_view(), name='labi_jednostka_detail'),
     url(r'^jednostka/create/$', views.JednostkaCreate.as_view(), name='labi_jednostka_create'),
 
