@@ -6,6 +6,10 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+import weasyprint
+from io import BytesIO
 
 from auth_ex.views import find_labi
 from .models import (
@@ -952,6 +956,20 @@ def step_four(request):
             komentarz = request.POST.get(komentarz_id)
             w.komentarz = komentarz
             w.save()
+            # wysylanie maila
+            subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
+            message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
+                'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
+                'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
+                'Wiadomość wygenerowana automatycznie.'
+            send_addr = w.pracownik.email
+            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+            html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
+            out = BytesIO()
+            weasyprint.HTML(string=html).write_pdf(out)
+            email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
+            email.send()
+            #
         cart.delete()
         return HttpResponseRedirect('/admin_index')
     context = {
