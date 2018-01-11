@@ -93,12 +93,12 @@
                 <label>Aktywny: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                 <form method="post" action="">{% csrf_token %}
-                        {% if prac.czy_aktywny %}
-                            Tak, <input type="submit" name="dezaktywuj" value="Dezaktywuj">
-                        {% else %}
-                            Nie, <input type="submit" name="aktywuj" value="Aktywuj">
-                        {% endif %}
+                <form method="post" action="">{% csrf_token %}
+                    {% if prac.czy_aktywny %}
+                        Tak, <input type="submit" name="dezaktywuj" value="Dezaktywuj">
+                    {% else %}
+                        Nie, <input type="submit" name="aktywuj" value="Aktywuj">
+                    {% endif %}
                 </form>
             </div>
         </div>

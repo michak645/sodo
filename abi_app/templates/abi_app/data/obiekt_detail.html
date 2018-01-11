@@ -72,9 +72,13 @@
                             <label>Aktywny: </label>
                         </div>
                         <div class="col-md-6">
-                            <p>
-                                {% if obiekt.czy_aktywny %}Tak{% else %}Nie{% endif %}
-                            </p>
+                            <form method="post" action="">{% csrf_token %}
+                                {% if obiekt.czy_aktywny %}
+                                    Tak, <input type="submit" name="dezaktywuj" value="Dezaktywuj">
+                                {% else %}
+                                    Nie, <input type="submit" name="aktywuj" value="Aktywuj">
+                                {% endif %}
+                            </form>
                         </div>
                     </div>
                 </div>

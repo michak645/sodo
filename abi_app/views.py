@@ -587,7 +587,15 @@ def obiekt_detail(request, pk):
     jednostki = JednOrg.objects.filter(
         id__in=pracownicy.values('jedn_org')
     )
+
     if request.method == 'POST':
+        if request.POST.get('aktywuj'):
+            obiekt.czy_aktywny = True
+            obiekt.save()
+        elif request.POST.get('dezaktywuj'):
+            obiekt.czy_aktywny = False
+            obiekt.save()
+
         form = ObiektFiltrowanieForm(request.POST)
         if form.is_valid():
             if request.POST.get('clear'):
