@@ -42,7 +42,10 @@
     </div>
 
     <div class="row">
+        {% if paginacja %}
+
         {% bootstrap_pager jednostki %}
+        {% endif %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -70,7 +73,10 @@
             </tbody>
         </table>
         <div class="center">
+        {% if paginacja %}
+
             {% bootstrap_paginate jednostki range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+        {% endif %}
         </div>
     </div>
 

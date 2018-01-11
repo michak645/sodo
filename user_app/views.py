@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView
 
 from .models import Cart
 from auth_ex.models import (
@@ -21,6 +21,7 @@ from wnioski.models import (
 from wnioski.forms import (
     WniosekFiltrowanieForm,
     ObiektyFiltrowanieForm,
+    JednostkiFiltrowanieForm,
 )
 
 
@@ -194,36 +195,44 @@ class ObiektDetailView(DetailView):
         return super().get(*args, **kwargs)
 
 
-class JednostkaListView(ListView):
-    model = JednOrg
-    template_name = 'user_app/jednostka_list.html'
-    context_object_name = 'jednostki'
+def jednostka_list(request):
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
+        return redirect('index')
+    jednostki = JednOrg.objects.all().order_by('nazwa')
+    paginacja = True
+    if request.method == 'POST':
+        form = JednostkiFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = JednostkiFiltrowanieForm()
+            else:
+                nazwa = form.cleaned_data['nazwa']
+                if nazwa:
+                    jednostki = jednostki.filter(
+                        nazwa__icontains=nazwa
+                    )
+                czy_labi = form.cleaned_data['czy_labi']
+                if czy_labi:
+                    jednostki = jednostki.filter(
+                        czy_labi=czy_labi
+                    )
+                parent = form.cleaned_data['parent']
+                if parent:
+                    jednostki = jednostki.filter(
+                        parent__nazwa__icontains=parent,
+                    )
+                paginacja = False
+    else:
+        form = JednostkiFiltrowanieForm()
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pracownik = authenticate(self.request)
-        context['pracownik'] = pracownik
-        paginator = Paginator(self.get_queryset(), 10)
-        page = self.request.GET.get('page')
-        try:
-            jednostki = paginator.page(page)
-        except PageNotAnInteger:
-            jednostki = paginator.page(1)
-        except EmptyPage:
-            jednostki = paginator.page(paginator.num_pages)
-        context['jednostki'] = jednostki
-        return context
-
-    def post(self, request, *args, **kwargs):
-        search = request.POST.get('search')
-        if search:
-            jednostki = self.get_queryset(). \
-                filter(nazwa__icontains=search)
-        else:
-            jednostki = self.get_queryset()
-
+    if paginacja:
         paginator = Paginator(jednostki, 10)
-        page = self.request.GET.get('page')
+        page = request.GET.get('page')
         try:
             jednostki = paginator.page(page)
         except PageNotAnInteger:
@@ -231,21 +240,13 @@ class JednostkaListView(ListView):
         except EmptyPage:
             jednostki = paginator.page(paginator.num_pages)
 
-        context = {
-            'jednostki': jednostki,
-            'search': search,
-        }
-        return render(request, self.template_name, context)
-
-    def get(self, *args, **kwargs):
-        pracownik = authenticate(self.request)
-        if not pracownik:
-            messages.warning(
-                self.request,
-                'Musisz się najpierw zalogować jako pracownik'
-            )
-            return redirect('index')
-        return super().get(*args, **kwargs)
+    context = {
+        'pracownik': pracownik,
+        'jednostki': jednostki,
+        'form': form,
+        'paginacja': paginacja,
+    }
+    return render(request, 'user_app/jednostka_list.html', context)
 
 
 class JednostkaDetailView(DetailView):

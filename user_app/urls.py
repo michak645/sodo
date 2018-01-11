@@ -7,7 +7,7 @@ urlpatterns = [
 
     url(r'^user_objects_list', views.obiekt_list, name='user_objects_list'),
     url(r'^user_obiekt/(?P<pk>\d+)/$', views.ObiektDetailView.as_view(), name='user_obiekt_detail'),
-    url(r'^user_jednostki/$', views.JednostkaListView.as_view(), name='user_jednostka_list'),
+    url(r'^user_jednostki/$', views.jednostka_list, name='user_jednostka_list'),
     url(r'^user_jednostka/(?P<pk>\d+)/$', views.JednostkaDetailView.as_view(), name='user_jednostka_detail'),
 
     url(r'^user_app_accepted', views.user_app_accepted, name='user_app_accepted'),
