@@ -20,7 +20,7 @@ host = "http://150.254.76.229/EodService/AXDWService.asmx/"
 wnioski_model = "wnioski_"
 auth_ex_model = "auth_ex_"
 domain = "@amu.edu.pl"
-database = "db (do skryptu js.py).sqlite3"
+database = "db.sqlite3"
 organization_descs = []
 
 
@@ -256,7 +256,7 @@ def start_emp():
     
     # print ("Amount: " + str(amount))
     for j in range(all):
-        query = u"INSERT or REPLACE into auth_ex_pracownik(login, imie, nazwisko, email, numer_ax, czy_aktywny, jedn_org_id, rodzaj_id) values('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(employee_uids[j],  employee_names[j], employee_surnames[j], employee_uids[j] + "@amu.edu.pl", employee_ax[j], '1', employee_organization_keys[j], employee_groups[j])
+        query = u"INSERT or REPLACE into auth_ex_pracownik(login, imie, nazwisko, email, numer_ax, czy_aktywny, jedn_org_id, rodzaj_id, password, czy_user) values('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(employee_uids[j],  employee_names[j], employee_surnames[j], employee_uids[j] + "@amu.edu.pl", employee_ax[j], '1', employee_organization_keys[j], employee_groups[j], None, '0')
         cursor.execute(query)
     
     connection.commit()
