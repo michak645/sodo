@@ -2,6 +2,7 @@
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
+from django import forms
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
@@ -27,6 +28,7 @@ from .forms import (
     WniosekFiltrowanieForm,
     PracownicyFiltrowanieForm,
     JednostkiFiltrowanieForm,
+    PracownikForm,
 )
 from auth_ex.models import (
     JednOrg,
@@ -365,8 +367,7 @@ class PracownikDetailView(DetailView):
 
 class PracownikCreate(CreateView):
     model = Pracownik
-    fields = ['login', 'imie', 'nazwisko', 'email',
-              'rodzaj', 'jedn_org', 'numer_ax']
+    form_class = PracownikForm
     template_name = 'wnioski/pracownik/pracownik_create.html'
     success_url = reverse_lazy('labi_pracownik_list')
 
