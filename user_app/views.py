@@ -18,6 +18,10 @@ from wnioski.models import (
     ZatwierdzonePrzezAS,
     AdministratorObiektu,
 )
+from wnioski.forms import (
+    WniosekFiltrowanieForm,
+    ObiektyFiltrowanieForm,
+)
 
 
 def authenticate(request):
@@ -116,56 +120,56 @@ def user_objects_available(request):
     return render(request, 'user_app/user_objects_available.html', context)
 
 
-class ObiektListView(ListView):
-    model = Obiekt
-    template_name = 'user_app/user_objects_list.html'
-    context_object_name = 'obiekty'
+def obiekt_list(request):
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
+        return redirect('index')
 
-    def get_context_data(self, *args, **kwargs):
-        pracownik = authenticate(self.request)
-        context = super().get_context_data(**kwargs)
-        paginator = Paginator(self.get_queryset(), 10)
-        page = self.request.GET.get('page')
-        try:
-            obiekty = paginator.page(page)
-        except PageNotAnInteger:
-            obiekty = paginator.page(1)
-        except EmptyPage:
-            obiekty = paginator.page(paginator.num_pages)
-        context['obiekty'] = obiekty
-        context['pracownik'] = pracownik
-        return context
+    obiekty = Obiekt.objects.all().order_by('nazwa')
+    paginacja = True
+    if request.method == 'POST':
+        form = ObiektyFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = ObiektyFiltrowanieForm()
+            else:
+                if form.cleaned_data['nazwa']:
+                    obiekty = obiekty.filter(
+                        nazwa__icontains=form.cleaned_data['nazwa']
+                    )
+                if form.cleaned_data['jednostka']:
+                    jedn = form.cleaned_data['jednostka']
+                    obiekty = obiekty.filter(
+                        jedn_org__nazwa__icontains=jedn
+                    )
+                if form.cleaned_data['typ']:
+                    obiekty = obiekty.filter(
+                        typ__nazwa__icontains=form.cleaned_data['typ'],
+                    )
+                paginacja = False
+    else:
+        form = ObiektyFiltrowanieForm()
 
-    def post(self, request, *args, **kwargs):
-        search = request.POST.get('search')
-        if search:
-            obiekty = self.get_queryset(). \
-                filter(nazwa__icontains=search)
-        else:
-            obiekty = self.get_queryset()
-        paginator = Paginator(obiekty, 10)
-        page = self.request.GET.get('page')
-        try:
-            obiekty = paginator.page(page)
-        except PageNotAnInteger:
-            obiekty = paginator.page(1)
-        except EmptyPage:
-            obiekty = paginator.page(paginator.num_pages)
-        context = {
-            'obiekty': obiekty,
-            'search': search,
-        }
-        return render(request, self.template_name, context)
+    paginator = Paginator(obiekty, 10)
+    page = request.GET.get('page')
+    try:
+        obiekty = paginator.page(page)
+    except PageNotAnInteger:
+        obiekty = paginator.page(1)
+    except EmptyPage:
+        obiekty = paginator.page(paginator.num_pages)
 
-    def get(self, *args, **kwargs):
-        pracownik = authenticate(self.request)
-        if not pracownik:
-            messages.warning(
-                self.request,
-                'Musisz się najpierw zalogować jako pracownik'
-            )
-            return redirect('index')
-        return super().get(*args, **kwargs)
+    context = {
+        'pracownik': pracownik,
+        'obiekty': obiekty,
+        'form': form,
+        'paginacja': paginacja,
+    }
+    return render(request, 'user_app/user_objects_list.html', context)
 
 
 class ObiektDetailView(DetailView):
@@ -280,25 +284,63 @@ def user_app_accepted(request):
         )
         return redirect('index')
     wnioski = Wniosek.objects.filter(pracownik=pracownik).order_by('-data')
-    historie = []
+    paginacja = True
+
+    wnioski_przyjete = []
     for wniosek in wnioski:
         historia = Historia.objects.filter(
             wniosek=wniosek.pk).order_by('-data')[0]
         if historia.status == '3' or historia.status == '4':
-            historie.append(historia)
+            wnioski_przyjete.append(historia.wniosek.pk)
 
-    paginator = Paginator(historie, 10)
-    page = request.GET.get('page')
-    try:
-        historie = paginator.page(page)
-    except PageNotAnInteger:
-        historie = paginator.page(1)
-    except EmptyPage:
-        historie = paginator.page(paginator.num_pages)
+    wnioski = wnioski.filter(
+        pk__in=wnioski_przyjete
+    )
+
+    if request.method == 'POST':
+        form = WniosekFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = WniosekFiltrowanieForm()
+            else:
+                obiekt = form.cleaned_data['obiekt']
+                if obiekt:
+                    wnioski = wnioski.filter(
+                        obiekty__nazwa__icontains=obiekt
+                    )
+                jednostka = form.cleaned_data['jednostka']
+                if jednostka:
+                    wnioski = wnioski.filter(
+                        obiekty__jedn_org__nazwa__icontains=jednostka
+                    )
+                uprawnienia = form.cleaned_data['uprawnienia']
+                if uprawnienia:
+                    wnioski = wnioski.filter(
+                        uprawnienia__icontains=uprawnienia,
+                    )
+                if form.cleaned_data['data']:
+                    wnioski = wnioski.filter(
+                        data__date=form.cleaned_data['data'],
+                    )
+                paginacja = False
+    else:
+        form = WniosekFiltrowanieForm()
+
+    if paginacja:
+        paginator = Paginator(wnioski, 10)
+        page = request.GET.get('page')
+        try:
+            wnioski = paginator.page(page)
+        except PageNotAnInteger:
+            wnioski = paginator.page(1)
+        except EmptyPage:
+            wnioski = paginator.page(paginator.num_pages)
 
     context = {
         'pracownik': pracownik,
-        'historie': historie,
+        'wnioski': wnioski,
+        'paginacja': paginacja,
+        'form': form,
     }
     return render(request, 'user_app/user_app_accepted.html', context)
 
@@ -312,6 +354,36 @@ def user_app_rejected(request):
         )
         return redirect('index')
     wnioski = Wniosek.objects.filter(pracownik=pracownik).order_by('-data')
+    paginacja = True
+    if request.method == 'POST':
+        form = WniosekFiltrowanieForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('clear'):
+                form = WniosekFiltrowanieForm()
+            else:
+                obiekt = form.cleaned_data['obiekt']
+                if obiekt:
+                    wnioski = wnioski.filter(
+                        obiekty__nazwa__icontains=obiekt
+                    )
+                jednostka = form.cleaned_data['jednostka']
+                if jednostka:
+                    wnioski = wnioski.filter(
+                        obiekty__jedn_org__nazwa__icontains=jednostka
+                    )
+                uprawnienia = form.cleaned_data['uprawnienia']
+                if uprawnienia:
+                    wnioski = wnioski.filter(
+                        uprawnienia__icontains=uprawnienia,
+                    )
+                if form.cleaned_data['data']:
+                    wnioski = wnioski.filter(
+                        data__date=form.cleaned_data['data'],
+                    )
+                paginacja = False
+    else:
+        form = WniosekFiltrowanieForm()
+
     historie = []
     for wniosek in wnioski:
         historia = Historia.objects.filter(
@@ -319,18 +391,21 @@ def user_app_rejected(request):
         if historia.status == '5':
             historie.append(historia)
 
-    paginator = Paginator(historie, 10)
-    page = request.GET.get('page')
-    try:
-        historie = paginator.page(page)
-    except PageNotAnInteger:
-        historie = paginator.page(1)
-    except EmptyPage:
-        historie = paginator.page(paginator.num_pages)
+    if paginacja:
+        paginator = Paginator(historie, 10)
+        page = request.GET.get('page')
+        try:
+            historie = paginator.page(page)
+        except PageNotAnInteger:
+            historie = paginator.page(1)
+        except EmptyPage:
+            historie = paginator.page(paginator.num_pages)
 
     context = {
         'pracownik': pracownik,
         'historie': historie,
+        'paginacja': paginacja,
+        'form': form,
     }
     return render(request, 'user_app/user_app_rejected.html', context)
 
@@ -676,6 +751,7 @@ def step_three(request):
         'obiekty': obiekty,
     }
     return render(request, 'user_app/wizard/step_three.html', context)
+
 
 def get_labi(jedn):
     try:

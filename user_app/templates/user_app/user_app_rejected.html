@@ -1,15 +1,56 @@
 {% extends 'user_app/base_site/base_site.html' %}
-{% load bootstrap_pagination %}
+{% load bootstrap_pagination static %}
 
 {% block content %}
 
-    {% if historie %}
         <div class="row">
             <h2 class="center">Wnioski odrzucone:</h2>
         </div>
 
         <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading center clickable" id="filtr">Filtruj</div>
+                    <div class="panel-body" id="filtr-content" hidden>
+                        <form method="post" action="">{% csrf_token %}
+                            <div class="row">
+                                <form action="" method="post">{% csrf_token %}
+                                    <div class="col-md-6">
+                                        <input type="text" name="{{ form.obiekt.html_name }}" placeholder="Obiekt" {% if form.obiekt.value %}value="{{ form.obiekt.value }}"{% endif %}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" name="{{ form.jednostka.html_name }}" placeholder="Szukaj jednostki" {% if form.jednostka.value %}value="{{ form.jednostka.value }}"{% endif %}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="date" name="{{ form.data.html_name }}" {% if form.data.value %}value="{{ form.data.value }}"{% endif %}>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <select name="{{ form.uprawnienia.html_name }}">
+                                            <option value="">Uprawnienia</option>
+                                            {% for key, value in form.uprawnienia.field.choices %}
+                                                <option value="{{ key }}" {% if form.uprawnienia.value == key %}selected{% endif %}>
+                                                    {{ value }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 center">
+                                        <input type="submit" value="Filtruj" class="btn btn-primary">
+                                        <input type="submit" name="clear" value="Wyczyść filtr" class="btn btn-primary">
+                                    </div>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+        {% if paginacja %}
             {% bootstrap_pager historie %}
+
+        {% endif %}
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -37,21 +78,14 @@
                 </tbody>
             </table>
             <div class="center">
+        {% if paginacja %}
                 {% bootstrap_paginate historie range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+
+        {% endif %}
             </div>
         </div>
-    {% else %}
-        <div class="row">
-            <h2 class="center">Brak odrzuconych wniosków</h2>
-        </div>
-    {% endif %}
 
-    <script type="text/javascript">
-        $(document).ready(function($) {
-            $(".clickable-row").click(function() {
-                window.location = $(this).data("href");
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'user_app/script.js' %}"></script>
+   
 
 {% endblock %}

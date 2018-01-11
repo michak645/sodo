@@ -137,7 +137,7 @@ def wnioski(request):
         form = WniosekFiltrowanieForm(request.POST)
         if form.is_valid():
             if request.POST.get('clear'):
-                form = ObiektFiltrowanieForm()
+                form = WniosekFiltrowanieForm()
             else:
                 obiekt = form.cleaned_data['obiekt']
                 if obiekt:
