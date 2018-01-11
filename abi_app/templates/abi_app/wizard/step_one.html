@@ -7,9 +7,21 @@
         <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 
+    <div class="row center">
+        <div class="col-md-4">
+            <a class="btn btn-primary" href="{% url 'abi_index' %}">Anuluj</a>
+        </div>
+        <div class="col-md-4">
+            <h3>Wybierz obiekty</h3>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-primary {% if not objs_cart %}disabled{% endif %}" href="{% url 'abi_step_two' %}">Dalej</a>
+        </div>
+    </div>
+
+    <hr>
+
     <div class="row">
-        <h3>Wybierz obiekty</h3>
-        <hr>
     	<div class="col-md-4">
             <h4>I. Wybierz jednostkę</h4>
             <form method="post" action="">{% csrf_token %}
@@ -63,11 +75,6 @@
                         </form>
                     {% endfor %}
                 </ol>
-                <div class="center">
-                    {% if paginacja_obie %}
-                    {% bootstrap_paginate obj_list range=3 show_prev_next="true" show_first_last="true" centered="true" %}
-                    {% endif %}
-                </div>
             {% else%}
                 <p>Nie ma przypisanych obiektów do tej jednostki</p>
             {% endif %}
@@ -93,9 +100,6 @@
             				</form>
                         </li>
                     {% endfor %}
-                    <div class="center">
-                        {% bootstrap_paginate objs_cart range=3 show_prev_next="true" show_first_last="true" centered="true" %}
-                    </div>
                 {% else %}
      			    <p>Brak</p>
                 {% endif %}
@@ -103,11 +107,6 @@
     	</div>
     </div>
 
-    <div class="clearfix"></div>
 
-    <div class="row center">
-		<a class="btn btn-primary" href="{% url 'abi_index' %}">Anuluj</a>
-		<a class="btn btn-primary {% if not objs_cart %}disabled{% endif %}" href="{% url 'abi_step_two' %}">Dalej</a>
-    </div>
 
 {% endblock %}

@@ -796,7 +796,6 @@ def step_one(request):
     jednostki = JednOrg.objects.all().order_by('nazwa')
     wszedzie = False
     paginacja_jedn = True
-    paginacja_obie = True
 
     if request.method == 'POST':
         obj = request.POST.get('obj')
@@ -827,7 +826,6 @@ def step_one(request):
                     czy_aktywny=True
                 )
                 wszedzie = False
-            paginacja_obie = False
         if request.POST.get('clear'):
             cart.obiekty.clear()
 
@@ -869,15 +867,6 @@ def step_one(request):
                     jedn_org=jednostka,
                     czy_aktywny=True
                 )
-        if obj_list and paginacja_obie:
-            paginator = Paginator(obj_list, 10)
-            page = request.GET.get('page_obiekt')
-            try:
-                obj_list = paginator.page(page)
-            except PageNotAnInteger:
-                obj_list = paginator.page(1)
-            except EmptyPage:
-                obj_list = paginator.page(paginator.num_pages)
 
     if paginacja_jedn:
         paginator = Paginator(jednostki, 10)
@@ -891,15 +880,6 @@ def step_one(request):
 
     objs_cart = cart.obiekty.all()
 
-    paginator = Paginator(objs_cart, 10)
-    page = request.GET.get('page')
-    try:
-        objs_cart = paginator.page(page)
-    except PageNotAnInteger:
-        objs_cart = paginator.page(1)
-    except EmptyPage:
-        objs_cart = paginator.page(paginator.num_pages)
-
     context = {
         'wybrana_jednostka': jednostka,
         'jednostki': jednostki,
@@ -908,7 +888,6 @@ def step_one(request):
         'objs_cart': objs_cart,
         'wszedzie': wszedzie,
         'paginacja_jedn': paginacja_jedn,
-        'paginacja_obie': paginacja_obie,
     }
     return render(request, 'abi_app/wizard/step_one.html', context)
 
@@ -927,7 +906,6 @@ def step_two(request):
     jednostki = JednOrg.objects.all().order_by('nazwa')
     wszedzie = False
     paginacja_jedn = True
-    paginacja_prac = True
 
     if request.method == 'POST':
         prac = request.POST.get('prac')
@@ -959,7 +937,6 @@ def step_two(request):
                     czy_aktywny=True,
                 )
                 wszedzie = False
-            paginacja_prac = False
 
         if request.POST.get('clear'):
             cart.pracownicy.clear()
@@ -1014,14 +991,6 @@ def step_two(request):
             jednostki = paginator.page(paginator.num_pages)
 
     prac_cart = cart.pracownicy.all()
-    paginator = Paginator(prac_cart, 10)
-    page = request.GET.get('page_prac')
-    try:
-        prac_cart = paginator.page(page)
-    except PageNotAnInteger:
-        prac_cart = paginator.page(1)
-    except EmptyPage:
-        prac_cart = paginator.page(paginator.num_pages)
 
     context = {
         'wybrana_jednostka': jednostka,
