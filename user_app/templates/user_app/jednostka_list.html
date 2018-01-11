@@ -1,5 +1,5 @@
 {% extends 'user_app/base_site/base_site.html' %}
-{% load bootstrap_pagination %}
+{% load bootstrap_pagination static %}
 
 {% block title %}Lista{% endblock %}
 
@@ -9,23 +9,43 @@
         <div class="col-md-3">
             <span class="title">Jednostki organizacyjne</span>
         </div>
-        <form method="post" action="">{% csrf_token %}
-            <div class="col-md-2">
-                <input type="text" name="search" placeholder="Szukaj po nazwie" class="form-control">
-            </div>
-            <div class="col-md-1">  
-                <input type="submit" value="Szukaj" class="btn">
-            </div>
-            {% if search %}
-                <div class="col-md-3">
-                    <p>Wyszukiwana fraza: {{ search }}</p>
-                </div>
-            {% endif %}
-        </form>
     </div>
 
     <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading center clickable" id="filtr">Filtruj</div>
+                <div class="panel-body" id="filtr-content" hidden>
+                    <form method="post" action="">{% csrf_token %}
+                        <div class="row">
+                            <form action="" method="post">{% csrf_token %}
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.nazwa.html_name }}" placeholder="Nazwa" {% if form.nazwa.value %}value="{{ form.nazwa.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.parent.html_name }}" placeholder="Jednostka nadrzędna" {% if form.parent.value %}value="{{ form.parent.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-12 center">
+                                    <input id="{{ form.czy_labi.html_name }}" type="checkbox" name="{{ form.czy_labi.html_name }}" {% if form.czy_labi.value %}value="{{ form.czy_labi.value }}"{% endif %}>
+                                    <label for="{{ form.czy_labi.html_name }}">Czy posiada LABI</label>
+                                </div>
+                                <div class="col-md-12 center">
+                                    <input type="submit" value="Filtruj" class="btn btn-primary">
+                                    <input type="submit" name="clear" value="Wyczyść filtr" class="btn btn-primary">
+                                </div>
+                            </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if paginacja %}
+
         {% bootstrap_pager jednostki %}
+        {% endif %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -53,16 +73,14 @@
             </tbody>
         </table>
         <div class="center">
+        {% if paginacja %}
+
             {% bootstrap_paginate jednostki range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+        {% endif %}
         </div>
     </div>
 
-    <script type="text/javascript">
-        $(document).ready(function($) {
-            $(".clickable-row").click(function() {
-                window.location = $(this).data("href");
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'user_app/script.js' %}"></script>
+    
 
 {% endblock %}

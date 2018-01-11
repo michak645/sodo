@@ -1,0 +1,60 @@
+{% extends 'user_app/base_site/base_site.html' %}
+{% block title %}Panel administratora{% endblock %}
+
+{% block content %}
+    
+    <div class="row">
+        <h3>Dane szczegółowe <i><b>ID: {{ obiekt.id }}</b></i></h3>
+    </div>
+
+    <div class="row">
+        {{ obiekt.wniosek }}
+        {{ obiekt.obiekt }}
+        {{ zatwierdzone }}
+        {{ komentarz }}
+        <form action="" method="post">{% csrf_token %}
+        </form>
+    </div>
+
+    <hr>
+        <div class="row">
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Wniosek: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ obiekt.wniosek }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Obiekt: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ obiekt.obiekt }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Zatwierdzone: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ obiekt.zatwierdzone }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Komentarz: </label>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <p>{{ obiekt.komentarz }}</p>
+                </div>
+            </div>
+
+        </div>
+    
+{% endblock %}

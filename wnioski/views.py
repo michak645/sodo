@@ -60,7 +60,6 @@ def admin_index(request):
         return redirect('index')
 
     wnioski = Wniosek.objects.all().order_by('-data')
-
     if request.method == 'POST':
         wnioski = Wniosek.objects.all().order_by('data')
         if request.POST.get('data-nowe'):
@@ -131,14 +130,14 @@ def wnioski(request):
             'Musisz się najpierw zalogować jako LABI'
         )
         return redirect('index')
-
     wnioski = Wniosek.objects.all().order_by('-data')
+    paginacja = True
 
     if request.method == 'POST':
         form = WniosekFiltrowanieForm(request.POST)
         if form.is_valid():
             if request.POST.get('clear'):
-                form = ObiektFiltrowanieForm()
+                form = WniosekFiltrowanieForm()
             else:
                 obiekt = form.cleaned_data['obiekt']
                 if obiekt:
@@ -164,22 +163,25 @@ def wnioski(request):
                     wnioski = wnioski.filter(
                         data__date=form.cleaned_data['data'],
                     )
+                paginacja = False
     else:
         form = WniosekFiltrowanieForm()
 
-    paginator = Paginator(wnioski, 10)
-    page = request.GET.get('page')
-    try:
-        wnioski = paginator.page(page)
-    except PageNotAnInteger:
-        wnioski = paginator.page(1)
-    except EmptyPage:
-        wnioski = paginator.page(paginator.num_pages)
+    if paginacja:
+        paginator = Paginator(wnioski, 10)
+        page = request.GET.get('page')
+        try:
+            wnioski = paginator.page(page)
+        except PageNotAnInteger:
+            wnioski = paginator.page(1)
+        except EmptyPage:
+            wnioski = paginator.page(paginator.num_pages)
 
     context = {
         'form': form,
         'pracownik': pracownik,
         'wnioski': wnioski,
+        'paginacja': paginacja,
     }
     return render(request, 'wnioski/wniosek/wniosek_list.html', context)
 
@@ -257,6 +259,7 @@ def pracownik_list(request):
         return redirect('index')
 
     pracownicy = Pracownik.objects.all().order_by('nazwisko')
+    paginacja = True
 
     if request.method == 'POST':
         form = PracownicyFiltrowanieForm(request.POST)
@@ -284,22 +287,25 @@ def pracownik_list(request):
                     pracownicy = pracownicy.filter(
                         rodzaj__rodzaj__icontains=rodzaj,
                     )
+                paginacja = False
     else:
         form = PracownicyFiltrowanieForm()
 
-    paginator = Paginator(pracownicy, 10)
-    page = request.GET.get('page')
-    try:
-        pracownicy = paginator.page(page)
-    except PageNotAnInteger:
-        pracownicy = paginator.page(1)
-    except EmptyPage:
-        pracownicy = paginator.page(paginator.num_pages)
+    if paginacja:
+        paginator = Paginator(pracownicy, 10)
+        page = request.GET.get('page')
+        try:
+            pracownicy = paginator.page(page)
+        except PageNotAnInteger:
+            pracownicy = paginator.page(1)
+        except EmptyPage:
+            pracownicy = paginator.page(paginator.num_pages)
 
     context = {
         'pracownik': pracownik,
         'pracownicy': pracownicy,
         'form': form,
+        'paginacja': paginacja,
     }
     return render(request, 'wnioski/pracownik/pracownik_list.html', context)
 
@@ -525,7 +531,7 @@ def obiekt_list(request):
         return redirect('index')
 
     obiekty = Obiekt.objects.all().order_by('nazwa')
-
+    paginacja = True
     if request.method == 'POST':
         form = ObiektyFiltrowanieForm(request.POST)
         if form.is_valid():
@@ -545,6 +551,7 @@ def obiekt_list(request):
                     obiekty = obiekty.filter(
                         typ__nazwa__icontains=form.cleaned_data['typ'],
                     )
+                paginacja = False
     else:
         form = ObiektyFiltrowanieForm()
 
@@ -561,6 +568,7 @@ def obiekt_list(request):
         'pracownik': pracownik,
         'obiekty': obiekty,
         'form': form,
+        'paginacja': paginacja,
     }
     return render(request, 'wnioski/obiekt/obiekt_list.html', context)
 
@@ -683,7 +691,7 @@ def jednostka_list(request):
         )
         return redirect('index')
     jednostki = JednOrg.objects.all().order_by('nazwa')
-
+    paginacja = True
     if request.method == 'POST':
         form = JednostkiFiltrowanieForm(request.POST)
         if form.is_valid():
@@ -705,22 +713,25 @@ def jednostka_list(request):
                     jednostki = jednostki.filter(
                         parent__nazwa__icontains=parent,
                     )
+                paginacja = False
     else:
         form = JednostkiFiltrowanieForm()
 
-    paginator = Paginator(jednostki, 10)
-    page = request.GET.get('page')
-    try:
-        jednostki = paginator.page(page)
-    except PageNotAnInteger:
-        jednostki = paginator.page(1)
-    except EmptyPage:
-        jednostki = paginator.page(paginator.num_pages)
+    if paginacja:
+        paginator = Paginator(jednostki, 10)
+        page = request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
 
     context = {
         'pracownik': pracownik,
         'jednostki': jednostki,
         'form': form,
+        'paginacja': paginacja,
     }
     return render(request, 'wnioski/jednostka/jednostka_list.html', context)
 

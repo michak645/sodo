@@ -54,7 +54,9 @@
     </div>
 
     <div class="row">
-        {% bootstrap_pager wnioski %}
+        {% if paginacja %}
+            {% bootstrap_pager wnioski %}
+        {% endif %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -80,7 +82,9 @@
             </tbody>
         </table>
         <div class="center">
+        {% if paginacja %}
             {% bootstrap_paginate wnioski range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+        {% endif %}
         </div>
     </div>
 
