@@ -1,5 +1,5 @@
 {% extends "abi_app/base_site/base_site.html" %}
-{% load bootstrap_pagination %}
+{% load bootstrap_pagination static %}
 
 {% block title %}Pracownicy{% endblock %}
 
@@ -9,26 +9,56 @@
         <div class="col-md-2">
             <span class="title">Pracownicy</span>
         </div>
-        <form method="post" action="">{% csrf_token %}
-            <div class="col-md-2">
-                <input type="text" name="search" placeholder="Szukaj po nazwisku" class="form-control">
-            </div>
-            <div class="col-md-1">
-                <input type="submit" value="Szukaj" class="btn">
-            </div>
-            {% if search %}
-                <div class="col-md-3">
-                    <p>Wyszukiwana fraza: {{ search }}</p>
-                </div>
-            {% endif %}
-        </form>
         <span class="right">
             <a href="{% url 'abi_pracownik_create' %}" class="btn btn-default">Dodaj pracownika</a>
             <a href="{% url 'abi_rodzaj_pracownik_create' %}" class="btn btn-default">Dodaj rodzaj pracownika</a>
         </span>
     </div>
+
     <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading center clickable" id="filtr">Filtruj</div>
+                <div class="panel-body" id="filtr-content" hidden>
+                    <form method="post" action="">{% csrf_token %}
+                        <div class="row">
+                            <form action="" method="post">{% csrf_token %}
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.nazwisko.html_name }}" placeholder="Nazwisko" {% if form.nazwisko.value %}value="{{ form.nazwisko.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.jednostka.html_name }}" placeholder="Szukaj jednostki" {% if form.jednostka.value %}value="{{ form.jednostka.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="{{ form.numer_ax.html_name }}" placeholder="Numer AX" {% if form.numer_ax.value %}value="{{ form.numer_ax.value }}"{% endif %}>
+                                </div>
+                                <div class="col-md-6">
+                                    <select name="{{ form.rodzaj.html_name }}">
+                                        <option value="">Rodzaj</option>
+                                        {% for key, value in form.rodzaj.field.choices %}
+                                            <option value="{{ key }}" {% if form.rodzaj.value == key %}selected{% endif %}>
+                                                {{ value }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12 center">
+                                    <input type="submit" value="Filtruj" class="btn btn-primary">
+                                    <input type="submit" name="clear" value="Wyczyść filtr" class="btn btn-primary">
+                                </div>
+                            </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if paginacja %}
+
         {% bootstrap_pager pracownicy %}
+        {% endif %}
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -56,17 +86,14 @@
             </tbody>
         </table>
         <div class="center">
+        {% if paginacja %}
+
             {% bootstrap_paginate pracownicy range=10 show_prev_next="false" show_first_last="true" centered="true" %}
+        {% endif %}
         </div>
     </div>
 
-    <script type="text/javascript">
-        $(document).ready(function($) {
-            $(".clickable-row").click(function() {
-                window.location = $(this).data("href");
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'abi_app/script.js' %}"></script>
 
     
 {% endblock %}

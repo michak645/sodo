@@ -1,4 +1,5 @@
 {% extends "abi_app/base_site/base_site.html" %}
+{% load static %}
 
 {% block title %}Lista{% endblock %}
 
@@ -53,46 +54,87 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <label>Opis: </label>
+                            <label>Administrator obiektu: </label>
                         </div>
                         <div class="col-md-6">
-                            <p>{{ obiekt.opis }}</p>
+                            <p>
+                                {% if as_obiekt %}
+                                    {{ as_obiekt.pracownik }}
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
-                    
-                    <form method="post" action="">{% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Czy aktywny: </label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>
-                                    <input type="checkbox" name="czy_aktywny"{% if obiekt.czy_aktywny %}value="True" checked{% else %}value="False"{% endif %}>
-                                    {% if obiekt.czy_aktywny %}Tak{% else %}Nie{% endif %}
-                                </p>
-                            </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Aktywny: </label>
                         </div>
-                        <div class="row">
-                            <input type="submit" value="Zapisz">
+                        <div class="col-md-6">
+                            <p>
+                                {% if obiekt.czy_aktywny %}Tak{% else %}Nie{% endif %}
+                            </p>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h3>Obecne uprawnienia do obiektu</h3>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading center clickable" id="filtr">Filtruj</div>
+                <div class="panel-body" id="filtr-content" hidden>
+                    <div class="row">
+                        <form action="" method="post">{% csrf_token %}
+                            <div class="col-md-6">
+                                <input type="text" name="{{ form.jednostka.html_name }}" placeholder="Szukaj jednostki" {% if form.jednostka.value %}value="{{ form.jednostka.value }}"{% endif %}>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" name="{{ form.pracownik.html_name }}" placeholder="Szukaj pracownika" {% if form.pracownik.value %}value="{{ form.pracownik.value }}"{% endif %}>
+                            </div><br>
+                            <div class="col-md-12">
+                                {% for key, value in form.uprawnienia.field.choices %}
+                                    <div class="col-md-6">
+                                        <input id="uprawnienie{{ forloop.counter }}" type="checkbox" name="{{ form.uprawnienia.html_name }}" value="{{ key }}" {% if key in form.uprawnienia.value %}checked{% endif %}>
+                                        <label for="uprawnienie{{ forloop.counter }}">{{ value }}</label><br>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12 center">
+                                <input type="submit" value="Filtruj" class="btn btn-primary">
+                                <input type="submit" name="clear" value="Wyczyść filtr" class="btn btn-primary">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+            {% for jednostka in jednostki %}
+                <p><strong>{{ jednostka }}</strong></p>
+                {% for pracownik in pracownicy %}
+                    {% if pracownik.jedn_org == jednostka %}
+                        <p>{{ pracownik }}</p>
+                        <ul>
+                            {% for uprawnienia in pou %}
+                                {% if uprawnienia.login == pracownik %}
+                                    <li>{{ uprawnienia.get_uprawnienia_display }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
 
 
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $(".clickable-row").click(function() {
-                window.location = $(this).data("href");
-            });
-            $("#return").click(function(){
-                history.back(1);
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'abi_app/script.js' %}"></script>
     
 {% endblock %}

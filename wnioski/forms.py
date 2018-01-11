@@ -1,20 +1,17 @@
 from django.forms import ModelForm
 from .models import (
-    Wniosek, Obiekt, TypObiektu,
-    AdministratorObiektu
+    Wniosek,
+    Obiekt,
+    TypObiektu,
 )
 from django import forms
-from auth_ex.models import RodzajPracownika
+from auth_ex.models import RodzajPracownika, Pracownik
 
 
 class WniosekForm(ModelForm):
     class Meta:
         model = Wniosek
         fields = ('typ',)
-
-    # def clean_user(self):
-    #     user = self.cleaned_data['user']
-    #     return user
 
 
 class SearchForm(forms.Form):
@@ -114,3 +111,15 @@ class WniosekFiltrowanieForm(forms.Form):
         required=False,
     )
     data = forms.DateTimeField(required=False)
+
+
+class PracownikForm(ModelForm):
+    class Meta:
+        model = Pracownik
+        fields = (
+            'login', 'password', 'imie', 'nazwisko', 'email',
+            'rodzaj', 'jedn_org', 'numer_ax', 'czy_user'
+        )
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
