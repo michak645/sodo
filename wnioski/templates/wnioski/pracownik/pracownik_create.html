@@ -11,19 +11,19 @@
 	<div class="col-md-6 col-md-offset-3">
 <form action="" method="post" >{% csrf_token %}
 <div class="form-group">
-<input type="text" name="{{ form.login.label }}" class="form-control form-control-sm" placeholder="Login" style="text-align: center" {% if form.login.value %}value="{{ form.login.value }}"{% endif %}>
+<input type="text" name="{{ form.login.label }}" class="form-control form-control-sm" placeholder="Login" style="text-align: center" {% if form.login.value %}value="{{ form.login.value }}"{% endif %} required>
 </div>
 <div class="form-group">
-<input type="password" name="{{ form.password.label }}" class="form-control form-control-sm" placeholder="Hasło" style="text-align: center" {% if form.password.value %}value="{{ form.password.value }}"{% endif %}>
+<input type="password" name="{{ form.password.label }}" class="form-control form-control-sm" placeholder="Hasło" style="text-align: center" {% if form.password.value %}value="{{ form.password.value }}"{% endif %} required>
 </div>
 <div class="form-group">
-<input type="text" name="{{ form.imie.label }}" class="form-control form-control-sm" placeholder="Imie" style="text-align: center" {% if form.imie.value %}value="{{ form.imie.value }}"{% endif %}>
+<input type="text" name="{{ form.imie.label }}" class="form-control form-control-sm" placeholder="Imie" style="text-align: center" {% if form.imie.value %}value="{{ form.imie.value }}"{% endif %} required>
 </div>
 <div class="form-group">
-<input type="text" name="{{ form.nazwisko.label }}" class="form-control form-control-sm" placeholder="Nazwisko" style="text-align: center" {% if form.nazwisko.value %}value="{{ form.nazwisko.value }}"{% endif %}>
+<input type="text" name="{{ form.nazwisko.label }}" class="form-control form-control-sm" placeholder="Nazwisko" style="text-align: center" {% if form.nazwisko.value %}value="{{ form.nazwisko.value }}"{% endif %} required>
 </div>
 <div class="form-group">
-<input type="text" name="{{ form.email.label }}" class="form-control form-control-sm" placeholder="Email" style="text-align: center" {% if form.email.value %}value="{{ form.email.value }}"{% endif %}>
+<input type="text" name="{{ form.email.label }}" class="form-control form-control-sm" placeholder="Email" style="text-align: center" {% if form.email.value %}value="{{ form.email.value }}"{% endif %} required>
 </div>
 <div class="form-group">
 <select class="form-control" style="text-align: center" {{ form.rodzaj }}</select>
@@ -32,7 +32,7 @@
 <select class="form-control" style="text-align: center" {{ form.jedn_org }} </select>
 </div>
 <div class="form-group">
-<input type="text" name="{{ form.numer_ax.label }}" class="form-control form-control-sm" placeholder="Numer AX" style="text-align: center" {% if form.numer_ax.value %}value="{{ form.numer_ax.value }}"{% endif %}>
+<input type="text" name="{{ form.numer_ax.label }}" class="form-control form-control-sm" placeholder="Numer AX" style="text-align: center" {% if form.numer_ax.value %}value="{{ form.numer_ax.value }}"{% endif %} required>
 </div>
 <div class="form-group">
 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
