@@ -1,0 +1,74 @@
+{% extends "abi_app/base_site/base_site.html" %}
+{% load bootstrap_pagination static %}
+
+{% block title %}SODO{% endblock %}
+
+{% block content %}
+
+	<div class="row center">
+		<h3>Dodaj administratora obiektu</h3>
+	</div>
+
+	<div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-6">
+                <h4>Obiekty:</h4>
+                <p>Wybrany: {% if obiekt %}{{ obiekt }}{% else %}Brak{% endif %}</p>
+                <form method="post" action="">{% csrf_token %}
+                    <input type="checkbox" name="wybrany_prac" value="{{ prac.pk }}" checked hidden>
+                    <input type="checkbox" name="wybrany_obiekt" value="{{ obiekt.id }}" checked hidden>
+
+
+                    <input type="text" name="szukaj_obiektu" placeholder="Szukaj obiektu">
+                    <input type="submit" name="szukaj" value="Szukaj">
+                </form>
+                <ol>
+                    {% for o in obiekty %}
+                        <li >
+                            <form method="post" action="">{% csrf_token %}
+                                <input type="checkbox" name="add_obiekt" value="True" checked hidden>
+                                <input type="checkbox" name="wybrany_prac" value="{{ prac.pk }}" checked hidden>
+                                <input type="text" value="{{ o.id }}" name="obiekt" hidden>
+                                <input class="lista-linkow" type="submit" value="{{ o }}">
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ol>
+                {% bootstrap_paginate obiekty range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+            </div>
+            <div class="col-md-6">
+                <h4>Pracownicy:</h4>
+                <p>Wybrany: {% if prac %}{{ prac }}{% else %}Brak{% endif %}</p>
+                <form method="post" action="">{% csrf_token %}
+                    <input type="checkbox" name="wybrany_prac" value="{{ prac.pk }}" checked hidden>
+                    <input type="checkbox" name="wybrany_obiekt" value="{{ obiekt.id }}" checked hidden>
+
+
+                    <input type="text" name="szukaj_pracownika" placeholder="Szukaj pracownika">
+                    <input type="submit" name="szukaj" value="Szukaj">
+                </form>
+                <ol>
+                    {% for p in pracownicy %}
+                        <li >
+                            <form method="post" action="">{% csrf_token %}
+                                <input type="checkbox" name="add_prac" value="True" checked hidden>
+                                <input type="checkbox" name="wybrany_obiekt" value="{{ obiekt.id }}" checked hidden>
+                                <input type="text" value="{{ p.pk }}" name="prac" hidden>
+                                <input class="lista-linkow" type="submit" value="{{ p }}">
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ol>
+                {% bootstrap_paginate pracownicy range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+
+            </div>
+            <div class="col-md-12 center">
+                <form method="post" action="">{% csrf_token %}
+                    <input type="checkbox" name="wybrany_obiekt" value="{{ obiekt.id }}" checked hidden>
+                    <input type="checkbox" name="wybrany_prac" value="{{ prac.pk }}" checked hidden>
+                    <input type="submit" name="zapisz" value="Zapisz" class="btn btn-success">
+                </form>
+            </div>
+        </div>
+	</div>
+{% endblock %}

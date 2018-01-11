@@ -267,7 +267,7 @@ def pracownik_list(request):
         form = PracownicyFiltrowanieForm(request.POST)
         if form.is_valid():
             if request.POST.get('clear'):
-                form = ObiektFiltrowanieForm()
+                form = PracownicyFiltrowanieForm()
             else:
                 nazwisko = form.cleaned_data['nazwisko']
                 if nazwisko:
@@ -429,7 +429,9 @@ def as_create(request):
         return redirect('index')
     pracownicy = Pracownik.objects.all()
     obiekty_z_as = AdministratorObiektu.objects.values('obiekt')
-    obiekty = Obiekt.objects.exclude(id__in=obiekty_z_as)
+    obiekty = Obiekt.objects.exclude(id__in=obiekty_z_as).filter(
+        czy_aktywny=True
+    )
 
     obiekt = None
     prac = None
@@ -478,15 +480,21 @@ def as_create(request):
                 prac = Pracownik.objects.get(
                     pk=prac,
                 )
-                AdministratorObiektu.objects.create(
+                admin, created = AdministratorObiektu.objects.get_or_create(
                     pracownik=prac,
                     obiekt=obiekt,
                 )
-                messages.success(
-                    request,
-                    'Pomyslnie dodano administratora systemu'
-                )
-                return redirect('admin_index')
+                if created:
+                    messages.success(
+                        request,
+                        'Pomyslnie dodano administratora systemu'
+                    )
+                    return redirect('abi_index')
+                else:
+                    messages.error(
+                        request,
+                        'Obiekt może mieć tylko jednego administratora'
+                    )
             else:
                 messages.error(request, 'błąd')
 
@@ -537,7 +545,7 @@ def obiekt_list(request):
         form = ObiektyFiltrowanieForm(request.POST)
         if form.is_valid():
             if request.POST.get('clear'):
-                form = ObiektFiltrowanieForm()
+                form = ObiektyFiltrowanieForm()
             else:
                 if form.cleaned_data['nazwa']:
                     obiekty = obiekty.filter(
@@ -697,7 +705,7 @@ def jednostka_list(request):
         form = JednostkiFiltrowanieForm(request.POST)
         if form.is_valid():
             if request.POST.get('clear'):
-                form = ObiektFiltrowanieForm()
+                form = JednostkiFiltrowanieForm()
             else:
                 nazwa = form.cleaned_data['nazwa']
                 if nazwa:
@@ -766,7 +774,7 @@ class JednostkaDetailView(DetailView):
 
 class JednostkaCreate(CreateView):
     model = JednOrg
-    fields = ['nazwa', 'parent', 'czy_labi']
+    fields = ['id', 'nazwa', 'parent', 'czy_labi']
     template_name = 'wnioski/jednostka/jednostka_create.html'
     success_url = reverse_lazy('labi_jednostka_list')
 
