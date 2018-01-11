@@ -272,7 +272,7 @@ def pracownik_list(request):
                 nazwisko = form.cleaned_data['nazwisko']
                 if nazwisko:
                     pracownicy = pracownicy.filter(
-                        nazwisko__icontains=nazwisko
+                        nazwisko__icontains=nazwisko,
                     )
                 jednostka = form.cleaned_data['jednostka']
                 if jednostka:

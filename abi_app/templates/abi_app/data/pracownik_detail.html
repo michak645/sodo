@@ -1,7 +1,7 @@
 {% extends "abi_app/base_site/base_site.html" %}
 {% load bootstrap_pagination %}
 
-{% block title %}User - {{ pracownik }}{% endblock %}
+{% block title %}User - {{ prac }}{% endblock %}
 
 {% block content %}
 
@@ -12,7 +12,7 @@
     </div>
 
     <div class="row">
-        <h3><strong>{{ pracownik }}</strong> - dane szczegółowe</h3>
+        <h3><strong>{{ prac }}</strong> - dane szczegółowe</h3>
     </div>
     <hr>
     <div class="row">
@@ -22,7 +22,7 @@
                 <label>Imię: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.imie }}</p>
+                <p>{{ prac.imie }}</p>
             </div>
         </div>
 
@@ -31,7 +31,7 @@
                 <label>Nazwisko: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.nazwisko }}</p>
+                <p>{{ prac.nazwisko }}</p>
             </div>
         </div>
 
@@ -41,7 +41,7 @@
                 <label>Email: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.email }}</p>
+                <p>{{ prac.email }}</p>
             </div>
         </div>
 
@@ -51,7 +51,7 @@
                 <label>Login: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.login }}</p>
+                <p>{{ prac.login }}</p>
             </div>
         </div>
 
@@ -61,7 +61,7 @@
                 <label>Jednostka organizacyjna: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.jedn_org }}</p>
+                <p>{{ prac.jedn_org }}</p>
             </div>
         </div>
 
@@ -70,7 +70,7 @@
                 <label>Szkolenie: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                {% if pracownik.szkolenie %}
+                {% if prac.szkolenie %}
                     <p>Przeszedł</p>
                 {% else %}
                     <p>Nie przeszedł</p>
@@ -83,26 +83,25 @@
                 <label>Rodzaj użytkownika: </label>
             </div>
             <div class="col-md-3 col-sm-4">
-                <p>{{ pracownik.rodzaj }}</p>
+                <p>{{ prac.rodzaj }}</p>
             </div>
         </div>
 
-        <form method="post" action="">{% csrf_token %}
-            <div class="row">
-                <div class="col-md-3 col-sm-4">
-                    <label>Czy aktywny: </label>
-                </div>
-                <div class="col-md-3 col-sm-4">
-                    <p>
-                        <input type="checkbox" name="czy_aktywny"{% if pracownik.czy_aktywny %}value="True" checked{% else %}value="False"{% endif %}>
-                        {% if pracownik.czy_aktywny %}Tak{% else %}Nie{% endif %}
-                    </p>
-                </div>
+       
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Aktywny: </label>
             </div>
-            <div class="row">
-                <input type="submit" value="Zapisz">
+            <div class="col-md-3 col-sm-4">
+                 <form method="post" action="">{% csrf_token %}
+                        {% if prac.czy_aktywny %}
+                            Tak, <input type="submit" name="dezaktywuj" value="Dezaktywuj">
+                        {% else %}
+                            Nie, <input type="submit" name="aktywuj" value="Aktywuj">
+                        {% endif %}
+                </form>
             </div>
-        </form>
+        </div>
     </div>
     <hr>
     <div class="row">

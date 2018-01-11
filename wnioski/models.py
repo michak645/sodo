@@ -75,7 +75,7 @@ class TypObiektu(models.Model):
 
 
 class Obiekt(models.Model):
-    nazwa = models.CharField(max_length=45)
+    nazwa = models.CharField(max_length=45, unique=True)
     # typ = models.ForeignKey(TypObiektu, on_delete=models.SET_DEFAULT)
     typ = models.ForeignKey(TypObiektu, on_delete=models.CASCADE)
     # jedn_org = models.ForeignKey(JednOrg, on_delete=models.SET(set_parent))

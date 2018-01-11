@@ -419,10 +419,59 @@ def user_profile(request):
             'Musisz się najpierw zalogować jako pracownik'
         )
         return redirect('index')
+
     context = {
         'pracownik': pracownik,
     }
     return render(request, 'user_app/user_profile.html', context)
+
+
+def change_password_1(request):
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
+        return redirect('index')
+
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        if pracownik.password == old_password:
+            return redirect('user_change_password_2')
+        else:
+            messages.error(request, 'Wprowadź poprawne hasło')
+
+    context = {
+        'pracownik': pracownik,
+    }
+    return render(request, 'user_app/change_password_1.html', context)
+
+
+def change_password_2(request):
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
+        return redirect('index')
+
+    if request.method == 'POST':
+        new_password_1 = request.POST.get('new_password_1')
+        new_password_2 = request.POST.get('new_password_2')
+        if new_password_1 == new_password_2:
+            pracownik.password = new_password_1
+            pracownik.save()
+            messages.success(request, 'Hasło zostało zmienione.')
+            return redirect('user_profile')
+        else:
+            messages.error(request, 'Hasła muszą być takie same')
+
+    context = {
+        'pracownik': pracownik,
+    }
+    return render(request, 'user_app/change_password_2.html', context)
 
 
 def user_app_detail(request, pk):

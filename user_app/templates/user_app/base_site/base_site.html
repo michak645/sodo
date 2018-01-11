@@ -40,9 +40,9 @@
                                     <li><a href="{% url 'user_jednostka_list' %}">Jednostki</a></li>
                                 </ul>
                         </li>
-                        {% for pracownik in pracownik.admin.all %}
+                        {% if pracownik.admin.all %}
                             <li><a href="{% url 'admin_panel' %}">Panel administratora</a></li>
-                        {% endfor %}
+                        {% endif %}
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">

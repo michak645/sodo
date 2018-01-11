@@ -12,8 +12,11 @@ urlpatterns = [
 
     url(r'^user_app_accepted', views.user_app_accepted, name='user_app_accepted'),
     url(r'^user_app_rejected', views.user_app_rejected, name='user_app_rejected'),
-    url(r'^user_profile', views.user_profile, name='user_profile'),
     url(r'^user_app_detail/(?P<pk>\d+)/$', views.user_app_detail, name='user_app_detail'),
+
+    url(r'^user_profile/$', views.user_profile, name='user_profile'),
+    url(r'^user_profile/change_password/step1$', views.change_password_1, name='user_change_password_1'),
+    url(r'^user_profile/change_password/step2$', views.change_password_2, name='user_change_password_2'),
 
     url(r'^admin_panel/$', views.admin_panel, name='admin_panel'),
     url(r'^admin_panel/(?P<pk>\d+)/$', views.admin_panel_detail, name='admin_panel_detail'),

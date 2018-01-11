@@ -1,3 +1,5 @@
+import random
+import string
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -300,8 +302,10 @@ def pracownik_detail(request, pk):
         )
         return redirect('index')
 
+    prac = Pracownik.objects.get(pk=pk)
+
     wnioski = Wniosek.objects.filter(
-        pracownik=pracownik.pk).order_by('-data')
+        pracownik=prac.pk).order_by('-data')
     historie = []
     for wniosek in wnioski:
         try:
@@ -313,16 +317,26 @@ def pracownik_detail(request, pk):
     wnioski_pracownika = []
     for wniosek in wnioski:
         for prac_wniosek in wniosek.pracownicy.all():
-            if prac_wniosek.pk == pracownik.pk:
+            if prac_wniosek.pk == prac.pk:
                 wnioski_pracownika.append(wniosek)
 
     if request.method == 'POST':
-        czy_aktywny = request.POST.get('czy_aktywny')
-        if czy_aktywny:
-            pracownik.czy_aktywny = True
-        else:
-            pracownik.czy_aktywny = False
-        pracownik.save()
+        if request.POST.get('aktywuj'):
+            prac.czy_aktywny = True
+            new_password = ''.join(
+                random.SystemRandom().choice(
+                    string.ascii_uppercase + string.digits
+                ) for _ in range(12)
+            )
+            prac.password = new_password
+            prac.save()
+
+            # KAMIL TODO
+            # MAIL DOTYCZACY ZALOGOWANIA Z NEW PASSWORD I INFO ŻEBY ZMIENIŁ
+
+        elif request.POST.get('dezaktywuj'):
+            prac.czy_aktywny = False
+            prac.save()
 
     paginator = Paginator(historie, 5)
     page = request.GET.get('page')
@@ -338,7 +352,7 @@ def pracownik_detail(request, pk):
     )
 
     context = {
-        'pracownik': pracownik,
+        'prac': prac,
         'historie': historie,
         'obiekty': obiekty,
     }
