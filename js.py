@@ -264,9 +264,15 @@ def start_emp():
     
 
 # Automatyczne uzupełnianie danych na początku oraz ich prototypowa aktualizacja
-start_org()
-start_typ()
-start_emp()
+#start_org()
+#start_typ()
+#start_emp()
+ 
+connection = sqlite3.connect(database)
+cursor = connection.cursor()
+cursor.execute("DELETE from auth_ex_jednorg where id = 'Brak danych'")
+connection.commit()
+connection.close()
     
 '''
 print ("Opcje: ")
