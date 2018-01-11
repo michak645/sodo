@@ -7,9 +7,21 @@
         <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 
+    <div class="row center">
+        <div class="col-md-4">
+        <a class="btn btn-primary" href="{% url 'step_one' %}">Powrót</a>
+        </div>
+        <div class="col-md-4">
+            <h3>Wybierz pracowników</h3>
+        </div>
+        <div class="col-md-4">
+        <a class="btn btn-primary {% if not prac_cart %}disabled{% endif %}" href="{% url 'step_three' %}">Dalej</a>
+        </div>
+    </div>
+
+    <hr>
+
     <div class="row">
-        <h3>Wybierz pracowników</h3>
-        <hr>
         <div class="col-md-4">
             <h4>I. Wybierz jednostkę</h4>
             <form method="post" action="">{% csrf_token %}
@@ -30,7 +42,10 @@
                         {% endfor %}
                     </ol>
                 <div class="center">
+                    {% if paginacja_jedn %}
+
                     {% bootstrap_paginate jednostki range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+                    {% endif %}
                 </div>
                 </div>
             </form>
@@ -60,9 +75,6 @@
                         </li>
                     {% endfor %}
                 </ol>
-                <div class="center">
-                    {% bootstrap_paginate prac_list range=3 show_prev_next="true" show_first_last="true" centered="true" %}
-                </div>
             {% else %}
                 <p>Nie ma pracowników w tej jednostce</p>
             {% endif %}
@@ -89,22 +101,12 @@
                             </form>
                         </li>
                     {% endfor %}
-                    <div class="center">
-                        {% bootstrap_paginate prac_cart range=3 show_prev_next="true" show_first_last="true" centered="true" %}
-                    </div>
                 {% else %}
                     <p>Brak</p>
                 {% endif %}
             </ol>
             </ol>
         </div>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="row center">
-        <a class="btn btn-primary" href="{% url 'step_one' %}">Powrót</a>
-        <a class="btn btn-primary {% if not prac_cart %}disabled{% endif %}" href="{% url 'step_three' %}">Dalej</a>
     </div>
 
 {% endblock %}
