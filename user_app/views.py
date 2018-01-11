@@ -26,10 +26,10 @@ from wnioski.forms import (
 
 
 def authenticate(request):
-    prac = request.session['pracownik']
     try:
+        prac = request.session['pracownik']
         pracownik = Pracownik.objects.get(pk=prac)
-    except Pracownik.DoesNotExist:
+    except:
         pracownik = None
     if pracownik:
         try:
