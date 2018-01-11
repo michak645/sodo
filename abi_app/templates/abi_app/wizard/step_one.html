@@ -29,9 +29,11 @@
                             </li>
                         {% endfor %}
                     </ol>
+                    {% if paginacja_jedn %}
                     <div class="center">
                         {% bootstrap_paginate jednostki range=3 show_prev_next="true" show_first_last="true" centered="true" %}
                     </div>
+                    {% endif %}
                 </div>
             </form>
     	</div>
@@ -62,7 +64,9 @@
                     {% endfor %}
                 </ol>
                 <div class="center">
+                    {% if paginacja_obie %}
                     {% bootstrap_paginate obj_list range=3 show_prev_next="true" show_first_last="true" centered="true" %}
+                    {% endif %}
                 </div>
             {% else%}
                 <p>Nie ma przypisanych obiektów do tej jednostki</p>

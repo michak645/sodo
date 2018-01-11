@@ -795,6 +795,8 @@ def step_one(request):
     jednostka = None
     jednostki = JednOrg.objects.all().order_by('nazwa')
     wszedzie = False
+    paginacja_jedn = True
+    paginacja_obie = True
 
     if request.method == 'POST':
         obj = request.POST.get('obj')
@@ -804,6 +806,7 @@ def step_one(request):
             jednostki = JednOrg.objects.filter(
                 nazwa__icontains=szukaj_jednostki
             )
+            paginacja_jedn = False
         szukaj_obiektu = request.POST.get('szukaj-obiektu')
         if szukaj_obiektu:
             jednostka = request.POST.get('wybrana-jednostka')
@@ -824,7 +827,7 @@ def step_one(request):
                     czy_aktywny=True
                 )
                 wszedzie = False
-
+            paginacja_obie = False
         if request.POST.get('clear'):
             cart.obiekty.clear()
 
@@ -866,7 +869,7 @@ def step_one(request):
                     jedn_org=jednostka,
                     czy_aktywny=True
                 )
-        if obj_list:
+        if obj_list and paginacja_obie:
             paginator = Paginator(obj_list, 10)
             page = request.GET.get('page_obiekt')
             try:
@@ -876,16 +879,18 @@ def step_one(request):
             except EmptyPage:
                 obj_list = paginator.page(paginator.num_pages)
 
-    paginator = Paginator(jednostki, 10)
-    page = request.GET.get('page')
-    try:
-        jednostki = paginator.page(page)
-    except PageNotAnInteger:
-        jednostki = paginator.page(1)
-    except EmptyPage:
-        jednostki = paginator.page(paginator.num_pages)
+    if paginacja_jedn:
+        paginator = Paginator(jednostki, 10)
+        page = request.GET.get('page')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
 
     objs_cart = cart.obiekty.all()
+
     paginator = Paginator(objs_cart, 10)
     page = request.GET.get('page')
     try:
@@ -902,6 +907,8 @@ def step_one(request):
         'pracownik': pracownik,
         'objs_cart': objs_cart,
         'wszedzie': wszedzie,
+        'paginacja_jedn': paginacja_jedn,
+        'paginacja_obie': paginacja_obie,
     }
     return render(request, 'abi_app/wizard/step_one.html', context)
 
@@ -919,6 +926,8 @@ def step_two(request):
     jednostka = None
     jednostki = JednOrg.objects.all().order_by('nazwa')
     wszedzie = False
+    paginacja_jedn = True
+    paginacja_prac = True
 
     if request.method == 'POST':
         prac = request.POST.get('prac')
@@ -928,6 +937,7 @@ def step_two(request):
             jednostki = JednOrg.objects.filter(
                 nazwa__icontains=szukaj_jednostki
             )
+            paginacja_jedn = False
 
         szukaj_pracownika = request.POST.get('szukaj-pracownika')
         if szukaj_pracownika:
@@ -949,6 +959,7 @@ def step_two(request):
                     czy_aktywny=True,
                 )
                 wszedzie = False
+            paginacja_prac = False
 
         if request.POST.get('clear'):
             cart.pracownicy.clear()
@@ -992,28 +1003,19 @@ def step_two(request):
                     czy_aktywny=True
                 )
 
-        if prac_list:
-            paginator = Paginator(prac_list, 10)
-            page = request.GET.get('page_obiekt')
-            try:
-                prac_list = paginator.page(page)
-            except PageNotAnInteger:
-                prac_list = paginator.page(1)
-            except EmptyPage:
-                prac_list = paginator.page(paginator.num_pages)
-
-    paginator = Paginator(jednostki, 10)
-    page = request.GET.get('page')
-    try:
-        jednostki = paginator.page(page)
-    except PageNotAnInteger:
-        jednostki = paginator.page(1)
-    except EmptyPage:
-        jednostki = paginator.page(paginator.num_pages)
+    if paginacja_jedn:
+        paginator = Paginator(jednostki, 10)
+        page = request.GET.get('page_jedn')
+        try:
+            jednostki = paginator.page(page)
+        except PageNotAnInteger:
+            jednostki = paginator.page(1)
+        except EmptyPage:
+            jednostki = paginator.page(paginator.num_pages)
 
     prac_cart = cart.pracownicy.all()
     paginator = Paginator(prac_cart, 10)
-    page = request.GET.get('page')
+    page = request.GET.get('page_prac')
     try:
         prac_cart = paginator.page(page)
     except PageNotAnInteger:
@@ -1028,6 +1030,7 @@ def step_two(request):
         'prac_list': prac_list,
         'prac_cart': prac_cart,
         'wszedzie': wszedzie,
+        'paginacja_jedn': paginacja_jedn,
     }
     return render(request, 'abi_app/wizard/step_two.html', context)
 
