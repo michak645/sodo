@@ -219,21 +219,24 @@ def wniosek_detail(request, pk):
                 pracownik=pracownik.login,
             )
             ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
-            wniosek_mail = Wniosek.objects.get(pk=pk)
-            pracownik_w = Pracownik.objects.get(pk=wniosek_mail.pracownik.pk)
-            historia_w = Historia.objects.filter(wniosek=pk)
-            subject = 'SODO: odrzucowno wniosek nr ' + str(wniosek_mail.pk) + ' w systemie'
-            message = 'Odrzucono twój wniosek o numerze ' + str(wniosek_mail.pk) + '.\n' \
-                'Do wiadomości dołączono raport z historią wniosku.\n' \
-                'Wiadomość wygenerowana automatycznie.'
-            send_addr = wniosek_mail.pracownik.email
-            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
-            html = render_to_string('PDF_wnioski/wniosek_rap_pdf_wzor.html',
-                                    {'wniosek': wniosek_mail, 'pracownik': pracownik_w, 'historia': historia_w})
-            out = BytesIO()
-            weasyprint.HTML(string=html).write_pdf(out)
-            email.attach('raport_wniosek' + str(wniosek_mail.pk) + '.pdf', out.getvalue(), 'application/pdf')
-            email.send()
+            try:
+                wniosek_mail = Wniosek.objects.get(pk=pk)
+                pracownik_w = Pracownik.objects.get(pk=wniosek_mail.pracownik.pk)
+                historia_w = Historia.objects.filter(wniosek=pk)
+                subject = 'SODO: odrzucowno wniosek nr ' + str(wniosek_mail.pk) + ' w systemie'
+                message = 'Odrzucono twój wniosek o numerze ' + str(wniosek_mail.pk) + '.\n' \
+                    'Do wiadomości dołączono raport z historią wniosku.\n' \
+                    'Wiadomość wygenerowana automatycznie.'
+                send_addr = wniosek_mail.pracownik.email
+                email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+                html = render_to_string('PDF_wnioski/wniosek_rap_pdf_wzor.html',
+                                        {'wniosek': wniosek_mail, 'pracownik': pracownik_w, 'historia': historia_w})
+                out = BytesIO()
+                weasyprint.HTML(string=html).write_pdf(out)
+                email.attach('raport_wniosek' + str(wniosek_mail.pk) + '.pdf', out.getvalue(), 'application/pdf')
+                email.send()
+            except:
+                pass
             '''
             historia = Historia.objects.filter(wniosek=pk)
             return HttpResponseRedirect('/admin_index')
