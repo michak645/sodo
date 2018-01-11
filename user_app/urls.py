@@ -15,7 +15,8 @@ urlpatterns = [
     url(r'^user_profile', views.user_profile, name='user_profile'),
     url(r'^user_app_detail/(?P<pk>\d+)/$', views.user_app_detail, name='user_app_detail'),
 
-    url(r'^admin_panel', views.admin_panel, name='admin_panel'),
+    url(r'^admin_panel/$', views.admin_panel, name='admin_panel'),
+    url(r'^admin_panel/(?P<pk>\d+)/$', views.admin_panel_detail, name='admin_panel_detail'),
 
     url(r'^wizard/step_one', views.step_one, name='step_one'),
     url(r'^wizard/step_two', views.step_two, name='step_two'),

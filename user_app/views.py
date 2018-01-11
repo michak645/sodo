@@ -765,6 +765,7 @@ def admin_panel(request):
             'Musisz się najpierw zalogować jako pracownik'
         )
         return redirect('index')
+
     obiekty_admina = AdministratorObiektu.objects.filter(pracownik=pracownik)
 
     if request.method == 'POST':
@@ -794,3 +795,21 @@ def admin_panel(request):
         'wnioski': to_approve,
     }
     return render(request, 'user_app/admin_panel.html', context)
+
+
+def admin_panel_detail(request, pk):
+    pracownik = authenticate(request)
+    if not pracownik:
+        messages.warning(
+            request,
+            'Musisz się najpierw zalogować jako pracownik'
+        )
+        return redirect('index')
+
+    obiekt = ZatwierdzonePrzezAS.objects.get(pk=pk)
+
+    context = {
+        'pracownik': pracownik,
+        'obiekt': obiekt,
+    }
+    return render(request, 'user_app/admin_panel_default.html', context)

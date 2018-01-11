@@ -236,6 +236,12 @@ class ZatwierdzonePrzezAS(models.Model):
         'Zatwierdzone przez administratora systemu',
         default=False,
     )
+    komentarz = models.TextField(
+        'Komentarz',
+        max_length=255,
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return 'Wniosek id: {}, obiekt: {}'.format(

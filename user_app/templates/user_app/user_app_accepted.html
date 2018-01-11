@@ -14,7 +14,8 @@
                 <thead>
                     <tr>
                         <th scope="col">Lp.</th>
-                        <th scope="col">Pracownicy</th>
+                        <th scope="col">Pracownik składający</th>
+                        <th scope="col">Dot. prac.</th>
                         <th scope="col">Typ</th>
                         <th scope="col">Uprawnienia</th>
                         <th scope="col">Obiekt</th>
@@ -24,20 +25,13 @@
                 <tbody>
                     {% for wniosek in historie %}
                         <tr class="clickable-row" data-href="{% url 'user_app_detail' wniosek.wniosek.id %}">
-                            <th scope="row">{{ forloop.counter }}</th>
-                                <td>
-                                    {% for pracownik in wniosek.wniosek.pracownicy.all %}
-                                        {{ pracownik }}<br>
-                                    {% endfor %}
-                                </td>
-                                <td>{{ wniosek.wniosek.get_typ_display }}</td>
-                                <td>{{ wniosek.wniosek.get_uprawnienia_display }}</td>
-                                <td>
-                                    {% for obiekt in wniosek.wniosek.obiekty.all %}
-                                        {{ obiekt }}<br>
-                                    {% endfor %}
-                                </td>
-                                <td>{{ wniosek.data }}</td>
+                            <td scope="row">{{ forloop.counter }}</td>
+                            <td>{{ wniosek.wniosek.pracownik }}</td>
+                            <td>{{ wniosek.wniosek.pracownicy.all|length }}</td>
+                            <td>{{ wniosek.wniosek.get_typ_display }}</td>
+                            <td>{{ wniosek.wniosek.get_uprawnienia_display|truncatechars:"50" }}</td>
+                            <td>{{ wniosek.wniosek.get_obiekty|truncatechars:"40" }}</td>
+                            <td>{{ wniosek.data }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
