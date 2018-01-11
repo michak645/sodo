@@ -29,6 +29,7 @@ def index(request):
                 typ = 'pracownik'
                 request.session['pracownik'] = pracownik.pk
             except Pracownik.DoesNotExist:
+                pracownik = None
                 typ = ''
                 messages.error(request, 'Błędne dane logowania')
             if pracownik:
