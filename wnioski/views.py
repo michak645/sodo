@@ -219,21 +219,24 @@ def wniosek_detail(request, pk):
                 pracownik=pracownik.login,
             )
             ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
-            wniosek_mail = Wniosek.objects.get(pk=pk)
-            pracownik_w = Pracownik.objects.get(pk=wniosek_mail.pracownik.pk)
-            historia_w = Historia.objects.filter(wniosek=pk)
-            subject = 'SODO: odrzucowno wniosek nr ' + str(wniosek_mail.pk) + ' w systemie'
-            message = 'Odrzucono twój wniosek o numerze ' + str(wniosek_mail.pk) + '.\n' \
-                'Do wiadomości dołączono raport z historią wniosku.\n' \
-                'Wiadomość wygenerowana automatycznie.'
-            send_addr = wniosek_mail.pracownik.email
-            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
-            html = render_to_string('PDF_wnioski/wniosek_rap_pdf_wzor.html',
-                                    {'wniosek': wniosek_mail, 'pracownik': pracownik_w, 'historia': historia_w})
-            out = BytesIO()
-            weasyprint.HTML(string=html).write_pdf(out)
-            email.attach('raport_wniosek' + str(wniosek_mail.pk) + '.pdf', out.getvalue(), 'application/pdf')
-            email.send()
+            try:
+                wniosek_mail = Wniosek.objects.get(pk=pk)
+                pracownik_w = Pracownik.objects.get(pk=wniosek_mail.pracownik.pk)
+                historia_w = Historia.objects.filter(wniosek=pk)
+                subject = 'SODO: odrzucowno wniosek nr ' + str(wniosek_mail.pk) + ' w systemie'
+                message = 'Odrzucono twój wniosek o numerze ' + str(wniosek_mail.pk) + '.\n' \
+                    'Do wiadomości dołączono raport z historią wniosku.\n' \
+                    'Wiadomość wygenerowana automatycznie.'
+                send_addr = wniosek_mail.pracownik.email
+                email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+                html = render_to_string('PDF_wnioski/wniosek_rap_pdf_wzor.html',
+                                        {'wniosek': wniosek_mail, 'pracownik': pracownik_w, 'historia': historia_w})
+                out = BytesIO()
+                weasyprint.HTML(string=html).write_pdf(out)
+                email.attach('raport_wniosek' + str(wniosek_mail.pk) + '.pdf', out.getvalue(), 'application/pdf')
+                email.send()
+            except:
+                pass
             '''
             historia = Historia.objects.filter(wniosek=pk)
             return HttpResponseRedirect('/admin_index')
@@ -1165,18 +1168,21 @@ def step_four(request):
             w.komentarz = komentarz
             w.save()
             ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
-            subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
-            message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
-                'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
-                'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
-                'Wiadomość wygenerowana automatycznie.'
-            send_addr = w.pracownik.email
-            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
-            html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
-            out = BytesIO()
-            weasyprint.HTML(string=html).write_pdf(out)
-            email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
-            email.send()
+            try:
+                subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
+                message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
+                    'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
+                    'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
+                    'Wiadomość wygenerowana automatycznie.'
+                send_addr = w.pracownik.email
+                email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+                html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
+                out = BytesIO()
+                weasyprint.HTML(string=html).write_pdf(out)
+                email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
+                email.send()
+            except:
+                pass
             '''
         cart.delete()
         return HttpResponseRedirect('/admin_index')

@@ -7,6 +7,10 @@ from django.contrib import messages
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+import weasyprint
+from io import BytesIO
 
 from auth_ex.models import Labi, Pracownik, JednOrg, RodzajPracownika
 from user_app.forms import WizardUprawnienia
@@ -334,8 +338,20 @@ def pracownik_detail(request, pk):
                     string.ascii_uppercase + string.digits
                 ) for _ in range(12)
             )
-            # KAMIL TODO
-            # MAIL DOTYCZACY ZALOGOWANIA Z NEW PASSWORD I INFO ŻEBY ZMIENIŁ
+
+            ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
+            try:
+                subject = 'SODO: aktywowano twoje konto'
+                message = 'Aktywowano twoje konto w systemie SODO.\nLogin: '+str(prac.login)+'\n' \
+                    'Hasło: '+str(new_password)+'\nProsimy o zmianę hasła po pierwszym zalogowaniu.\n' \
+                    'Wiadomość wygenerowana automatycznie.'
+                send_addr = prac.email
+                email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+                email.send()
+            except:
+                pass
+            '''
+
             prac.password = new_password
             prac.save()
         if request.POST.get('usun'):
@@ -1148,18 +1164,21 @@ def step_four(request):
             w.komentarz = komentarz
             w.save()
             ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
-            subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
-            message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
-                'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
-                'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
-                'Wiadomość wygenerowana automatycznie.'
-            send_addr = w.pracownik.email
-            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
-            html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
-            out = BytesIO()
-            weasyprint.HTML(string=html).write_pdf(out)
-            email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
-            email.send()
+            try:
+                subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
+                message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
+                    'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
+                    'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
+                    'Wiadomość wygenerowana automatycznie.'
+                send_addr = w.pracownik.email
+                email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+                html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
+                out = BytesIO()
+                weasyprint.HTML(string=html).write_pdf(out)
+                email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
+                email.send()
+            except:
+                pass
             '''
         cart.delete()
         return HttpResponseRedirect('/abi_index')
