@@ -16,30 +16,40 @@
 </head>
 <body>
 
-    <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <p {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}  role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </p>
-            {% endfor %}
-        {% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            {% if messages %}
+                {% for message in messages %}
+                    <p {% if message.tags %}  class="alert alert-{{ message.tags }}" {% endif %}  role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 
-        <div class="row center">
-            <h2>SODO</h2>
-            <div class="col-md-6 col-md-offset-3">
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <div class="form-login" id="logowanie">
+                <h1 id="naglowek">SODO</h1>
                 <form method="post" action="">{% csrf_token %}
-                    <input type="text" name="username" placeholder="login"><br>
-                    <input type="password" name="password" placeholder="hasło"><br>
-                    <input type="submit" name="login" value="Zaloguj" class="btn btn-default">
+                    <input type="text" name="username" class="form-control input-sm chat-input" placeholder="login"><br>
+                    <input type="password" name="password" class="form-control input-sm chat-input" placeholder="hasło"><br>
+                    <div class="wrapper">
+                        <span class="group-btn">
+                            <input type="submit" name="login" value="Zaloguj" class="btn btn-primary btn-md"></a>
+                        </span>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
+</div>
 
 </body>
 

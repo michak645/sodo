@@ -45,8 +45,10 @@ def authenticate(request):
 
 
 def logout(request):
-    pracownik = request.session['pracownik']
-    if pracownik:
+    try:
+        pracownik = request.session['pracownik']
+        request.session['pracownik'] = None
+    except:
         request.session['pracownik'] = None
     return redirect('index')
 
