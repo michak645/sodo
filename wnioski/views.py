@@ -1168,18 +1168,21 @@ def step_four(request):
             w.komentarz = komentarz
             w.save()
             ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
-            subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
-            message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
-                'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
-                'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
-                'Wiadomość wygenerowana automatycznie.'
-            send_addr = w.pracownik.email
-            email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
-            html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
-            out = BytesIO()
-            weasyprint.HTML(string=html).write_pdf(out)
-            email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
-            email.send()
+            try:
+                subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
+                message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
+                    'został umieszczony w systemie i oczekuje na decyzję Lokalnego Administratora ' \
+                    'Bezpieczeństwa Informacji.\nDokument w formacie PDF został dołączony do tej wiadomości.\n' \
+                    'Wiadomość wygenerowana automatycznie.'
+                send_addr = w.pracownik.email
+                email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
+                html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
+                out = BytesIO()
+                weasyprint.HTML(string=html).write_pdf(out)
+                email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
+                email.send()
+            except:
+                pass
             '''
         cart.delete()
         return HttpResponseRedirect('/admin_index')
