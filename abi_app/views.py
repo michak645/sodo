@@ -323,19 +323,24 @@ def pracownik_detail(request, pk):
     if request.method == 'POST':
         if request.POST.get('aktywuj'):
             prac.czy_aktywny = True
+            prac.save()
+        if request.POST.get('dezaktywuj'):
+            prac.czy_aktywny = False
+            prac.save()
+        if request.POST.get('dodaj'):
+            prac.czy_user = True
             new_password = ''.join(
                 random.SystemRandom().choice(
                     string.ascii_uppercase + string.digits
                 ) for _ in range(12)
             )
-            prac.password = new_password
-            prac.save()
-
             # KAMIL TODO
             # MAIL DOTYCZACY ZALOGOWANIA Z NEW PASSWORD I INFO ŻEBY ZMIENIŁ
-
-        elif request.POST.get('dezaktywuj'):
-            prac.czy_aktywny = False
+            prac.password = new_password
+            prac.save()
+        if request.POST.get('usun'):
+            prac.password = ''
+            prac.czy_user = False
             prac.save()
 
     paginator = Paginator(historie, 5)

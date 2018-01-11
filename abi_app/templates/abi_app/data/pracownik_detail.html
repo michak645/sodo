@@ -102,6 +102,21 @@
                 </form>
             </div>
         </div>
+       
+        <div class="row">
+            <div class="col-md-3 col-sm-4">
+                <label>Czy jest użytkownikiem systemu: </label>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <form method="post" action="">{% csrf_token %}
+                    {% if prac.czy_user %}
+                        Tak, <input type="submit" name="usun" value="Usuń">
+                    {% else %}
+                        Nie, <input type="submit" name="dodaj" value="Dodaj">
+                    {% endif %}
+                </form>
+            </div>
+        </div>
     </div>
     <hr>
     <div class="row">
