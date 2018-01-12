@@ -838,7 +838,6 @@ def step_four(request):
             komentarz = request.POST.get(komentarz_id)
             w.komentarz = komentarz
             w.save()
-            ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
             try:
                 subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
                 message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
@@ -854,7 +853,6 @@ def step_four(request):
                 email.send()
             except:
                 pass
-            '''
         cart.delete()
         return HttpResponseRedirect('/user_index')
     context = {

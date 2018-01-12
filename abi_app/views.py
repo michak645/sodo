@@ -339,7 +339,6 @@ def pracownik_detail(request, pk):
                 ) for _ in range(12)
             )
 
-            ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
             try:
                 subject = 'SODO: aktywowano twoje konto'
                 message = 'Aktywowano twoje konto w systemie SODO.\nLogin: '+str(prac.login)+'\n' \
@@ -350,7 +349,6 @@ def pracownik_detail(request, pk):
                 email.send()
             except:
                 pass
-            '''
 
             prac.password = new_password
             prac.save()

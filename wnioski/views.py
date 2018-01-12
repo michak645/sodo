@@ -85,7 +85,6 @@ def admin_index(request):
                     status='5',
                     pracownik=pracownik.login,
                 )
-                ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
                 wniosek_mail = Wniosek.objects.get(pk=pk)
                 pracownik_w = Pracownik.objects.get(pk=wniosek_mail.pracownik.pk)
                 historia_w = Historia.objects.filter(wniosek=pk)
@@ -101,7 +100,6 @@ def admin_index(request):
                 weasyprint.HTML(string=html).write_pdf(out)
                 email.attach('raport_wniosek'+str(wniosek_mail.pk)+'.pdf', out.getvalue(), 'application/pdf')
                 email.send()
-                '''
             historia = Historia.objects.filter(wniosek=pk)
             return redirect('admin_index')
 
@@ -218,7 +216,6 @@ def wniosek_detail(request, pk):
                 status='5',
                 pracownik=pracownik.login,
             )
-            ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
             try:
                 wniosek_mail = Wniosek.objects.get(pk=pk)
                 pracownik_w = Pracownik.objects.get(pk=wniosek_mail.pracownik.pk)
@@ -237,7 +234,6 @@ def wniosek_detail(request, pk):
                 email.send()
             except:
                 pass
-            '''
             historia = Historia.objects.filter(wniosek=pk)
             return HttpResponseRedirect('/admin_index')
     else:
@@ -1140,7 +1136,6 @@ def step_four(request):
             komentarz = request.POST.get(komentarz_id)
             w.komentarz = komentarz
             w.save()
-            ''' zakomentowane bo dlugo robi i nie chce spamowac, zreszta maile pracownikow sa fejkowe
             try:
                 subject = 'SODO: nowy wniosek nr '+str(w.pk)+' w systemie'
                 message = 'Złożyłeś nowy wniosek w systemie SODO.\nWniosek otrzymał numer '+str(w.pk)+', ' \
@@ -1156,7 +1151,6 @@ def step_four(request):
                 email.send()
             except:
                 pass
-            '''
         cart.delete()
         return HttpResponseRedirect('/admin_index')
     context = {
