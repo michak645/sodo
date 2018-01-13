@@ -3,6 +3,8 @@
 import sys
 import json, requests
 import sqlite3
+import random
+import string
 
 #   TERMINY ODNOŚNIE PRACY
 #   - obrony od 9 do 12 stycznia (wstępnie piątek, 9 stycznia pokazać ostateczną wersję)
@@ -202,15 +204,32 @@ def start_emp():
         # emp = EmpListByOrgDesc(row[0])
         emp = EmpListByOrgDesc("Matematyki")
         amount = len(emp)
+        employee_ax = random.sample(range(100000, 999999), amount)
+        
+        logins_len = 0
+        while logins_len <= amount:
+            employee_uid = []
+            for u in range(10):
+                employee_uid.append(random.choice(string.ascii_letters))
+            employee_uids.append(''.join(employee_uid))
+            logins_len += 1
+            if logins_len == amount + 1:
+                employee_uids_set = set(employee_uids)
+                employee_uids_set_len = len(employee_uids_set)
+                employee_uids_len = len(employee_uids)
+                employee_uids = list(employee_uids_set)
+                if employee_uids_set_len != employee_uids_len:
+                    logins_len = employee_uids_set_len
+            
         
         for i in range(amount):
             for key, value in emp[i].items():
                 if key == "status" and value == '0':
                     break
-                elif key == "uid":
-                    employee_uids.append(value)
-                elif key == "numer_AX":
-                    employee_ax.append(value)
+                # elif key == "uid":
+                    # employee_uids.append(value)
+                # elif key == "numer_AX":
+                    # employee_ax.append(value)
                 elif key == "nazwisko":
                     employee_surnames.append(value)
                 elif key == "imie":
@@ -252,7 +271,7 @@ def start_emp():
     
     # sys.exit()
     j = 0
-    all = len(employee_uids)
+    all = len(employee_names)
     
     # print ("Amount: " + str(amount))
     for j in range(all):
