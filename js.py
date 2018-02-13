@@ -67,7 +67,7 @@ def EmpListByLastName(name):
     return data
 
 def EmpListByOrgDesc(org_desc):
-    urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=%" + org_desc
+    urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=%" + org_desc + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlEmpListByOrgDesc)
     data = json.loads(response.text)
