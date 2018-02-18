@@ -6,17 +6,6 @@ import sqlite3
 import random
 import string
 
-#   TERMINY ODNOŚNIE PRACY
-#   - obrony od 9 do 12 stycznia (wstępnie piątek, 9 stycznia pokazać ostateczną wersję)
-#   + podział na 2 bazy (do testów i do obrony)
-#   - dodać do skryptu początkowego wypełnianie pozostałych tabel (np. Uprawnienia)
-#   - zamiana nazw tabel i kolejności kolumn
-#   - Transakcje
-#   - obsługa konfliktów (przy usuwaniu, dodawaniu wierszy)
-#   - skrypt podzielony na INSERT (na początku) i UPDATE
-#   - zamiana SQL na ORM
-#   - optymalizacja
-#   
 
 host = "http://150.254.76.229/EodService/AXDWService.asmx/"
 wnioski_model = "wnioski_"
@@ -24,6 +13,8 @@ auth_ex_model = "auth_ex_"
 domain = "@amu.edu.pl"
 database = "db.sqlite3"
 organization_descs = []
+login = "secret"    # ze względu na publiczność, utajone
+password = "secret" # ze względu na publiczność, utajone
 
 
 # Parametry: EmpId
@@ -51,22 +42,22 @@ OrgById = host + "GetOrgById"
 OrgListByDesc = host + "GetOrgListByDesc"
 
 
-def EmpByEmpId(emp_id):
-    urlEmpByEmpId = host + "GetEmpByEmpId?EmpId=%" + emp_id
+def EmpByEmpId(emp_id, login, password):
+    urlEmpByEmpId = host + "GetEmpByEmpId?EmpId=%" + emp_id + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlEmpByEmpId)
     data = json.loads(response.text)
     # print (data)
     
-def EmpListByLastName(name):
-    urlEmpListByLastName = host + "GetEmpListByLastName?Nazwisko=%" + name
+def EmpListByLastName(name, login, password):
+    urlEmpListByLastName = host + "GetEmpListByLastName?Nazwisko=%" + name + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlEmpListByLastName)
     data = json.loads(response.text)
     # print (data)
     return data
 
-def EmpListByOrgDesc(org_desc):
+def EmpListByOrgDesc(org_desc, login, password):
     urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=%" + org_desc + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlEmpListByOrgDesc)
@@ -74,22 +65,22 @@ def EmpListByOrgDesc(org_desc):
     # print (data)
     return data
     
-def EmpListByUid(uid, status):
-    urlEmpListByUid = host + "GetEmpListByUid?Uid=%" + uid + "&status=" + status
+def EmpListByUid(uid, status, login, password):
+    urlEmpListByUid = host + "GetEmpListByUid?Uid=%" + uid + "&status=" + status + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlEmpListByUid)
     data = json.loads(response.text)
     # print (data)
     
-def OrgById(org_id):
-    urlOrgById = host + "GetOrgById?OrgId=%" + org_id
+def OrgById(org_id, login, password):
+    urlOrgById = host + "GetOrgById?OrgId=%" + org_id + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlOrgById)
     data = json.loads(response.text)
     # print (data)
     
-def OrgListByDesc(org_desc):
-    urlOrgListByDesc = host + "GetOrgListByDesc?OrgDesc=%" + org_desc
+def OrgListByDesc(org_desc, login, password):
+    urlOrgListByDesc = host + "GetOrgListByDesc?OrgDesc=%" + org_desc + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlOrgListByDesc)
     data = json.loads(response.text)
@@ -97,12 +88,12 @@ def OrgListByDesc(org_desc):
     return data
 
 
-def start_org():
+def start_org(login, password):
     organization_keys = []
     organization_labi = []
     organization_parent_keys = []
 
-    org = OrgListByDesc("")
+    org = OrgListByDesc("", login, password)
     amount = len(org)
 
     for i in range(amount):
@@ -134,7 +125,7 @@ def start_org():
     connection.commit()
     connection.close()
 
-def start_typ():
+def start_typ(login, password):
     # sys.exit()
     employee_types = []
     
@@ -149,7 +140,7 @@ def start_typ():
         # print ("Row: ")
         # print (row)
         # typ = EmpListByOrgDesc(row[0])
-        typ = EmpListByOrgDesc("Matematyki")
+        typ = EmpListByOrgDesc("Matematyki", login, password)
         amount = len(typ)
         
         for i in range(amount):
@@ -183,7 +174,7 @@ def start_typ():
     connection.commit()
     connection.close()
     
-def start_emp():
+def start_emp(login, password):
     employee_uids = []
     employee_ax = []
     employee_surnames = []
@@ -202,7 +193,7 @@ def start_emp():
     # for row in cursor:
     if (True):
         # emp = EmpListByOrgDesc(row[0])
-        emp = EmpListByOrgDesc("Matematyki")
+        emp = EmpListByOrgDesc("Matematyki", login, password)
         amount = len(emp)
         employee_ax = random.sample(range(100000, 999999), amount)
         
