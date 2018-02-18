@@ -13,8 +13,8 @@ auth_ex_model = "auth_ex_"
 domain = "@amu.edu.pl"
 database = "db.sqlite3"
 organization_descs = []
-login = "secret"    # ze względu na publiczność, utajone
-password = "secret" # ze względu na publiczność, utajone
+login = ""    # ze względu na publiczność, utajone
+password = "" # ze względu na publiczność, utajone
 
 
 # Parametry: EmpId
@@ -58,7 +58,8 @@ def EmpListByLastName(name, login, password):
     return data
 
 def EmpListByOrgDesc(org_desc, login, password):
-    urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=%" + org_desc + "&login=" + login + "&password=" + password
+    urlEmpListByOrgDesc = host + "GetEmpListByOrgDesc?OrganizationDesc=%" + \ 
+    org_desc + "&login=" + login + "&password=" + password
     
     response = requests.get(url = urlEmpListByOrgDesc)
     data = json.loads(response.text)
