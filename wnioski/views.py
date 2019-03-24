@@ -9,7 +9,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-import weasyprint
+# import weasyprint
 from io import BytesIO
 
 from auth_ex.views import find_labi
@@ -97,7 +97,7 @@ def admin_index(request):
                 html = render_to_string('PDF_wnioski/wniosek_rap_pdf_wzor.html',
                                         {'wniosek': wniosek_mail, 'pracownik': pracownik_w, 'historia': historia_w})
                 out = BytesIO()
-                weasyprint.HTML(string=html).write_pdf(out)
+                # weasyprint.HTML(string=html).write_pdf(out)
                 email.attach('raport_wniosek'+str(wniosek_mail.pk)+'.pdf', out.getvalue(), 'application/pdf')
                 email.send()
             historia = Historia.objects.filter(wniosek=pk)
@@ -229,7 +229,7 @@ def wniosek_detail(request, pk):
                 html = render_to_string('PDF_wnioski/wniosek_rap_pdf_wzor.html',
                                         {'wniosek': wniosek_mail, 'pracownik': pracownik_w, 'historia': historia_w})
                 out = BytesIO()
-                weasyprint.HTML(string=html).write_pdf(out)
+                # weasyprint.HTML(string=html).write_pdf(out)
                 email.attach('raport_wniosek' + str(wniosek_mail.pk) + '.pdf', out.getvalue(), 'application/pdf')
                 email.send()
             except:
@@ -1146,7 +1146,7 @@ def step_four(request):
                 email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
                 html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
                 out = BytesIO()
-                weasyprint.HTML(string=html).write_pdf(out)
+                # weasyprint.HTML(string=html).write_pdf(out)
                 email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
                 email.send()
             except:

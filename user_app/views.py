@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-import weasyprint
+# import weasyprint
 from io import BytesIO
 
 from .models import Cart
@@ -848,7 +848,7 @@ def step_four(request):
                 email = EmailMessage(subject, message, 'sodo.uam.test@gmail.com', [send_addr])
                 html = render_to_string('PDF_wnioski/wniosek_pdf_wzor.html', {'wniosek': w, 'pracownik': pracownik})
                 out = BytesIO()
-                weasyprint.HTML(string=html).write_pdf(out)
+                # weasyprint.HTML(string=html).write_pdf(out)
                 email.attach('wniosek'+str(w.pk)+'.pdf', out.getvalue(), 'application/pdf')
                 email.send()
             except:

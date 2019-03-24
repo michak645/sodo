@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-import weasyprint
+# import weasyprint
 from io import BytesIO
 
 from auth_ex.models import Labi, Pracownik, JednOrg, RodzajPracownika
