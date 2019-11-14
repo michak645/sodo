@@ -1,0 +1,4 @@
+Django==1.11.17
+django-multiselectfield
+django-bootstrap-pagination
+django-weasyprint

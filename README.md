@@ -1,5 +1,19 @@
 # sodo
 
+
+Najnowsze zmiany:
+- dodanie Dockerfile 
+- dodanie docker-compose.yml
+- żeby odpalić projekt należy zainstalować dockera i odpalić polecenie `docker-compose up`
+- aplikacja jest na porcie 8000
+
+
+--------------------------
+
+
+
+
+
 <i>Do zrobienia</i>
 Powrót do carta jeżeli się wyjdzie - zapisywać stan carta (najlepiej w modelu)
 
